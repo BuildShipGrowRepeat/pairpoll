@@ -11,4 +11,15 @@ export default defineConfig({
   adapter: cloudflare({ imageService: "compile" }),
   // Without this the adapter adds a KV binding for Astro sessions; we keep state in D1.
   session: false,
+  integrations: [
+    {
+      // The component preview at /design exists in `astro dev` only, never in the build.
+      name: "dev-design-preview",
+      hooks: {
+        "astro:config:setup": ({ command, injectRoute }) => {
+          if (command === "dev") injectRoute({ pattern: "/design", entrypoint: "./src/dev/design.astro" });
+        },
+      },
+    },
+  ],
 });

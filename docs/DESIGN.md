@@ -30,7 +30,7 @@ Astro components render shared classes, so client-side TypeScript can build the 
 | `LinkList`, `PageIntro`, `CtaBand`, `DemoHero` | | Marketing building blocks. |
 | `demo/PairDemo` | | Playable sample poll. Logic in `demo/demo-knockout.ts`, art in `public/demo`. |
 
-`/design` (noindex, not in the sitemap) shows every component and state.
+`/design` shows every component and state. It exists only under `npm run dev` (`src/dev/design.astro`, added in `astro.config.mjs`) and is not in the build.
 
 ## Layouts (`src/layouts`)
 

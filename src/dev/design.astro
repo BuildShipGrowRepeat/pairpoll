@@ -11,7 +11,7 @@ import RankingList from "../components/RankingList.astro";
 import PickLoop from "../components/PickLoop.astro";
 import { demoSets } from "../components/demo/sets";
 
-// Component preview for builders and review (noindex, not in the sitemap). See docs/DESIGN.md.
+// Component preview for builders and review. Served at /design by `astro dev` only (see astro.config.mjs).
 const art = demoSets.thumbnails.items;
 ---
 <Marketing title="Design system | Pairpoll" description="Pairpoll components." noindex>
