@@ -4,6 +4,14 @@ The base path is `/api/v1`. All times are Unix milliseconds unless marked otherw
 
 Creator endpoints accept `Authorization: Bearer <api-key>` or the browser session cookie. Session-only endpoints do not accept API keys. Voter endpoints use an HttpOnly voter cookie; keep the same cookie across requests. Cookies are Secure and SameSite=Lax. Any mutation carrying cookies must send an `Origin` exactly matching the request origin. Sign-in consumption and joining also require this Origin because they set cookies. Browser fetch sends Origin on these POST requests. Browser and bearer clients must use HTTPS outside local development.
 
+## MCP OAuth
+
+`https://pairpoll.com/mcp` also accepts OAuth access tokens for the single `mcp:tools` scope. OAuth grants can call only the eight MCP tools; they are not browser sessions and do not authenticate `/api/v1`.
+
+The server implements OAuth 2.1 authorization code with PKCE S256, refresh tokens, resource indicators, Client ID Metadata Documents and dynamic client registration. Access tokens, refresh tokens, authorization codes and client secrets are stored only as hashes in the `OAUTH_KV` namespace. Discovery starts at `/.well-known/oauth-protected-resource/mcp`; authorization server metadata is at `/.well-known/oauth-authorization-server`. The protocol endpoints are `/oauth/authorize`, `/oauth/token` (also token revocation) and `/oauth/register`. Redirect URIs must match exactly and use HTTPS, except HTTP loopback redirects for native clients.
+
+The authorization page uses the existing email sign-in, then asks the person to approve the client name and redirect host. Connected apps are listed under `/app/keys`; disconnecting one revokes its grant. API-key bearer access remains unchanged.
+
 Errors are JSON: `{"error":{"code":"poll_not_found","message":"This poll was not found.","details":...}}`. `details` is optional. Unsupported methods return 405 `method_not_allowed` and an `Allow` header. Unknown endpoints return 404 `not_found`. Invalid JSON returns 400 `invalid_json`; JSON over 64 KB returns 413 `request_too_large`. Missing or invalid creator authentication returns 401 `authentication_required`; session-only endpoints use 401 `session_required`. Cookie mutations with the wrong or absent Origin return 403 `invalid_origin`. Unexpected failures return 500 `internal_error`.
 
 ## Data
@@ -31,6 +39,7 @@ Results have `poll`, `items`, `ranking`, `runs`, and `finished`. Ranking entries
 | GET `/keys` | Session | Array of `{id,name,createdAt}`. |
 | POST `/keys` | Session | `{name}` (optional; defaults to `API key`). Returns 201 `{id,name,createdAt,key}`. Save the key now; it is shown only once. |
 | DELETE `/keys/:id` | Session | Revokes the key. 404 `key_not_found`. |
+| DELETE `/oauth/grants/:id` | Session | Disconnects an OAuth app grant owned by this account. |
 | GET `/account/me` | Session | `{email}`. |
 | POST `/account/logout-everywhere` | Session | Revokes all sessions and clears this cookie. API keys remain active. |
 | DELETE `/account` | Session | Revokes credentials, denies access to polls and queues all account data and files for deletion; clears the cookie. |

@@ -4,6 +4,7 @@ import { closePoll, createPoll, deletePoll, draftPollRow, listPolls, openPoll } 
 import { getResults } from "../results.js";
 import { deleteRun } from "../runs.js";
 import { ServerError } from "../errors.js";
+import { MCP_SCOPE } from "./scope.js";
 
 function toolResult(value: unknown) {
   return {
@@ -29,6 +30,9 @@ function run<T>(operation: () => Promise<T>) {
 }
 
 const pollId = z.uuid().describe("The poll ID returned by create_poll or list_polls.");
+const oauthTool = {
+  _meta: { securitySchemes: [{ type: "oauth2", scopes: [MCP_SCOPE] }] },
+} as const;
 
 export function createPairpollMcpServer(db: D1Database, ownerId: string, requestUrl: string) {
   const origin = new URL(requestUrl).origin;
@@ -38,7 +42,9 @@ export function createPairpollMcpServer(db: D1Database, ownerId: string, request
   );
 
   server.registerTool("create_poll", {
+    ...oauthTool,
     title: "Create a Pairpoll draft",
+    annotations: { readOnlyHint: false, destructiveHint: false },
     description: "Create an empty image or video poll draft. This does not upload files or open voting. Next call get_upload_link so the creator can add 2 to 16 files in the browser.",
     inputSchema: z.object({
       kind: z.enum(["image", "video"]).describe("All files in the poll must have this type."),
@@ -50,7 +56,9 @@ export function createPairpollMcpServer(db: D1Database, ownerId: string, request
   }, (input) => run(() => createPoll(db, ownerId, input)));
 
   server.registerTool("get_upload_link", {
+    ...oauthTool,
     title: "Get the browser upload link",
+    annotations: { readOnlyHint: true, destructiveHint: false },
     description: "Return the browser page for adding local files to a draft poll. Use this because MCP chat clients cannot pass attached images or videos to Pairpoll, and Pairpoll does not fetch remote URLs.",
     inputSchema: z.object({ pollId }),
   }, ({ pollId: id }) => run(async () => {
@@ -59,7 +67,9 @@ export function createPairpollMcpServer(db: D1Database, ownerId: string, request
   }));
 
   server.registerTool("open_poll", {
+    ...oauthTool,
     title: "Open a poll",
+    annotations: { readOnlyHint: false, destructiveHint: true },
     description: "Open a draft after 2 to 16 files are ready. Opening freezes its settings and files and returns the voter share link.",
     inputSchema: z.object({ pollId }),
   }, ({ pollId: id }) => run(async () => {
@@ -68,25 +78,33 @@ export function createPairpollMcpServer(db: D1Database, ownerId: string, request
   }));
 
   server.registerTool("close_poll", {
+    ...oauthTool,
     title: "Close a poll",
+    annotations: { readOnlyHint: false, destructiveHint: true },
     description: "Stop new votes on an open poll. Closing is final and the poll cannot reopen.",
     inputSchema: z.object({ pollId }),
   }, ({ pollId: id }) => run(() => closePoll(db, ownerId, id)));
 
   server.registerTool("get_results", {
+    ...oauthTool,
     title: "Get poll results",
+    annotations: { readOnlyHint: true, destructiveHint: false },
     description: "Return the overall ranking and every admitted voter run for a poll owned by this API key. Only finished runs count in the overall ranking.",
     inputSchema: z.object({ pollId }),
   }, ({ pollId: id }) => run(() => getResults(db, ownerId, id)));
 
   server.registerTool("list_polls", {
+    ...oauthTool,
     title: "List polls",
+    annotations: { readOnlyHint: true, destructiveHint: false },
     description: "List all unexpired polls owned by this API key, newest first. Use the returned poll ID with the other tools.",
     inputSchema: z.object({}),
   }, () => run(async () => ({ polls: await listPolls(db, ownerId) })));
 
   server.registerTool("delete_voter", {
+    ...oauthTool,
     title: "Delete a voter result",
+    annotations: { readOnlyHint: false, destructiveHint: true },
     description: "Permanently remove one voter run and its result from an owned poll. This does not free a place in the poll's voter limit.",
     inputSchema: z.object({
       pollId,
@@ -98,7 +116,9 @@ export function createPairpollMcpServer(db: D1Database, ownerId: string, request
   }));
 
   server.registerTool("delete_poll", {
+    ...oauthTool,
     title: "Delete a poll",
+    annotations: { readOnlyHint: false, destructiveHint: true },
     description: "Permanently deny access to an owned poll and queue its files and data for deletion.",
     inputSchema: z.object({ pollId }),
   }, ({ pollId: id }) => run(async () => {

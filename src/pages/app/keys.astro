@@ -2,6 +2,7 @@
 import { env } from "cloudflare:workers";
 import App from "../../layouts/App.astro";
 import { authenticateSession, listKeys } from "../../server/auth";
+import { listConnectedApps } from "../../server/oauth";
 import "../../styles/app.css";
 
 export const prerender = false;
@@ -9,7 +10,9 @@ export const prerender = false;
 const auth = await authenticateSession(env.DB, Astro.request);
 if (!auth) return Astro.redirect("/signin?next=/app/keys");
 const keys = await listKeys(env.DB, auth);
+const apps = await listConnectedApps(env, Astro.url.origin, auth.accountId);
 const json = JSON.stringify(keys).replace(/</g, "\\u003c");
+const appsJson = JSON.stringify(apps).replace(/</g, "\\u003c");
 ---
 <App title="API keys">
   <div class="page-head">
@@ -42,6 +45,14 @@ const json = JSON.stringify(keys).replace(/</g, "\\u003c");
       <script type="application/json" data-keys set:html={json} />
       <ul class="settings-list key-list" data-list></ul>
       <p class="empty-line" data-empty hidden>No keys yet.</p>
+    </section>
+
+    <section aria-labelledby="apps-title">
+      <h2 class="section-title" id="apps-title">Connected apps</h2>
+      <p class="field-hint">Claude, ChatGPT and other apps you approved with Pairpoll.</p>
+      <script type="application/json" data-apps set:html={appsJson} />
+      <ul class="settings-list key-list" data-app-list></ul>
+      <p class="empty-line" data-app-empty hidden>No connected apps.</p>
     </section>
   </div>
 </App>
@@ -81,12 +92,22 @@ const json = JSON.stringify(keys).replace(/</g, "\\u003c");
     createdAt: number;
   }
 
+  interface ConnectedApp {
+    id: string;
+    name: string;
+    redirectHost: string;
+    connectedAt: number;
+  }
+
   const keys: Key[] = JSON.parse(document.querySelector("[data-keys]")!.textContent!);
   const list = document.querySelector<HTMLElement>("[data-list]")!;
   const empty = document.querySelector<HTMLElement>("[data-empty]")!;
   const error = document.querySelector<HTMLElement>("[data-error]")!;
   const shown = document.querySelector<HTMLElement>("[data-new-key]")!;
   const form = document.querySelector<HTMLFormElement>("[data-create]")!;
+  const apps: ConnectedApp[] = JSON.parse(document.querySelector("[data-apps]")!.textContent!);
+  const appList = document.querySelector<HTMLElement>("[data-app-list]")!;
+  const appEmpty = document.querySelector<HTMLElement>("[data-app-empty]")!;
 
   const fail = (message: string) => {
     error.textContent = message;
@@ -126,6 +147,38 @@ const json = JSON.stringify(keys).replace(/</g, "\\u003c");
 
   list.replaceChildren(...keys.map(row));
   empty.hidden = keys.length > 0;
+
+  function appRow(app: ConnectedApp) {
+    const disconnect = h("button", { type: "button", class: "btn btn--quiet btn--sm revoke" }, "Disconnect");
+    const item = h(
+      "li",
+      { class: "settings-row" },
+      h("div", null, h("h3", { class: "key-name" }, app.name), h("p", null, `Connected ${dateTime(app.connectedAt)} · ${app.redirectHost}`)),
+      disconnect,
+    );
+    disconnect.addEventListener("click", async () => {
+      const ok = await confirmDialog({
+        title: `Disconnect "${app.name}"?`,
+        body: "The app stops being able to use your Pairpoll account. You can approve it again later.",
+        confirm: "Disconnect",
+        danger: true,
+      });
+      if (!ok) return;
+      try {
+        await api(`/oauth/grants/${encodeURIComponent(app.id)}`, "DELETE");
+        item.remove();
+        appEmpty.hidden = appList.children.length > 0;
+        announce(`${app.name} disconnected.`);
+        fail("");
+      } catch (problem) {
+        fail((problem as Error).message);
+      }
+    });
+    return item;
+  }
+
+  appList.replaceChildren(...apps.map(appRow));
+  appEmpty.hidden = apps.length > 0;
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
