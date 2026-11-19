@@ -1,3 +1,4 @@
+/* global process */
 // @ts-check
 import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
@@ -8,7 +9,11 @@ export default defineConfig({
   trailingSlash: "never",
   build: { format: "file" },
   // "compile" optimises images at build time and avoids the paid Cloudflare Images binding.
-  adapter: cloudflare({ imageService: "compile" }),
+  // E2E_STATE_DIR (set only by playwright.config.ts) points local D1/R2 state at a throwaway directory.
+  adapter: cloudflare({
+    imageService: "compile",
+    ...(process.env.E2E_STATE_DIR && { persistState: { path: process.env.E2E_STATE_DIR } }),
+  }),
   // Without this the adapter adds a KV binding for Astro sessions; we keep state in D1.
   session: false,
   integrations: [

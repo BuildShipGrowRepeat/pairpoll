@@ -23,7 +23,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built and runs locally. Not
 3. Browser: `/signin`, enter any email, click "Open the sign-in link" (dev only, no mail is sent). Create a poll, open it, vote in a private window, watch the results update.
 4. CLI: from the repo root `alias pairpoll="node $PWD/packages/cli/bin/pairpoll.js"`, `export PAIRPOLL_API_URL=http://localhost:4321`, `pairpoll login` (approve the code in the signed-in browser), then `pairpoll create ./folder --question "Which?" --open`. The key is saved in `~/.config/pairpoll/config.json` (mode 0600); `pairpoll logout` deletes the file.
 5. MCP: create a key at `/app/keys`, then `claude mcp add --transport http pairpoll http://localhost:4321/mcp --header "Authorization: Bearer <key>"`. Codex and Cursor setups are on `/docs/mcp`.
-6. Gates: `npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e`. Stop any dev server on port 4321 before e2e; Playwright starts its own.
+6. Gates: `npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e`. Stop any dev server on port 4321 before e2e; Playwright starts its own on fresh state in `.wrangler/e2e-state` (wiped each run, so rate limits never carry over; `npm run dev` data is untouched).
 
 ## Checked end to end (19 Nov, local dev server)
 
