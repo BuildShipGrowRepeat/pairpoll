@@ -26,7 +26,9 @@
   },
   "vars": {
     // Placeholder; set the real Turnstile site key before deploying. Local dev overrides it from .dev.vars.
-    "TURNSTILE_SITE_KEY": "REPLACE_WITH_TURNSTILE_SITE_KEY"
+    "TURNSTILE_SITE_KEY": "REPLACE_WITH_TURNSTILE_SITE_KEY",
+    // Comma-separated service-owner accounts. Empty means owner routes are disabled.
+    "OWNER_EMAILS": ""
   },
   "secrets": {
     // Set with `wrangler secret put TURNSTILE_SECRET_KEY`; locally from .dev.vars.

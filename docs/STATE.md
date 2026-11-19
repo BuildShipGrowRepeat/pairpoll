@@ -1,14 +1,14 @@
 # State
 
-Updated 19 Nov 2026. Scaffold only: no product features yet.
+Updated 19 Nov 2026. The complete server API is implemented locally; UI, CLI and MCP work continue separately.
 
 ## What exists
 
-- One Cloudflare Worker built with Astro and `@astrojs/cloudflare`. Entry `src/worker.ts` exports Astro's `fetch` handler and an empty `scheduled` handler (cron `0 3 * * *`, for the 30-day cleanup).
-- Bindings in `wrangler.jsonc`: D1 `DB` (placeholder `database_id`), R2 `MEDIA`, var `TURNSTILE_SITE_KEY` (placeholder), required secret `TURNSTILE_SECRET_KEY`. `.dev.vars.example` holds Cloudflare's always-pass Turnstile test keys (invisible widget).
-- Placeholder routes: `/` (prerendered), `/app` (server-rendered, reads D1), `/api/v1/health` (JSON `{"ok":true}`). Plain HTML, base layout `src/layouts/Base.astro`.
-- `migrations/0001_init.sql`: placeholder `app_meta` table that the backend builder replaces.
-- Tests: `test/unit` (Vitest, Node), `test/worker` (Vitest in workerd with real local D1 and R2, migrations applied in a setup file), `e2e` (Playwright against `astro dev`). Each holds one trivial test; replace the unit placeholder with the first real test.
+- One Cloudflare Worker built with Astro and `@astrojs/cloudflare`. Entry `src/worker.ts` exports Astro's fetch handler and the bounded daily cleanup job.
+- Bindings in `wrangler.jsonc`: D1 `DB` (placeholder `database_id`), R2 `MEDIA`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and optional comma-separated `OWNER_EMAILS`.
+- `migrations/0002_product.sql` replaces the applied scaffold table with accounts, credentials, polls, items, voter runs, reports, usage and upload bookkeeping.
+- `/api/v1` implements email sign-in, sessions, API keys, CLI device approval, creator polls, uploads, voting, results/export/sharing, media ranges, account deletion and owner moderation. `docs/API.md` is the exact contract.
+- `src/lib/knockout.ts` replays deterministic top-1/3/5 tournaments for 2–16 items. Unit tests cover all supported sizes and observed bye arrangements; Worker tests exercise real local D1 and R2 boundaries.
 - `packages/cli`: workspace package `pairpoll`, bin prints its version.
 
 ## UI and marketing site (stage 1)
@@ -45,7 +45,8 @@ The stack is as assumed. Details that changed in current versions:
 
 - Playwright uses the headless Chromium already on this Mac (revision 1243, path hard-coded in `playwright.config.ts`); Playwright 1.65 expects 1255. On another machine remove `executablePath` and run `npx playwright install chromium`.
 - Codex `workspace-write` sandbox (checked 19 Nov): `npm test` and `npm run typecheck` pass (wrangler prints a harmless EPERM about its log file in ~/Library/Preferences). `npm run test:e2e` fails: wrangler cannot write its dev registry in ~/Library/Preferences, and even with that redirected, Chromium cannot launch (`MachPortRendezvousServer ... Permission denied`). Run e2e outside the sandbox.
-- Worker-level tests do not cover the Astro routes or the `scheduled` handler end to end; the e2e test covers routes.
+- Worker-level tests cover server functions against D1 and R2, not Astro route dispatch or the `scheduled` entry end to end.
 - `worker-configuration.d.ts` is generated and git-ignored; `dev`, `build`, `typecheck` and `test` regenerate it.
-- No real schema, auth, email, Turnstile check, media upload, CLI commands, MCP endpoint, content collections or design yet.
+- Production email delivery is intentionally unset until a provider is chosen. Local sign-in mail is stored in the dev-only mailbox and logged.
+- CLI commands and MCP are still built separately against `docs/API.md`.
 - `database_id` and `TURNSTILE_SITE_KEY` are placeholders until the first deploy.
