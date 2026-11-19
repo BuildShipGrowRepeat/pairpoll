@@ -34,3 +34,9 @@ Pairpoll doesn't test thumbnails on live YouTube traffic. YouTube's own [A/B tes
 - Ask the question your viewer would ask. "Which would you click?" works better than "Which is best?"
 - If you want to learn what works, change one thing between versions, such as the face, the colour or the text.
 - Ask people who watch your kind of videos. Friends who don't watch them will judge by different rules.
+
+## Related
+
+- [Compare video cuts](/for/video-cuts) to choose the edit behind the thumbnail.
+- [How many voters do you need?](/guides/how-many-voters-do-you-need)
+- [How voting in pairs works](/guides/how-voting-in-pairs-works)

@@ -49,3 +49,8 @@ Pairpoll gives you two views. The overall ranking adds up points from every fini
 ## A practical rule
 
 Decide before you look what result would change your mind. If you only need to drop the weak options, a small group of the right people is enough. If you need to choose between two close favourites, either get dozens of the right people or accept that it's a judgment call and make it.
+
+## Related
+
+- [How to test ads before spending](/guides/how-to-test-ads-before-spending)
+- [What you can rank](/for): thumbnails, ad creatives, logos, designs and more.

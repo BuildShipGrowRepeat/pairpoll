@@ -1,20 +1,28 @@
 # Pairpoll
 
-Pairpoll is a free poll for images and videos, ranked head to head.
+> Pairpoll is a free, open-source poll for images and videos, ranked head to head (pairwise ranking).
+
 Creators upload 2 to 16 items and share one voter link.
 Each voter picks between pairs. Pairpoll returns each voter's top list and an overall ranking.
 Agents can use the REST API, CLI or remote MCP server.
 
 ## Documentation
 
-- /docs.md
-- /docs/quick-start.md
-- /docs/agents.md
-- /docs/cli.md
-- /docs/api.md
-- /docs/mcp.md
+- [Docs index](https://pairpoll.com/docs.md)
+- [Quick start](https://pairpoll.com/docs/quick-start.md)
+- [Pairpoll for AI agents](https://pairpoll.com/docs/agents.md)
+- [CLI reference](https://pairpoll.com/docs/cli.md)
+- [REST API reference](https://pairpoll.com/docs/api.md)
+- [MCP server](https://pairpoll.com/docs/mcp.md)
 
 ## Machine endpoints
 
-- REST API: /api/v1
-- MCP Streamable HTTP: /mcp
+- REST API: https://pairpoll.com/api/v1
+- MCP Streamable HTTP: https://pairpoll.com/mcp
+
+## Optional
+
+- [What you can rank](https://pairpoll.com/for): thumbnails, ad creatives, logos, designs, photos, product images, video cuts, app screenshots
+- [Guides](https://pairpoll.com/guides): how voting in pairs works, how many voters you need, how to test ads before spending
+- [Compared with other tools](https://pairpoll.com/alternatives): PickFu, PollUnit, Lyssna, OpinionX
+- [Source code](https://github.com/BuildShipGrowRepeat/pairpoll)

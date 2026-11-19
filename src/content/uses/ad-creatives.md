@@ -1,7 +1,7 @@
 ---
 seoTitle: "Ad creative testing before you spend, free | Pairpoll"
 description: "Put your ad versions in a free poll and send it to customers or followers. Each person picks the better of two, so you see which ads to fund first."
-title: "See which ad people prefer before you pay to run it"
+title: "Test your ad creatives before you pay to run them"
 name: "Ad creatives"
 blurb: "See which ad your audience prefers before you pay to run it."
 lead: "Put up to 16 versions of an ad in one poll and send the link to customers, followers or your team. Each person picks the better of two until their top list is settled, and you get each voter's list and the overall ranking."

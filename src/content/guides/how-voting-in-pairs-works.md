@@ -1,13 +1,13 @@
 ---
-seoTitle: "How voting in pairs works (pairwise ranking) | Pairpoll"
-description: "What pairwise ranking is, how Pairpoll turns picks between two items into each voter's top list and an overall ranking, and when to use it."
-title: "How voting in pairs works"
+seoTitle: "Pairwise comparison: how voting in pairs works | Pairpoll"
+description: "What pairwise comparison is, how Pairpoll turns picks between two items into each voter's top list and an overall ranking, and when to use it."
+title: "Pairwise comparison: how voting in pairs works"
 blurb: "How picks between two items become each voter's top list and an overall ranking."
 published: 2026-11-19
 order: 1
 ---
 
-Voting in pairs means each person compares two items at a time and picks the one they prefer. It's also called pairwise ranking. Choosing between two is easier than ordering a whole list or giving each item a score.
+Voting in pairs means each person compares two items at a time and picks the one they prefer. It's also called pairwise comparison or pairwise ranking. Choosing between two is easier than ordering a whole list or giving each item a score.
 
 ## What a voter sees
 
@@ -39,3 +39,8 @@ A knockout isn't a full ranking of every item for each voter. An item that meets
 ## When to use it
 
 Voting in pairs works best when the items are alike and the question is a matter of taste: which thumbnail, which logo, which cut of a video. If you need a reason for each choice, or a score on a scale, use a survey instead.
+
+## Related
+
+- [How many voters do you need?](/guides/how-many-voters-do-you-need)
+- [Thumbnails](/for/thumbnails), [logos](/for/logos) and [video cuts](/for/video-cuts): how a poll works for each.

@@ -6,7 +6,7 @@ import LinkList from "../components/LinkList.astro";
 import { demoSets } from "../components/demo/sets";
 
 const description =
-  "Upload 2 to 16 images or videos and share one link. People pick the better of two until their top list is set, and you get the overall ranking. Free.";
+  "A free image and video poll. Upload 2 to 16, share one link, and people pick the better of two. You get every voter's top list and the overall ranking.";
 
 // The eight launch use pages (docs/SPEC.md). Each links to /for/<slug>.
 const uses = [
@@ -38,11 +38,12 @@ const jsonLd = {
   isAccessibleForFree: true,
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   author: { "@type": "Person", name: "Vladimir Terekhov" },
+  sameAs: ["https://github.com/BuildShipGrowRepeat/pairpoll"],
 };
 ---
-<Marketing title="Pairpoll: free image and video poll, ranked head to head" description={description} jsonLd={jsonLd}>
+<Marketing title="Free image and video poll, ranked head to head | Pairpoll" description={description} jsonLd={jsonLd}>
   <DemoHero
-    title="Images and videos, ranked head to head"
+    title="A poll for images and videos, ranked head to head"
     lead="A free poll with pictures or videos. Upload 2 to 16, send one link, and each person picks the better of two until their top list is settled. You see every voter's list and the overall ranking."
   />
 
@@ -114,7 +115,7 @@ const jsonLd = {
   <section class="section wrap closing" aria-labelledby="free-title">
     <h2 id="free-title">Free and open source</h2>
     <p class="lead">
-      Pairpoll is free to use and its code is open. It's a personal project by Vladimir Terekhov, built at Attract Group.
+      Pairpoll is free to use and its <a href="https://github.com/BuildShipGrowRepeat/pairpoll">code is on GitHub</a>. It's a personal project by Vladimir Terekhov, built at Attract Group.
       Polls, files and votes are deleted 30 days after a poll is created.
     </p>
     <div class="actions">
