@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pairpoll",
+  // Custom entry: Astro's fetch handler plus the cron handler.
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pairpoll",
+      // Placeholder until the first deploy creates the database.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "pairpoll-media"
+    }
+  ],
+  "triggers": {
+    // Daily 30-day cleanup.
+    "crons": ["0 3 * * *"]
+  },
+  "vars": {
+    // Placeholder; set the real Turnstile site key before deploying. Local dev overrides it from .dev.vars.
+    "TURNSTILE_SITE_KEY": "REPLACE_WITH_TURNSTILE_SITE_KEY"
+  },
+  "secrets": {
+    // Set with `wrangler secret put TURNSTILE_SECRET_KEY`; locally from .dev.vars.
+    "required": ["TURNSTILE_SECRET_KEY"]
+  }
+}

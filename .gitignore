@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
+CONTEXT-HANDOFF.md
+.agent-tasks/
+test-results/
+playwright-report/
+coverage/
+.DS_Store
