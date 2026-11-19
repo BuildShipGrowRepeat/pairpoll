@@ -57,4 +57,5 @@ Yes. You can export the results as CSV or JSON, or turn on a read-only results l
 
 - [Logos](/for/logos)
 - [App screenshots](/for/app-screenshots)
+- [Preference testing vs A/B testing](/guides/preference-testing-vs-ab-testing)
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

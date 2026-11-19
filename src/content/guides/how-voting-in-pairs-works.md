@@ -43,4 +43,5 @@ Voting in pairs works best when the items are alike and the question is a matter
 ## Related
 
 - [How many voters do you need?](/guides/how-many-voters-do-you-need)
+- [A pairwise ranking tool for images and videos](/for/pairwise-ranking): how many picks a voter makes, and when a tool that shows every pair fits better.
 - [Thumbnails](/for/thumbnails), [logos](/for/logos) and [video cuts](/for/video-cuts): how a poll works for each.
