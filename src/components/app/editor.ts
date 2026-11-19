@@ -290,11 +290,18 @@ export function mountEditor(root: HTMLElement) {
     update();
     try {
       const target = await ensurePoll();
+      // Cancelled while the draft was being created: nothing was sent yet.
+      if (!rows.includes(row)) return;
       if (!row.item) {
         const task = upload<Item>(`/polls/${target.id}/items`, row.file!, row.name, (share) => progress(row, share));
         row.abort = task.abort;
         row.item = await task.done;
         row.abort = undefined;
+        if (!rows.includes(row)) {
+          // Cancelled just as the upload finished: delete the stored file too.
+          await api(`/polls/${target.id}/items/${row.item.id}`, "DELETE").catch(() => {});
+          return;
+        }
       }
       const poster = await row.poster;
       if (poster && !row.item.posterId && rows.includes(row)) {
@@ -506,6 +513,10 @@ export function mountEditor(root: HTMLElement) {
     if (!poll) return;
     const target = poll;
     if (!questionValue()) return saveQuestion();
+    if (capValue() === null) {
+      fieldError(cap, capError, "Enter a whole number from 1 to 200.");
+      return cap.focus();
+    }
     const ok = await confirmDialog({
       title: "Open this poll?",
       body: "People can vote as soon as you share the link. Items and settings can't change after this.",
@@ -514,9 +525,18 @@ export function mountEditor(root: HTMLElement) {
     if (!ok) return;
     openButton.disabled = true;
     openButton.textContent = "Opening…";
-    saveQuestion();
+    window.clearTimeout(questionTimer);
     await saving;
     try {
+      // Open exactly what the page shows: save any setting an autosave missed (a failed
+      // autosave leaves `poll` at the server's values), and check the server holds these items.
+      const shown = { question: questionValue(), topSize: topValue(), playsOnce: kind === "video" && playsOnce.checked, voterCap: capValue()! };
+      const saved = poll!;
+      if (Object.entries(shown).some(([key, value]) => saved[key as keyof typeof shown] !== value)) {
+        poll = await api<Poll>(`/polls/${target.id}`, "PATCH", shown);
+        setSave("Saved");
+      }
+      await api(`/polls/${target.id}/items/reorder`, "POST", { ids: ready().map((row) => row.item!.id) });
       showOpened(await api<Poll>(`/polls/${target.id}/open`, "POST"));
     } catch (problem) {
       showError((problem as Error).message);
