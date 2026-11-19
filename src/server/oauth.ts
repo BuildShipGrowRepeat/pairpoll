@@ -27,6 +27,8 @@ import { consumeRateLimit, requestIp } from "./security.js";
 
 export { MCP_SCOPE };
 const HOUR = 60 * 60 * 1000;
+const TOKEN_BODY_LIMIT = 8 * 1024;
+const TOKEN_RATE_LIMIT = 120;
 const NOT_FOUND_HANDLER: ExportedHandler<Env> = {
   fetch: () => new Response("Not found", { status: 404 }),
 };
@@ -123,13 +125,44 @@ export function requireS256(request: AuthRequest): void {
   });
 }
 
+async function limitedTokenRequest(request: Request): Promise<Request | null> {
+  const declared = request.headers.get("Content-Length");
+  if (declared !== null && (!/^\d+$/.test(declared) || Number(declared) > TOKEN_BODY_LIMIT)) return null;
+  if (!request.body) return request;
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (true) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    size += chunk.value.byteLength;
+    if (size > TOKEN_BODY_LIMIT) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(chunk.value);
+  }
+  const body = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new Request(request.url, {
+    method: request.method,
+    headers: request.headers,
+    body: body.buffer,
+  });
+}
+
 export async function handleOAuthRequest(
   request: Request,
   env: Env,
   context: ExecutionContext,
   defaultHandler: ExportedHandler<Env>,
 ): Promise<Response> {
-  if (request.method === "POST" && new URL(request.url).pathname === "/oauth/register") {
+  const pathname = new URL(request.url).pathname;
+  if (request.method === "POST" && pathname === "/oauth/register") {
     const allowed = await consumeRateLimit(env.DB, "oauth-register", requestIp(request), 30, HOUR);
     if (!allowed) {
       return Response.json({ error: "temporarily_unavailable", error_description: "Try registering again later." }, {
@@ -138,7 +171,24 @@ export async function handleOAuthRequest(
       });
     }
   }
-  if (new URL(request.url).pathname.startsWith("/mcp/")) {
+  if (request.method === "POST" && pathname === "/oauth/token") {
+    const allowed = await consumeRateLimit(env.DB, "oauth-token", requestIp(request), TOKEN_RATE_LIMIT, HOUR);
+    if (!allowed) {
+      return Response.json({ error: "temporarily_unavailable", error_description: "Try the token request again later." }, {
+        status: 429,
+        headers: { "Cache-Control": "no-store", "Retry-After": "3600" },
+      });
+    }
+    const limited = await limitedTokenRequest(request);
+    if (!limited) {
+      return Response.json({ error: "invalid_request", error_description: "Send a token request no larger than 8 KB." }, {
+        status: 413,
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
+    request = limited;
+  }
+  if (pathname.startsWith("/mcp/")) {
     return defaultHandler.fetch!(
       request as Request<unknown, IncomingRequestCfProperties>,
       env,

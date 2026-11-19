@@ -13,6 +13,7 @@ import { clearConfig, readConfig, writeConfig } from "./config.js";
 const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm"]);
+const DEFAULT_API_URL = "https://pairpoll.com";
 // Same ceilings as the server, checked before anything is created or read into memory.
 const MAX_BYTES = { image: 10_000_000, video: 30_000_000 };
 
@@ -36,8 +37,7 @@ function output(json, value, text) {
 
 async function apiSettings(apiUrlOption, requireKey = true) {
   const saved = await readConfig();
-  const selectedUrl = apiUrlOption || process.env.PAIRPOLL_API_URL || saved.apiUrl;
-  if (!selectedUrl) throw new UsageError("Set --api-url or PAIRPOLL_API_URL. Pairpoll is not deployed yet.");
+  const selectedUrl = apiUrlOption || process.env.PAIRPOLL_API_URL || saved.apiUrl || DEFAULT_API_URL;
   const apiUrl = normalizeApiUrl(selectedUrl);
   const savedUrl = saved.apiUrl ? normalizeApiUrl(saved.apiUrl) : null;
   const apiKey = process.env.PAIRPOLL_API_KEY || (savedUrl === apiUrl ? saved.apiKey : undefined);

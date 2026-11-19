@@ -136,3 +136,31 @@ test("MCP creates and lists a draft for the authenticated owner", async () => {
     polls: [expect.objectContaining({ question: "Which one is best?", status: "draft" })],
   });
 });
+
+test("MCP tools publish their read-only and destructive annotations", async () => {
+  const owner = await accountWithKey("annotations@example.com");
+  const response = await handleMcpRequest(env.DB, request(owner.key));
+  expect(response.status).toBe(200);
+  const text = await response.text();
+  const payload = response.headers.get("Content-Type")?.includes("text/event-stream")
+    ? text.split("\n").find((line) => line.startsWith("data: "))?.slice(6)
+    : text;
+  if (!payload) throw new Error("MCP returned no JSON-RPC message");
+  const message = JSON.parse(payload) as {
+    result: { tools: Array<{ name: string; title: string; annotations?: { readOnlyHint?: boolean; destructiveHint?: boolean } }> };
+  };
+  expect(Object.fromEntries(message.result.tools.map((tool) => [tool.name, {
+    title: tool.title,
+    readOnlyHint: tool.annotations?.readOnlyHint,
+    destructiveHint: tool.annotations?.destructiveHint,
+  }]))).toEqual({
+    create_poll: { title: "Create a Pairpoll draft", readOnlyHint: false, destructiveHint: false },
+    get_upload_link: { title: "Get the browser upload link", readOnlyHint: true, destructiveHint: false },
+    open_poll: { title: "Open a poll", readOnlyHint: false, destructiveHint: true },
+    close_poll: { title: "Close a poll", readOnlyHint: false, destructiveHint: true },
+    get_results: { title: "Get poll results", readOnlyHint: true, destructiveHint: false },
+    list_polls: { title: "List polls", readOnlyHint: true, destructiveHint: false },
+    delete_voter: { title: "Delete a voter result", readOnlyHint: false, destructiveHint: true },
+    delete_poll: { title: "Delete a poll", readOnlyHint: false, destructiveHint: true },
+  });
+});

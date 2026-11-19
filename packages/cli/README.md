@@ -18,11 +18,10 @@ The package is private and is not published to npm.
 ## Sign in
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
 pairpoll login
 ```
 
-Pairpoll is not deployed yet, so the API URL is required. The command prints a short code and a browser URL, then waits for approval. It stores the issued API key in `~/.config/pairpoll/config.json` on macOS and Linux, or the Pairpoll folder under `%APPDATA%` on Windows. The directory is private and the file mode is `0600` where the platform supports it.
+The CLI connects to `https://pairpoll.com` by default. The command prints a short code and a browser URL, then waits for approval. It stores the issued API key in `~/.config/pairpoll/config.json` on macOS and Linux, or the Pairpoll folder under `%APPDATA%` on Windows. The directory is private and the file mode is `0600` where the platform supports it.
 
 Use `pairpoll logout` to remove the local file. Logout does not revoke the API key. Revoke it from the API keys page if it should stop working.
 
@@ -57,4 +56,4 @@ pairpoll --json list
 pairpoll --api-url http://localhost:4321 --json list
 ```
 
-Command-line `--api-url` wins over `PAIRPOLL_API_URL`, which wins over the saved URL. `PAIRPOLL_API_KEY` wins over the saved key.
+Command-line `--api-url` wins over `PAIRPOLL_API_URL`, which wins over the saved URL and the `https://pairpoll.com` default. `PAIRPOLL_API_KEY` wins over the saved key.

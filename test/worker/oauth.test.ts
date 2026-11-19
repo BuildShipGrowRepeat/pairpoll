@@ -47,6 +47,23 @@ async function dispatch(request: Request) {
   return handleOAuthRequest(request, env, createExecutionContext(), defaultHandler);
 }
 
+function streamedTokenRequest(chunks: Uint8Array[], ip: string) {
+  return new Request(`${ORIGIN}/oauth/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": "1",
+      "CF-Connecting-IP": ip,
+    },
+    body: new ReadableStream({
+      start(controller) {
+        for (const chunk of chunks) controller.enqueue(chunk);
+        controller.close();
+      },
+    }),
+  });
+}
+
 async function registerClient() {
   const response = await dispatch(new Request(`${ORIGIN}/oauth/register`, {
     method: "POST",
@@ -360,6 +377,15 @@ test("only the exact MCP path is protected by the OAuth provider", async () => {
   expect(response.status).toBe(404);
 });
 
+test("the token endpoint rejects a streamed body over 8 KB despite a smaller Content-Length", async () => {
+  const response = await dispatch(streamedTokenRequest([
+    new Uint8Array(8 * 1024),
+    new Uint8Array(1),
+  ], "198.51.100.42"));
+  expect(response.status).toBe(413);
+  expect(await response.json()).toMatchObject({ error: "invalid_request" });
+});
+
 test("a consent handle is bound to one account and consumed once", async () => {
   const owner = await account("consent-owner@example.com");
   const other = await account("consent-other@example.com");
@@ -370,7 +396,36 @@ test("a consent handle is bound to one account and consumed once", async () => {
   expect(await consumeOAuthConsent(env.DB, handle, owner)).toBe(false);
 });
 
-test("registration and authorization attempts are limited per IP", async () => {
+test("daily auth cleanup expires old grants and catches up with one IP's abandoned consents", async () => {
+  const accountId = await account("oauth-cleanup@example.com");
+  const now = Date.now();
+  const expired = now - 30 * 24 * 60 * 60 * 1000 - 1;
+  await env.DB.batch([
+    env.DB.prepare(`
+      INSERT INTO oauth_grant_states (account_id, grant_id, code_exchanged_at)
+      VALUES (?, 'expired-grant-01', ?), (?, 'current-grant-01', ?)
+    `).bind(accountId, expired, accountId, expired + 2),
+    env.DB.prepare(`
+      INSERT INTO oauth_grant_states (account_id, grant_id, code_exchanged_at, cleanup_pending)
+      VALUES (?, 'pending-grant-01', ?, 1)
+    `).bind(accountId, expired),
+    env.DB.prepare(`
+      WITH RECURSIVE attempts(n) AS (VALUES(1) UNION ALL SELECT n + 1 FROM attempts WHERE n < 720)
+      INSERT INTO oauth_consent_states (handle_hash, account_id, expires_at)
+      SELECT printf('expired-consent-%03d', n), ?, ? FROM attempts
+    `).bind(accountId, now - 1),
+  ]);
+
+  await pruneAuthData(env.DB, now);
+
+  const grants = await env.DB.prepare(`
+    SELECT grant_id FROM oauth_grant_states WHERE account_id = ? ORDER BY grant_id
+  `).bind(accountId).all<{ grant_id: string }>();
+  expect(grants.results.map((row) => row.grant_id)).toEqual(["current-grant-01", "pending-grant-01"]);
+  expect(await env.DB.prepare("SELECT COUNT(*) FROM oauth_consent_states").first<number>("COUNT(*)")).toBe(0);
+});
+
+test("registration, authorization and token attempts are limited per IP", async () => {
   const registrationIp = "198.51.100.40";
   for (let attempt = 0; attempt < 30; attempt++) {
     const response = await dispatch(new Request(`${ORIGIN}/oauth/register`, {
@@ -393,4 +448,25 @@ test("registration and authorization attempts are limited per IP", async () => {
     expect(await consumeAuthorizationRateLimit(env.DB, authorizationRequest)).toBe(true);
   }
   expect(await consumeAuthorizationRateLimit(env.DB, authorizationRequest)).toBe(false);
+
+  const tokenIp = "198.51.100.43";
+  for (let attempt = 0; attempt < 120; attempt++) {
+    const response = await dispatch(new Request(`${ORIGIN}/oauth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "CF-Connecting-IP": tokenIp,
+      },
+      body: "grant_type=refresh_token",
+    }));
+    expect(response.status).not.toBe(429);
+  }
+  expect((await dispatch(new Request(`${ORIGIN}/oauth/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "CF-Connecting-IP": tokenIp,
+    },
+    body: "grant_type=refresh_token",
+  }))).status).toBe(429);
 });

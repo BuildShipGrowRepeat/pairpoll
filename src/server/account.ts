@@ -1,5 +1,7 @@
 import type { SessionAuth } from "./auth";
 
+const OAUTH_GRANT_LIFETIME = 30 * 24 * 60 * 60 * 1000;
+
 export async function signOutEverywhere(db: D1Database, auth: SessionAuth): Promise<void> {
   if (auth.kind !== "session") return;
   await db.prepare(`
@@ -73,9 +75,16 @@ export async function pruneAuthData(db: D1Database, now = Date.now()): Promise<v
     `).bind(now),
     db.prepare(`
       DELETE FROM oauth_consent_states WHERE handle_hash IN (
-        SELECT handle_hash FROM oauth_consent_states WHERE expires_at <= ? LIMIT 500
+        SELECT handle_hash FROM oauth_consent_states WHERE expires_at <= ? LIMIT 1000
       )
     `).bind(now),
+    db.prepare(`
+      DELETE FROM oauth_grant_states WHERE (account_id, grant_id) IN (
+        SELECT account_id, grant_id FROM oauth_grant_states
+        WHERE cleanup_pending = 0 AND COALESCE(code_exchanged_at, revoked_at) <= ?
+        LIMIT 500
+      )
+    `).bind(now - OAUTH_GRANT_LIFETIME),
     db.prepare(`
       DELETE FROM accounts WHERE id IN (
         SELECT id FROM accounts a WHERE deleting_at IS NOT NULL
