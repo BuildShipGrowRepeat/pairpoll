@@ -41,7 +41,7 @@ Meet the requirement as simply as possible. No speculative abstractions, no conf
 
 ## How voting works
 
-Port the mechanics from the working prototype in `/Users/vladimir/Codebase/milltrue-ad-vote` (read `lib/bracket.js`, `public/app.js`, `api/admin.js`, `BRIEF.md`; read only, never edit that folder, and do not copy its MillTrue branding).
+The mechanics come from an earlier private prototype.
 
 - A voter opens the poll link, reads the short rules, types a name and starts.
 - The voter sees pairs. For videos with "plays once" on: each video plays once, with no replay, pause or seek, and the vote buttons appear after both have played. With it off, and for images, the voter can look freely.

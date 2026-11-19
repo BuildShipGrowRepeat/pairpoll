@@ -8,12 +8,8 @@ export default defineConfig({
   testDir: "e2e",
   use: {
     baseURL: `http://localhost:${port}`,
-    launchOptions: {
-      // Reuses the headless Chromium already on Vladimir's Mac (revision 1243; Playwright 1.65 ships 1255).
-      // On another machine, remove this line and run `npx playwright install chromium`.
-      executablePath:
-        "/Users/vladimir/Library/Caches/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-mac-arm64/chrome-headless-shell",
-    },
+    // Optional: reuse an already installed Chromium instead of running `npx playwright install chromium`.
+    launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
   },
   webServer: {
     // --ignore-lock keeps Astro in the foreground: Astro 7 backgrounds `astro dev` when it detects an AI agent.
