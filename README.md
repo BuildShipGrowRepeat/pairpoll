@@ -1,6 +1,6 @@
 # Pairpoll: a free poll for images and videos, ranked head to head
 
-[Pairpoll](https://pairpoll.com) is a free, open-source picture poll and video poll. Upload 2 to 16 images or videos, share one link, and each voter picks the better of two until their top list is settled. You get every voter's top list and one overall ranking.
+[Pairpoll](https://pairpoll.com) is a free, open-source image and video poll, and a pairwise ranking tool. Upload 2 to 16 images or videos, share one link, and each voter picks the better of two until their top list is settled. You get every voter's top list and one overall ranking.
 
 It works in the browser for people, and through a REST API, a CLI and an MCP server for AI agents such as Claude Code, Codex and Cursor.
 
