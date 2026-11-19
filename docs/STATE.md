@@ -67,7 +67,6 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 - Test Claude and ChatGPT connector sign-in against production (OAuth is deployed, not yet tried from the real apps).
 - npm publish of the CLI (the docs then drop the repository alias).
-- Vladimir's review of Terms and Privacy (About confirmed 19 Nov).
 - E2E on another machine: run `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` to an installed Chromium.
 
 ## Open questions (from docs/SPEC.md)
@@ -77,8 +76,8 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 3. (settled) Analytics: Google Analytics 4 with consent, plus Cloudflare Web Analytics.
 4. (built) OAuth for Claude and ChatGPT apps; live verification from the real apps remains.
 5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
-6. Terms, privacy and About text review.
-7. Limits: file sizes, polls per day, 30-day deletion.
+6. (settled) Terms, Privacy and About approved by the owner.
+7. (settled) Limits approved as built: file sizes, polls per day, voter cap, 30-day deletion.
 
 ## Versions
 
