@@ -1084,3 +1084,11 @@ kbd {
 .theme-menu [aria-pressed="false"] svg {
   visibility: hidden;
 }
+
+/* Browsers without popovers get no switch; the stored or device theme still applies. */
+@supports not selector(:popover-open) {
+  .theme-toggle,
+  .theme-menu {
+    display: none;
+  }
+}

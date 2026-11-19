@@ -47,6 +47,11 @@ const choices = [
       menu.style.right = `${root.clientWidth - box.right}px`;
     });
 
+    // Its place is stale after a resize or rotation, so close it.
+    window.addEventListener("resize", () => {
+      if (menu.matches(":popover-open")) menu.hidePopover();
+    });
+
     for (const choice of choices) {
       choice.addEventListener("click", () => {
         const theme = choice.dataset.themeChoice;
