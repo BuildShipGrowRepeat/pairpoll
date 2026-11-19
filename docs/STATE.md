@@ -60,7 +60,8 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 ## Listings
 
 - Published in the official MCP registry as `com.pairpoll/pairpoll` (proof file `public/.well-known/mcp-registry-auth`; the signing key is on the owner's machine outside the repository; bump `version` in `server.json` before each `mcp-publisher publish`).
-- Submitted 19 Nov: awesome-cloudflare-selfhosted (issue 72), Astro showcase thread.
+- Listed on Glama as `com.pairpoll/pairpoll` (not yet claimed by the owner).
+- Submitted 19 Nov: awesome-cloudflare-selfhosted (issue 72), Astro showcase thread, awesome-remote-mcp-servers (pull request 5255, checks passed, waiting for merge).
 
 ## Still needed
 
