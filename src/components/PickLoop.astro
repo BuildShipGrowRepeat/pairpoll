@@ -1,0 +1,10 @@
+---
+// The hand-drawn loop that marks a pick. It stretches to its box; the stroke keeps its width.
+interface Props {
+  class: string;
+}
+const { class: className } = Astro.props;
+---
+<svg class={className} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path d="M16 9C40 1 80 0 94 9 102 16 101 80 95 90 86 102 24 101 9 94 0 88-1 30 4 18 9 7 26 0 44-1"></path>
+</svg>

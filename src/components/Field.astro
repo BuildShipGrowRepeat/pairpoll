@@ -1,0 +1,35 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+// One labelled form control with an optional hint and error.
+// For a select, pass the options in the slot. Client code can show an error by filling
+// the `.field-error` element and setting aria-invalid="true" on the control.
+type Props = HTMLAttributes<"input"> & {
+  label: string;
+  name: string;
+  as?: "input" | "textarea" | "select";
+  hint?: string;
+  error?: string;
+};
+
+const { label, name, as = "input", hint, error, id = name, ...rest } = Astro.props;
+const hintId = `${id}-hint`;
+const errorId = `${id}-error`;
+const describedBy = [hint && hintId, errorId].filter(Boolean).join(" ");
+const Control = as;
+---
+<div class="field">
+  <label class="field-label" for={id}>{label}</label>
+  {hint && <p class="field-hint" id={hintId}>{hint}</p>}
+  <Control
+    class="input"
+    id={id}
+    name={name}
+    aria-describedby={describedBy}
+    aria-invalid={error ? "true" : undefined}
+    {...rest as Record<string, unknown>}
+  >
+    {as === "select" && <slot />}
+  </Control>
+  <p class="field-error" id={errorId} aria-live="polite">{error}</p>
+</div>

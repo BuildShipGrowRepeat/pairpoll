@@ -1,0 +1,16 @@
+---
+// An empty list or page: say what is missing and offer the next step in the `actions` slot.
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<div class="empty">
+  <svg class="empty-art" viewBox="0 0 88 40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" aria-hidden="true">
+    <rect x="1" y="5" width="38" height="30" rx="4"></rect>
+    <rect x="49" y="5" width="38" height="30" rx="4"></rect>
+  </svg>
+  <h2>{title}</h2>
+  <p><slot /></p>
+  {Astro.slots.has("actions") && <div class="actions"><slot name="actions" /></div>}
+</div>

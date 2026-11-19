@@ -1,0 +1,126 @@
+---
+import Logo from "./Logo.astro";
+
+const groups = [
+  {
+    title: "Product",
+    links: [
+      { href: "/app/new", label: "Create a poll" },
+      { href: "/for", label: "Uses" },
+      { href: "/alternatives", label: "Alternatives" },
+      { href: "/guides", label: "Guides" },
+    ],
+  },
+  {
+    title: "For agents",
+    links: [
+      { href: "/docs", label: "Docs" },
+      { href: "/docs/agents", label: "Agents overview" },
+    ],
+  },
+  {
+    title: "Pairpoll",
+    links: [
+      { href: "/about", label: "About" },
+      { href: "/terms", label: "Terms" },
+      { href: "/privacy", label: "Privacy" },
+    ],
+  },
+];
+---
+<footer class="site-footer">
+  <div class="wrap site-footer-grid">
+    <div class="site-footer-brand">
+      <Logo />
+      <p>A free poll for images and videos, ranked head to head. Open source.</p>
+    </div>
+    {
+      groups.map((group) => (
+        <nav aria-label={group.title}>
+          <h2>{group.title}</h2>
+          <ul>
+            {group.links.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+  <div class="wrap site-footer-base">
+    <p>
+      Made by Vladimir Terekhov at <a href="https://attractgroup.com">Attract Group</a>.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    padding-block: var(--s-7) var(--s-5);
+    background: var(--sheet);
+    font-size: var(--text-sm);
+  }
+
+  .site-footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: var(--s-6);
+  }
+
+  .site-footer-brand p {
+    max-width: 22em;
+    margin-top: var(--s-3);
+    color: var(--ink-soft);
+  }
+
+  .site-footer h2 {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  .site-footer ul {
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer li + li {
+    margin-top: var(--s-2);
+  }
+
+  .site-footer a {
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .site-footer a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .site-footer-base {
+    margin-top: var(--s-7);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .site-footer-base a {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 47.99rem) {
+    .site-footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .site-footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

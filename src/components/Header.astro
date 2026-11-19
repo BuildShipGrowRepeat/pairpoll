@@ -1,0 +1,162 @@
+---
+import Logo from "./Logo.astro";
+
+const links = [
+  { href: "/for", label: "Uses" },
+  { href: "/guides", label: "Guides" },
+  { href: "/docs", label: "Docs" },
+];
+const path = Astro.url.pathname;
+const current = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+<header class="site-header">
+  <div class="wrap site-header-row">
+    <Logo />
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} aria-current={current(link.href) ? "page" : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/signin">Sign in</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn--primary btn--sm" href="/app/new">Create a poll</a>
+    <details class="site-menu">
+      <summary aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 8h16M4 16h16"></path>
+        </svg>
+      </summary>
+      <ul>
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} aria-current={current(link.href) ? "page" : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/signin">Sign in</a></li>
+      </ul>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .site-header-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    min-height: 4rem;
+  }
+
+  .site-nav {
+    margin-left: auto;
+  }
+
+  .site-nav ul,
+  .site-menu ul {
+    display: flex;
+    gap: var(--s-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav a,
+  .site-menu a {
+    display: block;
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-control);
+    color: var(--ink-soft);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .site-nav a:hover,
+  .site-menu a:hover {
+    color: var(--ink);
+    background: var(--sheet);
+  }
+
+  .site-nav a[aria-current="page"],
+  .site-menu a[aria-current="page"] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+
+  .site-menu {
+    display: none;
+    position: relative;
+  }
+
+  .site-menu summary {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: -0.5rem;
+    border-radius: var(--r-control);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .site-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-menu[open] summary {
+    background: var(--sheet);
+  }
+
+  .site-menu ul {
+    position: absolute;
+    right: -0.5rem;
+    top: calc(100% + var(--s-2));
+    z-index: 5;
+    flex-direction: column;
+    min-width: 12rem;
+    padding: var(--s-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    background: var(--paper);
+    box-shadow: 0 12px 32px -16px rgb(29 26 51 / 0.35);
+  }
+
+  .site-menu a {
+    padding: var(--s-3);
+    font-size: var(--text-md);
+  }
+
+  @media (max-width: 47.99rem) {
+    .site-header-row {
+      gap: var(--s-3);
+    }
+
+    .site-nav {
+      display: none;
+    }
+
+    .site-header-row > .btn {
+      margin-left: auto;
+    }
+
+    .site-menu {
+      display: block;
+    }
+  }
+</style>

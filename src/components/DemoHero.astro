@@ -1,0 +1,65 @@
+---
+import PairDemo from "./demo/PairDemo.astro";
+import type { DemoSetName } from "./demo/sets";
+
+// Top of the home page and use pages: headline, lead, the create action, then the playable demo.
+interface Props {
+  title: string;
+  lead: string;
+  set?: DemoSetName;
+  question?: string;
+}
+const { title, lead, set, question } = Astro.props;
+---
+<section class="demo-hero wrap" aria-labelledby="demo-hero-title">
+  <h1 id="demo-hero-title">{title}</h1>
+  <div class="demo-hero-row">
+    <p class="lead">{lead}</p>
+    <div>
+      <div class="actions">
+        <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
+        <a class="btn btn--secondary btn--lg demo-hero-try" href="#demo">Try the demo</a>
+      </div>
+      <p class="demo-hero-note">Voters don't sign up. Files are deleted after 30 days.</p>
+    </div>
+  </div>
+  <PairDemo id="demo" set={set} question={question} />
+</section>
+
+<style>
+  .demo-hero {
+    padding-block: clamp(2.5rem, 1rem + 4vw, 4.5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  .demo-hero h1 {
+    max-width: 13em;
+  }
+
+  .demo-hero-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s-5) var(--s-7);
+    align-items: end;
+    margin: var(--s-5) 0 clamp(2rem, 1rem + 3vw, 3.5rem);
+  }
+
+  .demo-hero-try {
+    display: none;
+  }
+
+  .demo-hero-note {
+    margin-top: var(--s-3);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 63.99rem) {
+    .demo-hero-row {
+      grid-template-columns: 1fr;
+    }
+
+    .demo-hero-try {
+      display: inline-flex;
+    }
+  }
+</style>

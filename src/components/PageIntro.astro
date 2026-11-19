@@ -1,0 +1,28 @@
+---
+// Title block at the top of content pages and hubs.
+interface Props {
+  title: string;
+  lead?: string;
+}
+const { title, lead } = Astro.props;
+---
+<div class="page-intro">
+  <h1>{title}</h1>
+  {lead && <p class="lead">{lead}</p>}
+  <slot />
+</div>
+
+<style>
+  .page-intro {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) var(--s-6);
+  }
+
+  .page-intro h1 {
+    max-width: 16em;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  }
+
+  .page-intro .lead {
+    margin-top: var(--s-4);
+  }
+</style>

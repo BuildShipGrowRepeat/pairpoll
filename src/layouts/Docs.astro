@@ -1,0 +1,101 @@
+---
+import { getCollection } from "astro:content";
+import Marketing from "./Marketing.astro";
+
+// Developer and agent docs: side navigation from the docs collection, content in the slot.
+interface Props {
+  title: string;
+  description: string;
+  markdownHref?: string;
+}
+const { title, description, markdownHref } = Astro.props;
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+const path = Astro.url.pathname.replace(/(.)\/$/, "$1");
+---
+<Marketing title={title} description={description}>
+  <div class="wrap docs">
+    <nav class="docs-nav" aria-label="Docs">
+      <ul>
+        <li><a href="/docs" aria-current={path === "/docs" ? "page" : undefined}>Overview</a></li>
+        {
+          docs.map((doc) => (
+            <li>
+              <a href={`/docs/${doc.id}`} aria-current={path === `/docs/${doc.id}` ? "page" : undefined}>
+                {doc.data.nav}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="docs-body">
+      <slot />
+      {
+        markdownHref && (
+          <p class="docs-raw">
+            This page as plain Markdown: <a href={markdownHref}>{markdownHref}</a>
+          </p>
+        )
+      }
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: var(--s-7);
+    padding-block: var(--s-7) var(--s-8);
+  }
+
+  .docs-nav ul {
+    position: sticky;
+    top: var(--s-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .docs-nav a {
+    display: block;
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-control);
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .docs-nav a:hover {
+    background: var(--sheet);
+    color: var(--ink);
+  }
+
+  .docs-nav a[aria-current="page"] {
+    background: var(--sheet);
+    color: var(--ink);
+    font-weight: var(--weight-ui);
+  }
+
+  .docs-raw {
+    margin-top: var(--s-7);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 47.99rem) {
+    .docs {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+      padding-top: var(--s-5);
+    }
+
+    .docs-nav ul {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s-1);
+    }
+  }
+</style>

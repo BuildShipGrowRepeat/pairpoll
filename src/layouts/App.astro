@@ -1,0 +1,86 @@
+---
+import Base from "./Base.astro";
+import Logo from "../components/Logo.astro";
+
+// Creator app shell: always noindex. Pages put their title row and content in the slot.
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const links = [
+  { href: "/app", label: "Polls" },
+  { href: "/app/keys", label: "API keys" },
+  { href: "/app/account", label: "Account" },
+];
+const path = Astro.url.pathname;
+const current = (href: string) => (href === "/app" ? path === "/app" || path.startsWith("/app/polls") : path.startsWith(href));
+---
+<Base title={`${title} | Pairpoll`} noindex>
+  <header class="app-header">
+    <div class="wrap app-header-row">
+      <Logo href="/app" />
+      <nav aria-label="App">
+        <ul>
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} aria-current={current(link.href) ? "page" : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="wrap app-main">
+    <slot />
+  </main>
+</Base>
+
+<style>
+  .app-header {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .app-header-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-5);
+    min-height: 4rem;
+  }
+
+  .app-header ul {
+    display: flex;
+    gap: var(--s-1);
+    margin: 0 -0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .app-header a:not(.logo) {
+    display: block;
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-control);
+    color: var(--ink-soft);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .app-header a:not(.logo):hover {
+    background: var(--sheet);
+    color: var(--ink);
+  }
+
+  .app-header a[aria-current="page"] {
+    color: var(--ink);
+    background: var(--sheet);
+  }
+
+  .app-main {
+    padding-block: var(--s-6) var(--s-8);
+  }
+</style>

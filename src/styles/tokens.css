@@ -1,0 +1,83 @@
+/* Pairpoll design tokens. See docs/DESIGN.md for the idea and usage rules. */
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  src: url("/fonts/schibsted-grotesk-latin-wght.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Colour: a cool contact sheet, violet-black ink, one red grease-pencil mark. */
+  --paper: #ffffff;
+  --sheet: #f3f2f7;
+  --sheet-deep: #e8e6ef;
+  --ink: #1d1a33;
+  --ink-lift: #36315a;
+  --ink-soft: #4e4a66;
+  --ink-faint: #6f6a86;
+  --line: #dedbe7;
+  --line-strong: #8c88a3;
+  --marker: #e8402f;
+  --marker-ink: #c0301f;
+  --marker-wash: #fdeceb;
+  --danger: #b42318;
+  --danger-wash: #fdeeec;
+  --danger-deep: #8f1b13;
+  --ok: #1d7549;
+  --ok-wash: #e7f4ec;
+  --warn: #7f5300;
+  --warn-wash: #fff3d3;
+  --focus: #1d1a33;
+
+  /* Type: one family, Schibsted Grotesk (SIL OFL 1.1, public/fonts/OFL.txt). */
+  --font: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-code: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text-sm: 0.875rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
+  --text-3xl: clamp(2.5rem, 1.5rem + 4.2vw, 4.75rem);
+  --weight-body: 400;
+  --weight-ui: 600;
+  --weight-display: 800;
+  --leading-tight: 1.04;
+  --leading-snug: 1.25;
+  --leading-body: 1.55;
+
+  /* Space: 4px steps. */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+
+  /* Radius by role: prints are crisp, controls are soft, panels are softer. */
+  --r-frame: 6px;
+  --r-control: 10px;
+  --r-panel: 16px;
+  --r-pill: 999px;
+
+  /* Layout. */
+  --page: 72rem;
+  --measure: 40rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+
+  /* Motion: only in answer to an action. */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --quick: 140ms;
+  --draw: 420ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --quick: 0ms;
+    --draw: 0ms;
+  }
+}

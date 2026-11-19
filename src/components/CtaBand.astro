@@ -1,0 +1,40 @@
+---
+// Closing call to action on content pages.
+interface Props {
+  title?: string;
+}
+const { title = "Make your own poll" } = Astro.props;
+---
+<section class="cta-band" aria-label={title}>
+  <div class="wrap cta-band-row">
+    <div>
+      <h2>{title}</h2>
+      <p>Free. Upload 2 to 16 images or videos and share one link. Voters don't sign up.</p>
+    </div>
+    <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: var(--s-7);
+    border-top: 1px solid var(--line);
+  }
+
+  .cta-band-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-5);
+  }
+
+  .cta-band h2 {
+    font-size: var(--text-xl);
+  }
+
+  .cta-band p {
+    margin-top: var(--s-2);
+    color: var(--ink-soft);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+import PickLoop from "./PickLoop.astro";
+
+// One side of a pair. Images: the whole card is the pick button.
+// Videos: the video plays inside the frame and a separate button below picks it
+// (the voter page decides when that button is enabled).
+interface Props {
+  kind?: "image" | "video";
+  src: string;
+  alt?: string;
+  poster?: string;
+  pickLabel: string;
+  ratio?: string;
+  id?: string;
+}
+const { kind = "image", src, alt = "", poster, pickLabel, ratio, id } = Astro.props;
+const style = ratio ? `--ratio: ${ratio}` : undefined;
+---
+{
+  kind === "image" ? (
+    <button type="button" class="duel-card" data-item={id} aria-label={pickLabel}>
+      <span class="frame" style={style}>
+        <img src={src} alt={alt} draggable="false" />
+      </span>
+      <PickLoop class="duel-loop" />
+    </button>
+  ) : (
+    <div class="duel-card" data-item={id}>
+      <div class="frame" style={style}>
+        <video src={src} poster={poster} playsinline preload="metadata" />
+      </div>
+      <PickLoop class="duel-loop" />
+      <button type="button" class="btn btn--secondary btn--block duel-pick">
+        {pickLabel}
+      </button>
+    </div>
+  )
+}

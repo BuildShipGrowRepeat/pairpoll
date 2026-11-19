@@ -1,0 +1,26 @@
+---
+// Inline message in the page flow. Use tone "danger" for errors (role alert); others announce politely.
+interface Props {
+  tone?: "info" | "ok" | "warn" | "danger";
+  title?: string;
+}
+const { tone = "info", title } = Astro.props;
+---
+<div class:list={["notice", tone !== "info" && `notice--${tone}`]} role={tone === "danger" ? "alert" : "status"}>
+  <svg class="notice-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <circle cx="10" cy="10" r="8.1"></circle>
+    {
+      tone === "ok" ? (
+        <path d="m6.4 10.2 2.5 2.5 4.8-5" stroke-linecap="round" stroke-linejoin="round" />
+      ) : tone === "info" ? (
+        <path d="M10 9v5M10 6.2v.1" stroke-linecap="round" />
+      ) : (
+        <path d="M10 5.8v5M10 13.8v.1" stroke-linecap="round" />
+      )
+    }
+  </svg>
+  <div>
+    {title && <p><strong>{title}</strong></p>}
+    <slot />
+  </div>
+</div>

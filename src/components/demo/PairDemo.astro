@@ -1,0 +1,179 @@
+---
+import DuelCard from "../DuelCard.astro";
+import PickLoop from "../PickLoop.astro";
+import { demoSets, type DemoSetName } from "./sets";
+import { replayDemo } from "./demo-knockout";
+
+// A playable sample poll: pick the better of two until the top 3 is settled. Nothing is stored.
+interface Props {
+  set?: DemoSetName;
+  question?: string;
+  id?: string;
+}
+const { set = "thumbnails", question, id = "demo" } = Astro.props;
+const demo = demoSets[set];
+const ids = demo.items.map((item) => item.id);
+const first = replayDemo(ids, []);
+const byId = new Map(demo.items.map((item) => [item.id, item]));
+const [a, b] = (first.pair ?? [ids[0], ids[1]]).map((itemId) => byId.get(itemId)!);
+---
+<div class="pair-demo" id={id} data-demo data-items={JSON.stringify(demo.items)}>
+  <div class="pair-demo-head">
+    <p class="pair-demo-question">{question ?? demo.question}</p>
+    <p class="pair-demo-count" data-count aria-live="polite">Pick 1 of {first.total}</p>
+  </div>
+
+  <div class="duel" data-stage>
+    <div class="duel-pair">
+      <DuelCard id={a.id} src={a.src} alt={a.name} pickLabel={`Pick ${a.name}`} ratio={demo.ratio} />
+      <span class="duel-or" aria-hidden="true">or</span>
+      <DuelCard id={b.id} src={b.src} alt={b.name} pickLabel={`Pick ${b.name}`} ratio={demo.ratio} />
+    </div>
+  </div>
+
+  <div class="pair-demo-result" data-result hidden>
+    <h3 tabindex="-1" data-result-title>Your top 3</h3>
+    <ol class="rank" data-rank></ol>
+    <div class="actions">
+      <a class="btn btn--primary" href="/app/new">Create your own poll</a>
+      <button type="button" class="btn btn--quiet" data-restart>Start over</button>
+    </div>
+  </div>
+
+  <p class="pair-demo-note">Sample pictures. Nothing you pick is saved.</p>
+
+  <template data-rank-template>
+    <li class="rank-item">
+      <span class="rank-place"><span data-place></span><PickLoop class="rank-loop" /></span>
+      <span class="frame rank-thumb"><img alt="" /></span>
+      <span class="rank-name" data-name></span>
+      <span class="rank-meta"></span>
+    </li>
+  </template>
+</div>
+
+<style>
+  .pair-demo {
+    padding: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+    border-radius: var(--r-panel);
+    background: var(--sheet);
+  }
+
+  .pair-demo-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-4);
+    margin-bottom: var(--s-4);
+  }
+
+  .pair-demo-question {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-display);
+    letter-spacing: -0.015em;
+    line-height: var(--leading-snug);
+  }
+
+  .pair-demo-count {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-ui);
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pair-demo-result h3 {
+    margin-bottom: var(--s-2);
+  }
+
+  .pair-demo-result h3:focus {
+    outline: none;
+  }
+
+  .pair-demo-result .rank {
+    margin-bottom: var(--s-4);
+  }
+
+  .pair-demo-note {
+    margin-top: var(--s-4);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+</style>
+
+<script>
+  import { replayDemo } from "./demo-knockout";
+  import type { DemoItem } from "./sets";
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-demo]")) {
+    const items: DemoItem[] = JSON.parse(root.dataset.items ?? "[]");
+    const byId = new Map(items.map((item) => [item.id, item]));
+    const ids = items.map((item) => item.id);
+    const cards = [...root.querySelectorAll<HTMLButtonElement>("[data-stage] .duel-card")];
+    const stage = root.querySelector<HTMLElement>("[data-stage]")!;
+    const count = root.querySelector<HTMLElement>("[data-count]")!;
+    const result = root.querySelector<HTMLElement>("[data-result]")!;
+    const list = root.querySelector<HTMLOListElement>("[data-rank]")!;
+    const template = root.querySelector<HTMLTemplateElement>("[data-rank-template]")!;
+    let picks: string[] = [];
+    let busy = false;
+
+    for (const item of items) new Image().src = item.src;
+
+    const show = () => {
+      const state = replayDemo(ids, picks);
+      busy = false;
+      if (state.pair) {
+        state.pair.forEach((itemId, i) => {
+          const item = byId.get(itemId)!;
+          const card = cards[i];
+          card.dataset.item = item.id;
+          card.setAttribute("aria-label", `Pick ${item.name}`);
+          const img = card.querySelector("img")!;
+          img.src = item.src;
+          img.alt = item.name;
+          card.classList.remove("is-picked", "is-passed");
+        });
+        count.textContent = `Pick ${state.done + 1} of ${state.total}`;
+        stage.hidden = false;
+        result.hidden = true;
+        return;
+      }
+      list.replaceChildren(
+        ...state.top.map((itemId, i) => {
+          const item = byId.get(itemId)!;
+          const row = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+          row.querySelector("[data-place]")!.textContent = String(i + 1);
+          if (i > 0) row.querySelector(".rank-loop")!.remove();
+          row.querySelector("img")!.src = item.src;
+          row.querySelector("[data-name]")!.textContent = item.name;
+          return row;
+        }),
+      );
+      count.textContent = "Done";
+      stage.hidden = true;
+      result.hidden = false;
+      result.querySelector<HTMLElement>("[data-result-title]")!.focus();
+    };
+
+    for (const card of cards) {
+      card.addEventListener("click", () => {
+        if (busy) return;
+        busy = true;
+        for (const other of cards) {
+          other.classList.add(other === card ? "is-picked" : "is-passed");
+        }
+        picks = [...picks, card.dataset.item!];
+        window.setTimeout(show, reduceMotion.matches ? 250 : 700);
+      });
+    }
+
+    root.querySelector("[data-restart]")!.addEventListener("click", () => {
+      picks = [];
+      show();
+      cards[0].focus();
+    });
+  }
+</script>

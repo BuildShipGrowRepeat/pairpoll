@@ -1,0 +1,70 @@
+---
+// A list of pages, each with a bold name and one line. Used for uses, alternatives, guides and docs.
+interface Props {
+  items: { href: string; name: string; blurb: string }[];
+  columns?: 1 | 2 | 3 | 4;
+}
+const { items, columns = 2 } = Astro.props;
+---
+<ul class="link-list" style={`--cols: ${columns}`}>
+  {
+    items.map((item) => (
+      <li>
+        <a href={item.href}>
+          <span class="link-list-name">{item.name}</span>
+          <span class="link-list-blurb">{item.blurb}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .link-list {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 0 var(--s-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .link-list a {
+    display: grid;
+    align-content: start;
+    gap: var(--s-1);
+    height: 100%;
+    padding-block: var(--s-4) var(--s-5);
+    border-top: 1.5px solid var(--ink);
+    text-decoration: none;
+  }
+
+  .link-list-name {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-display);
+    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+  }
+
+  .link-list a:hover .link-list-name {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+
+  .link-list-blurb {
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 63.99rem) {
+    .link-list {
+      grid-template-columns: repeat(min(var(--cols), 2), minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 29.99rem) {
+    .link-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

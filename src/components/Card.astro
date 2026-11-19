@@ -1,0 +1,12 @@
+---
+interface Props {
+  href?: string;
+  tone?: "line" | "sheet";
+  class?: string;
+}
+const { href, tone = "line", class: className } = Astro.props;
+const Tag = href ? "a" : "div";
+---
+<Tag href={href} class:list={["card", tone === "sheet" && "card--sheet", className]}>
+  <slot />
+</Tag>

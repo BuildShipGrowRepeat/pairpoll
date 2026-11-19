@@ -1,0 +1,170 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import Button from "../components/Button.astro";
+import Field from "../components/Field.astro";
+import Card from "../components/Card.astro";
+import Badge from "../components/Badge.astro";
+import Notice from "../components/Notice.astro";
+import EmptyState from "../components/EmptyState.astro";
+import DuelCard from "../components/DuelCard.astro";
+import RankingList from "../components/RankingList.astro";
+import PickLoop from "../components/PickLoop.astro";
+import { demoSets } from "../components/demo/sets";
+
+// Component preview for builders and review (noindex, not in the sitemap). See docs/DESIGN.md.
+const art = demoSets.thumbnails.items;
+---
+<Marketing title="Design system | Pairpoll" description="Pairpoll components." noindex>
+  <div class="wrap preview">
+    <h1>Components</h1>
+    <p class="lead">Every shared component in its states. Rules and tokens are in docs/DESIGN.md.</p>
+
+    <section>
+      <h2>Buttons</h2>
+      <div class="actions">
+        <Button>Create a poll</Button>
+        <Button variant="secondary">Copy link</Button>
+        <Button variant="quiet">Cancel</Button>
+        <Button variant="danger">Delete poll</Button>
+        <Button disabled>Open poll</Button>
+      </div>
+      <div class="actions">
+        <Button size="lg">Create a poll</Button>
+        <Button size="sm" variant="secondary">Export CSV</Button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Form fields</h2>
+      <form class="form" onsubmit="return false">
+        <Field label="Question" name="question" placeholder="Which thumbnail would you click?" hint="Voters see this above every pair." />
+        <Field label="Email" name="email" type="email" value="not-an-email" error="Enter an email address like name@example.com." />
+        <Field label="Maximum voters" name="voters" as="select">
+          <option>50</option>
+          <option>100</option>
+          <option>200</option>
+        </Field>
+        <fieldset class="field">
+          <legend class="field-label">Top size</legend>
+          <div class="segmented">
+            <input type="radio" name="top" id="top-1" value="1" /><label for="top-1">1</label>
+            <input type="radio" name="top" id="top-3" value="3" checked /><label for="top-3">3</label>
+            <input type="radio" name="top" id="top-5" value="5" /><label for="top-5">5</label>
+          </div>
+        </fieldset>
+        <label class="check"><input type="checkbox" checked /> Each video plays once</label>
+      </form>
+    </section>
+
+    <section>
+      <h2>Badges</h2>
+      <div class="actions">
+        <Badge>Draft</Badge>
+        <Badge tone="live">Open</Badge>
+        <Badge tone="done">Closed</Badge>
+        <Badge tone="warn">Expires in 2 days</Badge>
+        <Badge tone="danger">Taken down</Badge>
+      </div>
+    </section>
+
+    <section>
+      <h2>Notices</h2>
+      <div class="stack">
+        <Notice>Your poll is a draft. Open it to get the voting link.</Notice>
+        <Notice tone="ok">Link copied.</Notice>
+        <Notice tone="warn" title="This poll is full">All 50 places are taken. Raise the limit or close the poll.</Notice>
+        <Notice tone="danger">The upload failed: the file is larger than allowed. Choose a smaller file.</Notice>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cards</h2>
+      <div class="grid">
+        <Card><h3>Line card</h3><p class="muted">For grouped content in the app.</p></Card>
+        <Card tone="sheet"><h3>Sheet card</h3><p class="muted">For a quieter panel.</p></Card>
+        <Card href="#"><h3>Link card</h3><p class="muted">The whole card is a link.</p></Card>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pair</h2>
+      <div class="duel">
+        <div class="duel-pair">
+          <DuelCard src={art[0].src} alt={art[0].name} pickLabel="Pick the first one" />
+          <span class="duel-or" aria-hidden="true">or</span>
+          <div class="duel-card is-picked" style="cursor: default">
+            <span class="frame"><img src={art[2].src} alt={art[2].name} /></span>
+            <PickLoop class="duel-loop" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Ranking</h2>
+      <RankingList
+        entries={[
+          { place: 1, name: art[2].name, src: art[2].src, meta: "12 points" },
+          { place: 1, name: art[5].name, src: art[5].src, meta: "12 points" },
+          { place: 3, name: art[0].name, src: art[0].src, meta: "7 points" },
+        ]}
+      />
+    </section>
+
+    <section>
+      <h2>Empty state</h2>
+      <EmptyState title="No polls yet">
+        Upload 2 to 16 images or videos and share one link.
+        <Fragment slot="actions"><Button>Create a poll</Button></Fragment>
+      </EmptyState>
+    </section>
+  </div>
+</Marketing>
+
+<style>
+  .preview {
+    padding-block: var(--s-7) var(--s-9);
+  }
+
+  .preview > .lead {
+    margin-top: var(--s-3);
+  }
+
+  section {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-8);
+  }
+
+  section h2 {
+    font-size: var(--text-xl);
+  }
+
+  .form {
+    display: grid;
+    gap: var(--s-5);
+    max-width: 28rem;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .stack {
+    display: grid;
+    gap: var(--s-3);
+    max-width: 36rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--s-4);
+  }
+
+  .grid p {
+    margin-top: var(--s-2);
+  }
+</style>

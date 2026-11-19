@@ -1,0 +1,8 @@
+---
+// Poll and voter status. live: open poll; done: finished or closed; warn: needs attention; danger: blocked or failed.
+interface Props {
+  tone?: "neutral" | "live" | "done" | "warn" | "danger";
+}
+const { tone = "neutral" } = Astro.props;
+---
+<span class:list={["badge", tone !== "neutral" && `badge--${tone}`]}><slot /></span>
