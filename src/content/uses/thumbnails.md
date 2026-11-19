@@ -27,7 +27,7 @@ Many thumbnail raters give each image a score from a model. Pairpoll shows your 
 
 ## What it doesn't do
 
-Pairpoll doesn't test thumbnails on live YouTube traffic. YouTube's own [A/B test for titles and thumbnails](https://support.google.com/youtube/answer/13861714) does that, in YouTube Studio for your own videos. Use Pairpoll before you publish, to narrow a long list down to the two or three worth testing.
+Pairpoll doesn't test thumbnails on live YouTube traffic. YouTube's own [A/B test for titles and thumbnails](https://support.google.com/youtube/answer/16391400) does that, in YouTube Studio for your own videos. Use Pairpoll before you publish, to narrow a long list down to the two or three worth testing.
 
 ## Tips
 
