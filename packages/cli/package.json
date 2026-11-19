@@ -1,9 +1,23 @@
 {
   "name": "pairpoll",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Command-line client for Pairpoll: create image and video polls from local files and read the ranked results.",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BuildShipGrowRepeat/pairpoll.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://pairpoll.com/docs/cli",
+  "bugs": {
+    "url": "https://github.com/BuildShipGrowRepeat/pairpoll/issues"
+  },
+  "keywords": ["pairpoll", "poll", "cli", "image-poll", "video-poll", "pairwise-ranking", "preference-testing", "ai-agents"],
+  "engines": {
+    "node": ">=18"
+  },
+  "files": ["bin", "src"],
   "bin": {
     "pairpoll": "bin/pairpoll.js"
   },

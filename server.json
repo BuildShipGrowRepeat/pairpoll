@@ -16,14 +16,14 @@
       "headers": [
         {
           "name": "Authorization",
-          "description": "Pairpoll API key from https://pairpoll.com/app/keys",
+          "description": "Pairpoll API key from https://pairpoll.com/app/keys. Optional: omit it to sign in with OAuth.",
           "value": "Bearer {api_key}",
-          "isRequired": true,
+          "isRequired": false,
           "isSecret": true,
           "variables": {
             "api_key": {
               "description": "Pairpoll API key (starts with ppk_)",
-              "isRequired": true,
+              "isRequired": false,
               "isSecret": true
             }
           }

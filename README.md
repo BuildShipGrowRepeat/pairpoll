@@ -81,6 +81,38 @@ Checks: `npm run typecheck`, `npm run lint`, `npm test`, `npm run test:e2e`, `np
 
 Where things live is described in [AGENTS.md](AGENTS.md); the product spec is [docs/SPEC.md](docs/SPEC.md) and the API contract is [docs/API.md](docs/API.md).
 
+## Deploy your own
+
+You need a Cloudflare account, Node 22.23.4 or newer, a [Turnstile](https://developers.cloudflare.com/turnstile/) widget, and a [Resend](https://resend.com) account with a verified sending domain. Create the resources, then copy the ids they print into `wrangler.jsonc`:
+
+```sh
+npx wrangler login
+npx wrangler d1 create pairpoll              # database_id -> d1_databases[0].database_id (binding DB)
+npx wrangler r2 bucket create pairpoll-media # bucket_name -> r2_buckets[0].bucket_name (binding MEDIA)
+npx wrangler kv namespace create OAUTH_KV    # id -> kv_namespaces[0].id (binding OAUTH_KV)
+```
+
+In the Cloudflare dashboard create a Turnstile widget (invisible) and put its site key in `vars.TURNSTILE_SITE_KEY` in `wrangler.jsonc`. Then set the three secrets the Worker requires (`secrets.required`):
+
+```sh
+npx wrangler secret put TURNSTILE_SECRET_KEY  # secret key of that widget
+npx wrangler secret put OWNER_EMAILS          # comma-separated emails allowed to open the owner page
+npx wrangler secret put RESEND_API_KEY        # sends the sign-in emails
+npx wrangler d1 migrations apply DB --remote
+npm run build
+npx wrangler deploy
+```
+
+Analytics are optional. `PUBLIC_GA_ID` and `PUBLIC_CF_BEACON_TOKEN` are set in `astro.config.mjs` and baked into the build; set them to your own ids or to empty strings, or the build sends data to pairpoll.com's analytics.
+
+These files are specific to pairpoll.com and must be edited:
+
+- `wrangler.jsonc`: `routes` (your domain; or remove `routes`, set `workers_dev` to `true` and use the `*.workers.dev` address)
+- `src/server/email.ts`: the `from` address, which must be on your verified Resend domain
+- `astro.config.mjs`: `site`
+- `src/worker.ts`: the two `https://pairpoll.com` origins in the cron handler (OAuth cleanup)
+- `src/layouts/Base.astro`, `public/robots.txt`, `public/llms.txt` and the pages in `src/pages` and `src/content` (about, terms, privacy, home, guides, docs): canonical URLs, example URLs and the owner's details
+
 ## About
 
 Pairpoll is a personal project by Vladimir Terekhov, built at [Attract Group](https://attractgroup.com).
