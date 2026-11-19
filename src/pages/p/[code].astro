@@ -1,0 +1,38 @@
+---
+import { env } from "cloudflare:workers";
+import Voter from "../../layouts/Voter.astro";
+import VoterApp from "../../components/voter/VoterApp.astro";
+import { ServerError } from "../../server/errors";
+import { getPublicPoll, getVoterState, voterToken } from "../../server/runs";
+import "../../styles/voter.css";
+
+export const prerender = false;
+
+// The voting page. This browser's run (if any) is read here, so a reload resumes at once.
+const code = Astro.params.code ?? "";
+let poll: Awaited<ReturnType<typeof getPublicPoll>> | null = null;
+let state: Awaited<ReturnType<typeof getVoterState>> | null = null;
+let removed = false;
+try {
+  poll = await getPublicPoll(env.DB, code);
+  const token = voterToken(Astro.request);
+  if (token) state = await getVoterState(env.DB, code, token);
+} catch (error) {
+  if (!(error instanceof ServerError)) throw error;
+  if (error.code === "run_deleted") removed = true;
+}
+if (!poll) Astro.response.status = 404;
+---
+<Voter title={poll && poll.question ? poll.question : "Poll not found | Pairpoll"}>
+  {
+    poll ? (
+      <VoterApp poll={poll} state={state} removed={removed} sitekey={env.TURNSTILE_SITE_KEY} />
+    ) : (
+      <section class="status">
+        <h1>This poll doesn't exist</h1>
+        <p>Check that the link is complete, or ask the person who sent it for a new one.</p>
+      </section>
+    )
+  }
+  {poll && <button slot="report" type="button" class="report-link" data-report>Report this poll</button>}
+</Voter>

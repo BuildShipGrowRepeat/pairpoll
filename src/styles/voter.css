@@ -1,0 +1,540 @@
+/*
+  Voter page and preview. Global because voter.ts builds the markup.
+  Builds on .duel, .duel-card, .frame and the pick loop from components.css.
+*/
+
+[hidden] {
+  display: none !important;
+}
+
+.voter {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-control);
+  background: var(--warn-wash);
+  color: var(--warn);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-ui);
+}
+
+.preview-bar a {
+  color: inherit;
+}
+
+/* Intro: the creator's question is the headline; the rules arrive one line at a time. */
+.intro {
+  display: grid;
+  gap: var(--s-6);
+  max-width: 38rem;
+  padding-top: clamp(0.5rem, 4vh, 3.5rem);
+}
+
+.intro h1,
+.status h1 {
+  font-size: clamp(2.1rem, 1.4rem + 3.4vw, 3.5rem);
+  overflow-wrap: anywhere;
+}
+
+.rules {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-lg);
+  line-height: 1.4;
+}
+
+.rules li {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  gap: var(--s-3);
+}
+
+.rules li::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  margin: 0.55em 0 0 0.2rem;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+/* Lines wait invisible (keeping their space) until revealed. */
+.rules.is-revealing li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 320ms var(--ease),
+    transform 320ms var(--ease);
+}
+
+.rules.is-revealing li.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-form {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 26rem;
+  transition: opacity 320ms var(--ease);
+}
+
+.intro-form.is-waiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Status screens: closed, full, not open yet, expired, removed. */
+.status {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 34rem;
+  padding-top: clamp(0.5rem, 4vh, 3.5rem);
+}
+
+.status h1 {
+  font-size: var(--text-2xl);
+}
+
+.status p {
+  color: var(--ink-soft);
+  font-size: var(--text-lg);
+  line-height: 1.45;
+}
+
+.status-art {
+  width: 5.5rem;
+  color: var(--line-strong);
+}
+
+/* Pair screen */
+.vote-head {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.vote-question {
+  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  font-weight: var(--weight-display);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.vote-count {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-ui);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.vote-count:focus {
+  outline: none;
+}
+
+.vote-track {
+  flex: 1;
+  max-width: 12rem;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sheet-deep);
+  overflow: hidden;
+}
+
+.vote-track > span {
+  display: block;
+  height: 100%;
+  width: calc(var(--done) * 100%);
+  background: var(--ink);
+  transition: width var(--draw) var(--ease);
+}
+
+.vote {
+  display: grid;
+  gap: var(--s-5);
+}
+
+/*
+  The pair may be wider than the text column (up to 80rem), but never so wide that
+  both items no longer fit in the window's height: tall items make the pair narrower.
+*/
+.vote .duel {
+  --duel-w: min(calc(100vw - 2 * var(--gutter)), 80rem, max(18rem, calc((100dvh - 16rem) * var(--ratio-n, 1.78) * 2 + 3rem)));
+  width: var(--duel-w);
+  margin-inline: calc((100% - var(--duel-w)) / 2);
+}
+
+.vote .duel--portrait .duel-pair {
+  gap: var(--s-2);
+}
+
+.duel-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-frame);
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.duel-hit:focus-visible {
+  outline: none;
+}
+
+.duel-hit:focus-visible .frame {
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.duel-card .frame > img,
+.duel-card .frame > video {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* "View larger" sits on the image's corner. */
+.duel-zoom {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-control);
+  background: rgb(255 255 255 / 0.92);
+  color: var(--ink);
+  box-shadow: 0 2px 8px -2px rgb(29 26 51 / 0.35);
+  cursor: zoom-in;
+}
+
+.duel-zoom svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.duel-zoom:hover {
+  background: var(--paper);
+}
+
+/* Video tiles */
+.tile-cover,
+.tile-note,
+.tile-seal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 0;
+  text-align: center;
+}
+
+.tile-cover {
+  width: 100%;
+  background: rgb(29 26 51 / 0.18);
+  color: var(--paper);
+  font-weight: var(--weight-ui);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tile-cover:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.tile-play {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 6px 20px -6px rgb(29 26 51 / 0.6);
+  transition: transform var(--quick) var(--ease);
+}
+
+.tile-play svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 3px;
+}
+
+@media (hover: hover) {
+  .tile-cover:hover .tile-play {
+    transform: scale(1.06);
+  }
+}
+
+.tile-cover:active .tile-play {
+  transform: scale(0.96);
+}
+
+.tile-cover-label {
+  padding: 0.1rem 0.6rem;
+  border-radius: var(--r-pill);
+  background: rgb(29 26 51 / 0.72);
+  font-size: var(--text-sm);
+}
+
+.tile-cover[disabled] {
+  cursor: default;
+}
+
+.tile-cover[disabled] .tile-play {
+  opacity: 0.5;
+}
+
+.tile-note {
+  background: rgb(29 26 51 / 0.62);
+  color: var(--paper);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-ui);
+}
+
+.tile-note .btn {
+  min-height: 2.5rem;
+}
+
+.tile-seal {
+  pointer-events: none;
+  background: rgb(255 255 255 / 0.35);
+}
+
+.tile-seal > span {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.35rem 0.9rem 0.35rem 0.4rem;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-ui);
+  box-shadow: 0 6px 18px -8px rgb(29 26 51 / 0.5);
+}
+
+.tile-seal svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 3px solid rgb(255 255 255 / 0.35);
+  border-top-color: var(--paper);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+/* While one video plays, the other waits quietly. */
+.duel-card.is-waiting .frame {
+  opacity: 0.55;
+}
+
+.duel-card .frame {
+  transition:
+    box-shadow var(--quick) var(--ease),
+    transform var(--quick) var(--ease),
+    opacity var(--draw) var(--ease);
+}
+
+.duel-card.is-playing .frame {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.duel-pick {
+  margin-top: var(--s-3);
+}
+
+/* Pick buttons rise in once both videos have played. */
+.duel-pick.is-new {
+  animation: rise 360ms var(--ease) both;
+}
+
+.duel-card:last-child .duel-pick.is-new {
+  animation-delay: 70ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duel-pick.is-new {
+    animation: none;
+  }
+}
+
+.duel-card.is-picked .duel-pick {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  opacity: 1;
+}
+
+.vote .duel-status {
+  margin-top: 0;
+  text-align: center;
+  font-size: var(--text-md);
+}
+
+.vote .duel-status.is-error {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+/* Larger view of an image. */
+.viewer {
+  width: auto;
+  max-width: min(96vw, 80rem);
+  padding: var(--s-3);
+}
+
+.viewer img {
+  max-width: 100%;
+  max-height: calc(100dvh - 9rem);
+  margin-inline: auto;
+  border-radius: var(--r-frame);
+}
+
+.viewer .actions {
+  justify-content: center;
+  margin-top: var(--s-3);
+}
+
+/* End: the voter's own top list. */
+.done {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.done h1 {
+  font-size: var(--text-2xl);
+}
+
+.done h1:focus {
+  outline: none;
+}
+
+.done-question {
+  margin-bottom: var(--s-3);
+  color: var(--ink-soft);
+  font-weight: var(--weight-ui);
+  overflow-wrap: anywhere;
+}
+
+.done-lead {
+  margin-top: var(--s-2);
+  color: var(--ink-soft);
+}
+
+.top-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5) var(--s-4);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.top-list:not(.has-many) {
+  grid-template-columns: minmax(0, 30rem);
+}
+
+.top-list li {
+  display: grid;
+  align-content: start;
+  gap: var(--s-2);
+}
+
+.top-list .top-place {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-display);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.top-list li:first-child .top-place {
+  font-size: var(--text-xl);
+}
+
+.top-list .top-frame {
+  position: relative;
+}
+
+.top-list .top-frame .duel-loop {
+  opacity: 1;
+  clip-path: circle(150% at 16% 6%);
+  animation: draw-pick var(--draw) var(--ease) 200ms both;
+}
+
+@keyframes draw-pick {
+  from {
+    clip-path: circle(0% at 16% 6%);
+  }
+}
+
+/* First place leads the list at full width; the rest sit smaller beneath it. */
+.top-list.has-many li:first-child {
+  grid-column: 1 / -1;
+  max-width: 30rem;
+}
+
+@media (min-width: 40rem) {
+  .top-list.has-many {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.report-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.report-link:hover {
+  color: var(--ink);
+}

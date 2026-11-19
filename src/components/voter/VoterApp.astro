@@ -1,0 +1,49 @@
+---
+import type { PublicPoll, VoterState } from "../app/client";
+import "../../styles/app.css";
+import "../../styles/voter.css";
+
+// Mount point for the voter flow. The page passes the poll and this browser's state (if any);
+// voter.ts renders every screen. In the creator's preview, `previewBack` is set and nothing is stored.
+interface Props {
+  poll: PublicPoll;
+  state?: VoterState | null;
+  removed?: boolean;
+  sitekey?: string;
+  previewBack?: string;
+}
+const { poll, state = null, removed = false, sitekey, previewBack } = Astro.props;
+const json = JSON.stringify({ poll, state, removed, sitekey, previewBack }).replace(/</g, "\\u003c");
+---
+<div class="voter" data-voter>
+  {
+    previewBack && (
+      <p class="preview-bar">
+        <span>Preview. Votes here are not saved.</span>
+        <a href={previewBack}>Back to the draft</a>
+      </p>
+    )
+  }
+  <script type="application/json" data-voter-data set:html={json} />
+  <div data-stage>
+    <noscript>
+      <p class="lead">Voting needs JavaScript. Turn it on and reload the page.</p>
+    </noscript>
+  </div>
+</div>
+
+<script>
+  import { previewDriver, serverDriver } from "./driver";
+  import { mountVoter, mountReport } from "./voter";
+  import { api } from "../app/client";
+
+  const root = document.querySelector<HTMLElement>("[data-voter]")!;
+  const data = JSON.parse(root.querySelector("[data-voter-data]")!.textContent!);
+  const { poll } = data;
+  mountVoter(root, {
+    ...data,
+    driver: data.previewBack ? previewDriver(poll.items.map((item: { id: string }) => item.id), poll.topSize) : serverDriver(poll.code),
+  });
+  const report = document.querySelector<HTMLButtonElement>("[data-report]");
+  if (report) mountReport(report, poll.code, (reason) => api(`/public/${encodeURIComponent(poll.code)}/report`, "POST", { reason }));
+</script>
