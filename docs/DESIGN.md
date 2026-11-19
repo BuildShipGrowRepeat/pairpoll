@@ -28,7 +28,7 @@ Astro components render shared classes, so client-side TypeScript can build the 
 | `Notice` | `.notice--ok/warn/danger` | Inline messages in the page flow. Danger uses `role="alert"`. No toasts. |
 | `EmptyState` | `.empty` | Say what is missing and give the next action. |
 | `LinkList`, `PageIntro`, `CtaBand`, `DemoHero` | | Marketing building blocks. |
-| `demo/PairDemo` | | Playable sample poll. Logic in `demo/demo-knockout.ts`, art in `public/demo`. |
+| `demo/PairDemo` | | Playable sample poll on the real knockout (`src/lib/knockout.ts`); sets in `demo/sets.ts`, art in `public/demo`. |
 
 `/design` shows every component and state. It exists only under `npm run dev` (`src/dev/design.astro`, added in `astro.config.mjs`) and is not in the build.
 

@@ -8,12 +8,13 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built and runs locally. Not
 - Voting: `src/lib/knockout.ts` replays top-1/3/5 knockouts for 2–16 items (every size, top size and bye arrangement tested). Plays-once videos, resume in the same browser, voter cap, Turnstile on sign-in and join.
 - REST API `/api/v1` (contract in `docs/API.md`): email sign-in, sessions, API keys, CLI device approval, polls, uploads, voting, results, CSV/JSON export, share links, media with ranges, account deletion, owner moderation.
 - MCP: `/mcp`, stateless Streamable HTTP, bearer API key only, eight tools (`create_poll`, `get_upload_link`, `open_poll`, `close_poll`, `get_results`, `list_polls`, `delete_voter`, `delete_poll`).
-- CLI: `packages/cli` (`pairpoll`), no dependencies, not published. Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete, logout.
+- CLI: `packages/cli` (`pairpoll`), no dependencies, not published. Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete-voter, delete, logout. Checks file sizes before creating a poll.
 - Creator app: `/signin`, `/signin/confirm`, `/signin/device`, `/app`, `/app/new`, `/app/polls/<id>` (draft editor, then results), `/app/polls/<id>/preview`, `/app/keys`, `/app/account`, `/app/owner` (only for `OWNER_EMAILS`; others get 404).
 - Voters: `/p/<code>` with every state (not open, closed, full, expired, finished, removed) and a report link; shared results `/results/<shareCode>`.
-- Marketing: home, 8 use pages, 4 alternative pages, 3 guides, About, Terms, Privacy, 404, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
+- Marketing: home, 8 use pages, 4 alternative pages, 3 guides, About, Terms, Privacy, 404, 500, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
+- Pages rendered on request send `Cache-Control: no-store` and `frame-ancestors 'none'` (`src/middleware.ts`).
 - Design system: `docs/DESIGN.md`. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
-- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke, image poll with two voters, plays-once video poll with a reload).
+- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation).
 
 ## Try it locally
 

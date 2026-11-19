@@ -17,15 +17,15 @@ What a small poll can't do is separate two options that are close. A 6 to 4 spli
 
 ## When a result is too close to call
 
-Here's a way to see why. Say it comes down to two finalists, and each voter picks one. Suppose people had no real preference and picked by tossing a coin. How often would one option still get this many votes?
+Here's a way to see why. Say it comes down to two finalists, and each voter picks one. Suppose people had no real preference and picked by tossing a coin. How often would either option get at least this many votes, just by chance?
 
-| Voters | Votes for the leading option | How often coin tosses give that option at least this many |
+| Voters | Votes for the leading option | How often coin tosses give either option at least this many |
 | --- | --- | --- |
-| 10 | 6 | About 38% of the time |
-| 20 | 12 | About 25% of the time |
-| 40 | 24 | About 13% of the time |
+| 10 | 6 | About 75% of the time |
+| 20 | 12 | About 50% of the time |
+| 40 | 24 | About 27% of the time |
 
-Each row is a 60% share, and each is easy to get by chance. To bring the chance down to about 5%, the leader needs 8 of 10 votes, 14 of 20 or 26 of 40. So with ten voters, only a lopsided result means much. With forty, a smaller lead starts to count.
+Each row is a 60% share, and each is easy to get by chance. To bring the chance below 5%, the leader needs 9 of 10 votes, 15 of 20 or 27 of 40. So with ten voters, only a lopsided result means much. With forty, a smaller lead starts to count.
 
 These figures are plain coin-toss arithmetic (the binomial distribution), not a survey of real polls. Real voters aren't coins, but the point holds: a narrow lead from a small group can easily be luck.
 

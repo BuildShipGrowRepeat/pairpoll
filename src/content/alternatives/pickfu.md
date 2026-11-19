@@ -28,7 +28,7 @@ comparison:
 
 ## When PickFu is the better choice
 
-You need answers from strangers who match a target audience, and you don't have that audience yourself. PickFu's paid panel does this. Pairpoll has no panel: only the people you send the link to can vote.
+You need answers from strangers who match a target audience, and you don't have that audience yourself. PickFu's paid panel does this. Pairpoll has no panel: you bring your own voters by sharing the link.
 
 ## When Pairpoll is the better choice
 

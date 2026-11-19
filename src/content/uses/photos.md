@@ -33,7 +33,7 @@ Pairpoll shows each photo whole, without cropping, so voters judge the frame you
 
 ### Are my photos public?
 
-No. Poll links are unlisted and hidden from search engines, so only people you send the link to can open the poll. Photos, votes and the poll are deleted 30 days after the poll is created.
+No. Poll links are unlisted and hidden from search engines. Anyone with the link can open the poll, so share it only with people you trust. Photos, votes and the poll are deleted 30 days after the poll is created.
 
 ### Do voters see each other's votes?
 

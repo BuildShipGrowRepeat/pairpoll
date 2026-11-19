@@ -28,7 +28,7 @@ Source material for the "alternative to" pages, use pages and guides. Recheck a 
 
 **Others, for context only**
 - UXtweak: MP4 up to 100 MB, up to 6 designs; free plan images only, 2 designs, 3 responses: https://uxtweak.com/preference-test-tool/ and https://uxtweak.com/pricing
-- YouTube's own "Test & Compare" tests thumbnails on live traffic, on your own channel only.
+- YouTube's own title and thumbnail A/B test ("test and compare") runs on live traffic, in YouTube Studio, for your own videos only: https://support.google.com/youtube/answer/13861714
 
 **What none of them combine:** voting in pairs across many uploaded videos, one play per video, a top list per voter, and free creation by an AI agent for your own audience.
 
