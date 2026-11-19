@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.BuildShipGrowRepeat/pairpoll",
+  "name": "com.pairpoll/pairpoll",
   "title": "Pairpoll",
   "description": "Free polls for images and videos ranked head to head: create a poll, share a link, read results.",
   "version": "1.0.0",
