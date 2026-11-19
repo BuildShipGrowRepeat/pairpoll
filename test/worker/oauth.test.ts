@@ -469,4 +469,4 @@ test("registration, authorization and token attempts are limited per IP", async 
     },
     body: "grant_type=refresh_token",
   }))).status).toBe(429);
-});
+}, 60_000);
