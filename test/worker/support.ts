@@ -12,6 +12,9 @@ export const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0
 
 export async function clearData() {
   await env.DB.batch([
+    env.DB.prepare("DELETE FROM oauth_consent_states"),
+    env.DB.prepare("DELETE FROM oauth_grant_states"),
+    env.DB.prepare("DELETE FROM oauth_account_cleanup"),
     env.DB.prepare("DELETE FROM reports"),
     env.DB.prepare("DELETE FROM runs"),
     env.DB.prepare("DELETE FROM uploads"),
@@ -119,7 +122,11 @@ export async function expectCode(promise: Promise<unknown>, code: string) {
 }
 
 export async function databaseState() {
-  const tables = ["accounts", "credentials", "device_requests", "polls", "items", "runs", "reports", "usage", "uploads"];
+  const tables = [
+    "accounts", "credentials", "device_requests", "oauth_account_cleanup", "oauth_consent_states",
+    "oauth_grant_states",
+    "polls", "items", "runs", "reports", "usage", "uploads",
+  ];
   const rows = await Promise.all(tables.map(async (table) =>
     (await env.DB.prepare(`SELECT * FROM ${table} ORDER BY 1`).all()).results));
   const objects = (await env.MEDIA.list()).objects.map(({ key, size }) => ({ key, size }));

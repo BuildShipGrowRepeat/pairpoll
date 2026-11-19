@@ -115,6 +115,8 @@ test("blocking an account revokes credentials that were previously usable", asyn
   expect(await authenticate(env.DB, keyRequest)).toBeNull();
   expect(await env.DB.prepare("SELECT blocked_at FROM accounts WHERE id = ?").bind(target)
     .first<number | null>("blocked_at")).not.toBeNull();
+  expect(await env.DB.prepare("SELECT account_id FROM oauth_account_cleanup WHERE account_id = ?").bind(target)
+    .first<string | null>("account_id")).toBe(target);
 });
 
 test("revoking a key immediately denies it without changing other credentials", async () => {

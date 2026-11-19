@@ -10,6 +10,7 @@ import { readDevMail } from "../../../server/email.js";
 import { ServerError } from "../../../server/errors.js";
 import { duplicatePoll, removeItem, serveMedia, uploadItem, uploadPoster } from "../../../server/media.js";
 import { blockAccount, getOwnerOverview, ownerAccess } from "../../../server/owner.js";
+import { revokeAllConnectedApps, revokeConnectedApp } from "../../../server/oauth.js";
 import {
   closePoll, createPoll, deletePoll, getPoll, listPolls, openPoll, reorderItems, setResultsSharing, updatePoll,
 } from "../../../server/polls.js";
@@ -161,10 +162,22 @@ async function route(request: Request, path: string) {
     if (!await revokeKey(env.DB, await session(request), id)) throw new ServerError(404, "key_not_found", "This key was not found.");
     return json({ ok: true });
   }
+  if (root === "oauth" && id === "grants" && action && parts.length === 3) {
+    method(request, "DELETE");
+    const auth = await session(request);
+    if (!await revokeConnectedApp(env, new URL(request.url).origin, auth.accountId, action)) {
+      throw new ServerError(404, "oauth_grant_not_found", "This connected app was not found.");
+    }
+    return json({ ok: true });
+  }
   if (root === "account" && parts.length <= 2) {
     if (!id) {
       method(request, "DELETE");
-      if (!await deleteAccount(env.DB, await session(request))) throw new ServerError(401, "session_required", "Sign in in your browser.");
+      const auth = await session(request);
+      if (!await deleteAccount(env.DB, auth, (accountId) =>
+        revokeAllConnectedApps(env, new URL(request.url).origin, accountId))) {
+        throw new ServerError(401, "session_required", "Sign in in your browser.");
+      }
       return json({ ok: true }, 200, { "Set-Cookie": clearSessionCookie() });
     }
     if (id === "me") {
@@ -312,7 +325,13 @@ async function route(request: Request, path: string) {
     if (id === "accounts" && action && sub === "block" && parts.length === 4) {
       method(request, "POST");
       const auth = await owner(request);
-      if (!await blockAccount(env.DB, auth, (env as typeof env & { OWNER_EMAILS?: string }).OWNER_EMAILS, action)) throw new ServerError(404, "account_not_found", "This account was not found.");
+      if (!await blockAccount(
+        env.DB,
+        auth,
+        (env as typeof env & { OWNER_EMAILS?: string }).OWNER_EMAILS,
+        action,
+        (accountId) => revokeAllConnectedApps(env, new URL(request.url).origin, accountId),
+      )) throw new ServerError(404, "account_not_found", "This account was not found.");
       return json({ ok: true });
     }
   }

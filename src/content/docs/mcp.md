@@ -1,18 +1,26 @@
 ---
 seoTitle: "Pairpoll remote MCP server | Pairpoll"
-description: "Connect Claude Code, Codex or Cursor to Pairpoll's remote Streamable HTTP MCP server with an API key and use its poll tools."
+description: "Connect Claude, ChatGPT, Claude Code, Codex or Cursor to Pairpoll's remote MCP server and use its poll tools."
 title: "MCP server"
 nav: "MCP"
 order: 5
 ---
 
-Pairpoll serves a stateless Streamable HTTP MCP server at `/mcp`. It is local until the first deployment:
+Pairpoll serves a stateless Streamable HTTP MCP server at:
 
 ```text
-http://localhost:4321/mcp
+https://pairpoll.com/mcp
 ```
 
-Every request needs a Pairpoll API key as a bearer token.
+Once this OAuth release is deployed, Claude and ChatGPT apps sign in with OAuth. Developer tools can keep using a Pairpoll API key as a bearer token.
+
+## Claude and ChatGPT apps
+
+Add `https://pairpoll.com/mcp` as a custom connector or remote MCP server. Choose Pairpoll's detected OAuth sign-in and the client's published identity or automatic registration. Pairpoll sends you to the existing email one-time-link sign-in, then shows the app name and where it will return. Approve it to connect.
+
+The app can create and manage polls and read results in your Pairpoll account. Disconnect it at **Pairpoll → API keys → Connected apps**.
+
+Chat apps cannot pass attached images or videos to connectors. When a tool returns an upload link, open it and add the files in your browser. Pairpoll does not fetch files from URLs.
 
 ## Claude Code
 
@@ -69,10 +77,8 @@ Restart Cursor after changing the environment variable or config.
 
 The tool descriptions include each input and lifecycle rule. Results are also returned as structured data.
 
-## File uploads and chat apps
+## File uploads
 
 The server does not fetch files from URLs. Use `get_upload_link` and add the local files in your browser. Claude and ChatGPT chat apps cannot pass their attachments to Pairpoll.
 
-Claude and ChatGPT chat apps also require OAuth for a normal connector sign-in. OAuth is planned after the first deployment. The API-key setup above is for Claude Code, Codex and Cursor.
-
-After deployment, set `PAIRPOLL_API_URL` to the public HTTPS origin and reconnect the client.
+For local API-key testing, set `PAIRPOLL_API_URL=http://localhost:4321`. OAuth-capable clients need the public HTTPS endpoint.

@@ -1,0 +1,137 @@
+---
+import { AuthorizationError } from "@cloudflare/workers-oauth-provider";
+import { env } from "cloudflare:workers";
+import Marketing from "../../layouts/Marketing.astro";
+import { authenticateSession } from "../../server/auth";
+import {
+  consumeAuthorizationRateLimit,
+  MCP_SCOPE,
+  oauthHelpers,
+  requireS256,
+  type OAuthGrantProps,
+} from "../../server/oauth";
+import { sameOrigin } from "../../server/security";
+import { consumeOAuthConsent, recordOAuthConsent } from "../../server/oauth-grants";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+let clientName = "Connected app";
+let clientDomain: string | undefined;
+let redirectHost = "";
+let redirectIsLoopback = false;
+let handle = "";
+let errorMessage = "";
+let status = 200;
+
+const oauth = oauthHelpers(env, Astro.url.origin);
+
+try {
+  if (Astro.request.method === "GET") {
+    if (!await consumeAuthorizationRateLimit(env.DB, Astro.request)) {
+      status = 429;
+      errorMessage = "Too many connection attempts. Try again later.";
+    } else {
+      const request = await oauth.parseAuthRequest(Astro.request);
+      requireS256(request);
+      const auth = await authenticateSession(env.DB, Astro.request);
+      if (!auth) {
+        const next = Astro.url.pathname + Astro.url.search;
+        return Astro.redirect(`/signin?next=${encodeURIComponent(next)}`);
+      }
+      const description = await oauth.describeConsent(request);
+      const transaction = await oauth.beginConsent(request);
+      clientName = description.clientName;
+      clientDomain = description.clientDomain;
+      redirectHost = description.redirectHost;
+      redirectIsLoopback = description.redirectIsLoopback;
+      handle = transaction.handle;
+      await recordOAuthConsent(env.DB, handle, auth.accountId);
+      for (const [name, value] of transaction.headers) Astro.response.headers.append(name, value);
+    }
+  } else if (Astro.request.method === "POST") {
+    if (!sameOrigin(Astro.request)) return new Response("Invalid origin", { status: 403 });
+    const auth = await authenticateSession(env.DB, Astro.request);
+    if (!auth) return new Response("Your session ended. Start the connection again.", { status: 401 });
+    const form = await Astro.request.formData();
+    const submittedHandle = typeof form.get("handle") === "string" ? String(form.get("handle")) : "";
+    const action = form.get("action");
+    if (action !== "approve" && action !== "cancel") return new Response("Invalid action", { status: 400 });
+    if (!await consumeOAuthConsent(env.DB, submittedHandle, auth.accountId)) {
+      return new Response("This approval is invalid or expired.", { status: 400 });
+    }
+    if (action === "cancel") {
+      const denied = await oauth.denyConsent(Astro.request, submittedHandle);
+      return new Response(null, { status: 302, headers: denied.headers });
+    }
+    const approved = await oauth.approveConsent(Astro.request, submittedHandle, { scope: [MCP_SCOPE] });
+    requireS256(approved.request);
+    const description = await oauth.describeConsent(approved.request);
+    const result = await oauth.completeAuthorization({
+      request: approved.request,
+      userId: auth.accountId,
+      scope: [MCP_SCOPE],
+      metadata: { clientName: description.clientName, redirectHost: description.redirectHost },
+      props: { accountId: auth.accountId, access: "oauth" } satisfies OAuthGrantProps,
+    });
+    const headers = new Headers(approved.headers);
+    headers.set("Location", result.redirectTo);
+    return new Response(null, { status: 302, headers });
+  } else {
+    return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, POST" } });
+  }
+} catch (error) {
+  if (error instanceof AuthorizationError && error.redirectTo) return Astro.redirect(error.redirectTo);
+  console.error("OAuth authorization failed", error);
+  status = 400;
+  errorMessage = error instanceof AuthorizationError
+    ? "This connection request is invalid. Return to the app and try again."
+    : "Pairpoll could not start this connection. Try again.";
+}
+
+Astro.response.status = status;
+---
+<Marketing title="Connect an app | Pairpoll" description="Approve access to your Pairpoll account." noindex signedIn>
+  <div class="wrap auth">
+    <div class="auth-panel">
+      {
+        errorMessage ? (
+          <section>
+            <h1>Could not connect</h1>
+            <p class="lead">{errorMessage}</p>
+          </section>
+        ) : (
+          <section>
+            <h1>Connect {clientName}?</h1>
+            <p class="lead">
+              <strong>{clientName}</strong> wants to create and manage polls and read results in your Pairpoll account.
+            </p>
+            <div class="consent-details">
+              {clientDomain && <p>Client domain: <strong>{clientDomain}</strong></p>}
+              <p>Returns to: <strong>{redirectHost}</strong></p>
+              {redirectIsLoopback && <p class="muted small">This returns to an app running on this device.</p>}
+            </div>
+            <form method="post">
+              <input type="hidden" name="handle" value={handle} />
+              <button class="btn btn--primary btn--lg btn--block" type="submit" name="action" value="approve">Approve</button>
+              <button class="btn btn--quiet btn--block" type="submit" name="action" value="cancel">Cancel</button>
+            </form>
+            <p class="auth-foot">Only approve if you started this connection. You can disconnect the app later under API keys.</p>
+          </section>
+        )
+      }
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .consent-details {
+    display: grid;
+    gap: var(--s-2);
+    margin-top: var(--s-5);
+    padding: var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    overflow-wrap: anywhere;
+  }
+</style>

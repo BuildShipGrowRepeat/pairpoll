@@ -9,6 +9,8 @@ const NOW = Date.now();
 
 async function clearData() {
   await env.DB.batch([
+    env.DB.prepare("DELETE FROM oauth_consent_states"),
+    env.DB.prepare("DELETE FROM oauth_grant_states"),
     env.DB.prepare("DELETE FROM reports"),
     env.DB.prepare("DELETE FROM runs"),
     env.DB.prepare("DELETE FROM uploads"),

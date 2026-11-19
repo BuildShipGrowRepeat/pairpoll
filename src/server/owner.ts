@@ -55,11 +55,12 @@ export async function blockAccount(
   auth: CreatorAuth | null,
   ownerEmails: string | undefined,
   account: string,
+  revokeOAuth: (accountId: string) => Promise<void> = async () => {},
 ): Promise<boolean> {
   if (!auth || !ownerAccess(auth, ownerEmails)) return false;
   const now = Date.now();
   const selector = account.trim().toLowerCase();
-  const [blocked] = await db.batch([
+  const [blocked] = await db.batch<{ id: string }>([
     db.prepare(`
       UPDATE accounts SET blocked_at = COALESCE(blocked_at, ?)
       WHERE (id = ? OR email = ?) AND deleting_at IS NULL
@@ -69,6 +70,7 @@ export async function blockAccount(
             AND c.revoked_at IS NULL AND c.expires_at > ?
             AND a.blocked_at IS NULL AND a.deleting_at IS NULL
         )
+      RETURNING id
     `).bind(now, selector, selector, auth.credentialId, auth.accountId, now),
     db.prepare(`
       DELETE FROM credentials WHERE account_id IN (
@@ -80,6 +82,18 @@ export async function blockAccount(
         SELECT id FROM accounts WHERE (id = ? OR email = ?) AND blocked_at IS NOT NULL
       )
     `).bind(selector, selector),
+    db.prepare(`
+      INSERT INTO oauth_account_cleanup (account_id, created_at)
+      SELECT id, ? FROM accounts WHERE (id = ? OR email = ?) AND blocked_at IS NOT NULL
+      ON CONFLICT (account_id) DO NOTHING
+    `).bind(now, selector, selector),
   ]);
-  return blocked.meta.changes === 1;
+  const blockedId = blocked.results[0]?.id;
+  if (!blockedId) return false;
+  try {
+    await revokeOAuth(blockedId);
+  } catch (error) {
+    console.error("OAuth blocked-account revocation will be retried", error);
+  }
+  return true;
 }
