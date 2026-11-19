@@ -273,7 +273,8 @@ async function route(request: Request, path: string) {
       if (!await verifyTurnstile(request, string(input.token), env.TURNSTILE_SECRET_KEY, "join", import.meta.env.DEV)) {
         throw new ServerError(403, "turnstile_failed", "The verification failed. Try again.");
       }
-      return json(await joinPoll(env.DB, id, input.name, existingToken));
+      // Renew the cookie on every join so it outlives the newest poll this browser joined.
+      return json(await joinPoll(env.DB, id, input.name, existingToken), 200, { "Set-Cookie": voterCookie(existingToken) });
     }
     if (parts.length === 3 && action === "me") {
       method(request, "GET");

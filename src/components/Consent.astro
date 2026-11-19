@@ -23,8 +23,10 @@ import Button from "./Button.astro";
 <script>
   const KEY = "pairpoll-analytics";
   const dialog = document.querySelector<HTMLDialogElement>("[data-consent]");
+  let loaded = false;
 
   function loadAnalytics(id: string) {
+    loaded = true;
     const w = window as unknown as { dataLayer: unknown[] };
     w.dataLayer = w.dataLayer || [];
     // gtag.js reads the `arguments` object, not a plain array.
@@ -74,6 +76,8 @@ import Button from "./Button.astro";
           document.cookie = `${name}=; Max-Age=0; path=/`;
           document.cookie = `${name}=; Max-Age=0; path=/; domain=${location.hostname}`;
         }
+        // Google Analytics already runs on this page: reload so it stops.
+        if (loaded) location.reload();
       }
     });
 

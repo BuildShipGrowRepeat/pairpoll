@@ -134,7 +134,7 @@ export async function uploadPoster(
 export async function removeItem(db: D1Database, ownerId: string, pollId: string, itemId: string, now = Date.now()) {
   await draftPollRow(db, ownerId, pollId, now);
   const row = await db.prepare(`
-    UPDATE items AS i SET status = 'deleting' WHERE id = ? AND poll_id = ? AND status <> 'uploading'
+    UPDATE items AS i SET status = 'deleting' WHERE id = ? AND poll_id = ? AND status = 'ready'
       AND EXISTS (SELECT 1 FROM polls p WHERE p.id = i.poll_id AND p.owner_id = ? AND p.status = 'draft' AND ${LIVE_POLL})
     RETURNING id
   `).bind(itemId, pollId, ownerId, now).first<{ id: string }>();
@@ -231,14 +231,17 @@ export async function duplicatePoll(db: D1Database, bucket: R2Bucket, ownerId: s
   }
 }
 
+// One well-formed range: the bytes to send, or null when it lies outside the file (416).
+// Anything else (malformed, several ranges) is ignored: undefined, and the whole file is sent.
 function byteRange(header: string, bytes: number) {
   const match = /^bytes=(\d*)-(\d*)$/i.exec(header.trim());
-  if (!match || (!match[1] && !match[2])) return null;
+  if (!match || (!match[1] && !match[2])) return undefined;
   if (!match[1]) {
     const suffix = Math.min(bytes, Number(match[2]));
     return suffix > 0 ? { offset: bytes - suffix, length: suffix } : null;
   }
   const offset = Number(match[1]);
+  if (match[2] && Number(match[2]) < offset) return undefined;
   const end = match[2] ? Math.min(bytes - 1, Number(match[2])) : bytes - 1;
   return end >= offset ? { offset, length: end - offset + 1 } : null;
 }

@@ -37,7 +37,7 @@ Pairpoll does not find voters. The person shares the link with their own audienc
 
 Pairpoll does not fetch files from URLs. The CLI and REST API upload local file bytes. Over MCP, the person uploads the files in the browser.
 
-The MCP server accepts only an API key in the `Authorization` header. It works in clients where you can set that header, such as Claude Code, Codex and Cursor. Sign-in for the Claude and ChatGPT chat apps is not available yet.
+The MCP server accepts an API key in the `Authorization` header. It works in clients where you can set that header, such as Claude Code, Codex and Cursor. The Claude and ChatGPT apps sign in with OAuth instead: the person adds `https://pairpoll.com/mcp` as a custom connector and approves it.
 
 ## Step 2: get access
 
@@ -114,7 +114,7 @@ Create a draft. `kind` is `image` or `video`. `topSize` is 1, 3 or 5 (default 3)
 curl "$PAIRPOLL_API_URL/api/v1/polls" \
   -H "Authorization: Bearer $PAIRPOLL_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"kind":"image","question":"Which video would you click?","topSize":3}'
+  -d '{"kind":"image","question":"Which thumbnail would you click?","topSize":3}'
 ```
 
 Save the `id` from the response as `POLL_ID`. Upload each file as raw bytes, one request per file, not multipart:

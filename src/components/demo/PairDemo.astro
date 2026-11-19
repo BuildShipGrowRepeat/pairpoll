@@ -36,7 +36,7 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
   </div>
 
   <div class="pair-demo-result" data-result hidden>
-    <h3 tabindex="-1" data-result-title>Your top 3</h3>
+    <h2 tabindex="-1" data-result-title>Your top 3</h2>
     <ol class="rank" data-rank></ol>
     <div class="actions">
       <a class="btn btn--primary" href="/app/new">Create your own poll</a>
@@ -90,11 +90,15 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
     margin-inline: auto;
   }
 
-  .pair-demo-result h3 {
+  /* An h2 for the outline, sized like the h3 it used to be. */
+  .pair-demo-result h2 {
     margin-bottom: var(--s-2);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    letter-spacing: -0.01em;
   }
 
-  .pair-demo-result h3:focus {
+  .pair-demo-result h2:focus {
     outline: none;
   }
 

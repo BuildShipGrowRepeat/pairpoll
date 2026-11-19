@@ -13,7 +13,7 @@ How an agent sets up a poll (full recipe: https://pairpoll.com/docs/agents.md):
 3. Share: give the person the voter link `https://pairpoll.com/p/<code>`.
 4. Results: CLI `pairpoll --json results <poll-id>`; REST `GET /api/v1/polls/:id/results`; MCP `get_results`.
 
-The MCP server takes an API key as `Authorization: Bearer <key>` and works in Claude Code, Codex and Cursor. Sign-in for the Claude and ChatGPT chat apps is not available yet.
+The MCP server takes an API key as `Authorization: Bearer <key>` and works in Claude Code, Codex and Cursor. The Claude and ChatGPT apps sign in with OAuth: add https://pairpoll.com/mcp as a custom connector.
 
 ## Documentation
 

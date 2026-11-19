@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { beforeEach, expect, test } from "vitest";
 import { runCleanup } from "../../src/server/cleanup";
-import { duplicatePoll, uploadItem, uploadPoster } from "../../src/server/media";
+import { duplicatePoll, removeItem, uploadItem, uploadPoster } from "../../src/server/media";
 import { DAILY_UPLOAD_LIMIT, utcDay } from "../../src/server/polls";
 import { NOW, PNG, account, clearData, expectCode, poll, readyItem } from "./support";
 
@@ -126,4 +126,32 @@ test("cleanup keeps object references when R2 deletion fails and removes everyth
   expect(await env.DB.prepare("SELECT id FROM polls WHERE id = ?").bind(created.id).first()).toBeNull();
   expect(await env.MEDIA.head(item.key)).toBeNull();
   expect(await env.MEDIA.head(item.posterKey!)).toBeNull();
+});
+
+test("one cleanup run drains more than one batch of deleted items", async () => {
+  const owner = await account("cleanup-batches@example.com");
+  const created = await poll(owner);
+  const keys = Array.from({ length: 250 }, () => crypto.randomUUID());
+  await env.DB.batch(keys.map((key, position) => env.DB.prepare(`
+    INSERT INTO items (id, poll_id, position, object_key, status, created_at) VALUES (?, ?, ?, ?, 'deleting', ?)
+  `).bind(crypto.randomUUID(), created.id, position, key, NOW)));
+  await env.MEDIA.put(keys[249], PNG);
+
+  await runCleanup(env.DB, env.MEDIA, NOW);
+  expect(await env.DB.prepare("SELECT COUNT(*) AS count FROM items").first<number>("count")).toBe(0);
+  expect(await env.MEDIA.head(keys[249])).toBeNull();
+});
+
+test("removing a draft item twice reports the item as not found", async () => {
+  const owner = await account("remove-twice@example.com");
+  const created = await poll(owner);
+  const item = await readyItem(created.id, 0);
+  await removeItem(env.DB, owner, created.id, item.id, NOW);
+  await expectCode(removeItem(env.DB, owner, created.id, item.id, NOW), "item_not_found");
+});
+
+test("text limits count characters, so emoji count once", async () => {
+  const owner = await account("emoji@example.com");
+  expect((await poll(owner, { question: "😀".repeat(200) })).question).toBe("😀".repeat(200));
+  await expectCode(poll(owner, { question: "😀".repeat(201) }), "invalid_text");
 });

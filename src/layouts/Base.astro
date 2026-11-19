@@ -27,7 +27,7 @@ const {
 } = Astro.props;
 
 const site = Astro.site ?? new URL("https://pairpoll.com");
-const path = Astro.url.pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/").replace(/(.)\/$/, "$1");
 const canonical = new URL(path, site).href;
 const image = new URL(ogImage, site).href;
 // Escape "<" so content can never close the script tag.

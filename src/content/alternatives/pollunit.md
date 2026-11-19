@@ -25,7 +25,7 @@ comparison:
     pairpoll: "Voting in pairs only"
     source: "https://pollunit.com/llms.txt"
   - topic: "Developer and agent access"
-    them: "Public REST API"
+    them: "Public REST API, and an MCP connection for AI assistants"
     pairpoll: "REST API, a command line tool and an MCP server for AI agents"
     source: "https://pollunit.com/llms.txt"
 ---
@@ -40,7 +40,7 @@ comparison:
 
 - You want to compare videos head to head. Pairpoll can play each video once per pair, with no replay, pause or seeking, before the voter picks.
 - You want each voter's own top list as well as the combined ranking.
-- You want an AI agent to create the poll and read the results through the MCP server or the command line tool.
+- You want an AI agent to create the poll and read the results from a command line tool, as well as through an MCP server.
 - You want it free, without a plan to choose.
 
 ## How the ranking differs

@@ -51,6 +51,11 @@ try {
     }
   } else if (Astro.request.method === "POST") {
     if (!sameOrigin(Astro.request)) return new Response("Invalid origin", { status: 403 });
+    // The consent form is tiny: refuse a missing or large body before parsing it.
+    const length = Astro.request.headers.get("Content-Length");
+    if (!length || !/^\d+$/.test(length) || Number(length) > 4096) {
+      return new Response("Request too large", { status: 413 });
+    }
     const auth = await authenticateSession(env.DB, Astro.request);
     if (!auth) return new Response("Your session ended. Start the connection again.", { status: 401 });
     const form = await Astro.request.formData();

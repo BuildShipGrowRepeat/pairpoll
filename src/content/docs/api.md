@@ -144,15 +144,4 @@ Voter endpoints use the opaque HttpOnly voter cookie. Keep the same cookie acros
 
 Accounts can create 10 polls per UTC day, keep 20 unexpired polls and upload 1 GB per UTC day. Polls expire 30 days after creation. Closing is final. Deletion denies access at once and queues file cleanup.
 
-## Owner and local routes
-
-Owner routes need a browser session whose email is in `OWNER_EMAILS`.
-
-| Method | Path | Purpose |
-| --- | --- | --- |
-| `GET` | `/owner?offset=0` | Return counts, reports and accounts. |
-| `POST` | `/owner/polls/:id/takedown` | Take down a poll. |
-| `POST` | `/owner/accounts/:id/block` | Block an account and revoke its credentials. |
-| `GET` | `/dev/mail` | Read local unexpired sign-in links on localhost only. |
-
-See the repository's `docs/API.md` for every validation and error code.
+See the repository's [docs/API.md](https://github.com/BuildShipGrowRepeat/pairpoll/blob/main/docs/API.md) for every validation and error code.

@@ -190,11 +190,17 @@ test("media supports HEAD and one byte range and denies expired polls", async ()
   expect(head.status).toBe(200);
   expect(head.headers.get("Content-Length")).toBe("8");
   expect(head.headers.get("X-Content-Type-Options")).toBe("nosniff");
-  const invalid = await serveMedia(env.DB, env.MEDIA, new Request("https://pairpoll.test/media", {
+  const several = await serveMedia(env.DB, env.MEDIA, new Request("https://pairpoll.test/media", {
     headers: { Range: "bytes=0-1,3-4" },
   }), item.key, null, NOW);
-  expect(invalid.status).toBe(416);
-  expect(invalid.headers.get("Content-Range")).toBe("bytes */8");
+  expect(several.status).toBe(200);
+  expect(several.headers.get("Content-Length")).toBe("8");
+  expect([...new Uint8Array(await several.arrayBuffer())]).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+  const outside = await serveMedia(env.DB, env.MEDIA, new Request("https://pairpoll.test/media", {
+    headers: { Range: "bytes=8-" },
+  }), item.key, null, NOW);
+  expect(outside.status).toBe(416);
+  expect(outside.headers.get("Content-Range")).toBe("bytes */8");
   const expired = await serveMedia(env.DB, env.MEDIA, new Request("https://pairpoll.test/media"),
     item.key, null, NOW + 31 * 24 * 60 * 60 * 1000);
   expect(expired.status).toBe(404);

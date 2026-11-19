@@ -20,7 +20,7 @@ export PAIRPOLL_API_URL=https://pairpoll.com
 pairpoll login
 ```
 
-The CLI has no default server, so set the API URL first. For a local server, use `http://localhost:4321`. The command prints a short code and browser URL, waits for approval, then stores the API key in a private config file. On macOS and Linux the default is `~/.config/pairpoll/config.json`. On Windows it is in the Pairpoll folder under `%APPDATA%`.
+The CLI uses `https://pairpoll.com` unless you set another API URL. For a local server, use `http://localhost:4321`. The command prints a short code and browser URL, waits for approval, then stores the API key in a private config file. On macOS and Linux the default is `~/.config/pairpoll/config.json`. On Windows it is in the Pairpoll folder under `%APPDATA%`.
 
 ```sh
 pairpoll whoami

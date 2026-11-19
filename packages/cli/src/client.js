@@ -1,5 +1,7 @@
 /* global fetch, Headers */
 
+import { UsageError } from "./args.js";
+
 export class ApiError extends Error {
   constructor(status, code, message, details) {
     super(message);
@@ -15,11 +17,11 @@ export function normalizeApiUrl(value) {
   try {
     url = new URL(value);
   } catch {
-    throw new Error(`Invalid API URL: ${value}`);
+    throw new UsageError(`Invalid API URL: ${value}`);
   }
-  if (!['http:', 'https:'].includes(url.protocol)) throw new Error("The API URL must use HTTP or HTTPS.");
+  if (!['http:', 'https:'].includes(url.protocol)) throw new UsageError("The API URL must use HTTP or HTTPS.");
   if (url.protocol === "http:" && !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
-    throw new Error("Use HTTPS, except for a local Pairpoll server.");
+    throw new UsageError("Use HTTPS, except for a local Pairpoll server.");
   }
   return url.href.replace(/\/$/, "");
 }

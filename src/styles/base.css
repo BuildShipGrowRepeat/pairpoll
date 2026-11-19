@@ -243,6 +243,7 @@ pre {
   padding: 0.1em 0.35em;
   background: var(--sheet);
   border-radius: 4px;
+  overflow-wrap: anywhere;
 }
 
 .prose pre {

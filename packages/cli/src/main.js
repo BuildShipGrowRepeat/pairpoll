@@ -54,7 +54,7 @@ async function collectFiles(inputs) {
     if (info.isFile()) files.push(path);
     else if (info.isDirectory()) {
       const entries = await readdir(path, { withFileTypes: true });
-      files.push(...entries.filter((entry) => entry.isFile()).map((entry) => join(path, entry.name)).sort());
+      files.push(...entries.filter((entry) => entry.isFile() && !entry.name.startsWith(".")).map((entry) => join(path, entry.name)).sort());
     } else throw new UsageError(`Not a regular file or folder: ${input}`);
   }
   const unique = [...new Set(files)];

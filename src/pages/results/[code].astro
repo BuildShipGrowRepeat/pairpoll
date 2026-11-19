@@ -18,6 +18,8 @@ try {
 }
 if (!results) Astro.response.status = 404;
 
+// A voter's top list is never longer than the poll, so neither are the points.
+const topSize = Math.min(results?.topSize ?? 1, results?.items.length ?? 1);
 const plural = (count: number, one: string) => `${count} ${count === 1 ? one : `${one}s`}`;
 const items = new Map(results?.items.map((item) => [item.id, item]));
 const media = (id: string) => {
@@ -68,7 +70,7 @@ const media = (id: string) => {
           )}
           {results.finished > 0 && (
             <p class="shared-note">
-              Each voter's top {results.topSize === 1 ? "pick scores 1 point" : `${results.topSize} score points: first place ${results.topSize}, then one less for each place`}.
+              Each voter's top {topSize === 1 ? "pick scores 1 point" : `${topSize} score points: first place ${topSize}, then one less for each place`}.
             </p>
           )}
         </section>

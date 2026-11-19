@@ -64,7 +64,8 @@ beforeAll(async () => {
   apiUrl = `http://127.0.0.1:${server.address().port}`;
   directory = await mkdtemp(join(tmpdir(), "pairpoll-cli-test-"));
   const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1]);
-  await Promise.all([writeFile(join(directory, "one.png"), png), writeFile(join(directory, "two.png"), png)]);
+  await Promise.all([writeFile(join(directory, "one.png"), png), writeFile(join(directory, "two.png"), png),
+    writeFile(join(directory, ".DS_Store"), "")]);
 });
 
 afterAll(async () => {
@@ -109,4 +110,13 @@ test("create stops before making a poll when a file is over the size limit", asy
   } finally {
     await rm(large, { recursive: true, force: true });
   }
+});
+
+test("an API URL the CLI refuses is a usage error", async () => {
+  const cli = new URL("../bin/pairpoll.js", import.meta.url);
+  const failed = await execute(process.execPath, [
+    cli.pathname, "whoami", "--api-url", "http://pairpoll.example", "--json",
+  ], { env: { ...process.env, PAIRPOLL_API_KEY: `ppk_${"1".repeat(64)}` } }).catch((error) => error);
+  expect(failed.code).toBe(2);
+  expect(JSON.parse(failed.stderr).error.code).toBe("usage_error");
 });

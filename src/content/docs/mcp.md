@@ -12,7 +12,7 @@ Pairpoll serves a stateless Streamable HTTP MCP server at:
 https://pairpoll.com/mcp
 ```
 
-Once this OAuth release is deployed, Claude and ChatGPT apps sign in with OAuth. Developer tools can keep using a Pairpoll API key as a bearer token.
+Claude and ChatGPT apps sign in with OAuth. Developer tools can keep using a Pairpoll API key as a bearer token.
 
 ## Claude and ChatGPT apps
 
@@ -25,7 +25,7 @@ Chat apps cannot pass attached images or videos to connectors. When a tool retur
 ## Claude Code
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 export PAIRPOLL_API_KEY=ppk_your_key
 claude mcp add --transport http pairpoll "$PAIRPOLL_API_URL/mcp" \
   --header "Authorization: Bearer $PAIRPOLL_API_KEY"
@@ -36,7 +36,7 @@ Run `claude mcp get pairpoll` to check it.
 ## Codex
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 export PAIRPOLL_API_KEY=ppk_your_key
 codex mcp add pairpoll \
   --url "$PAIRPOLL_API_URL/mcp" \

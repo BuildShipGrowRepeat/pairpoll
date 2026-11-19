@@ -545,8 +545,30 @@ export function mountEditor(root: HTMLElement) {
     }
   });
 
-  preview.addEventListener("click", (event) => {
-    if (preview.getAttribute("aria-disabled") === "true") event.preventDefault();
+  preview.addEventListener("click", async (event) => {
+    if (preview.getAttribute("aria-disabled") === "true") return event.preventDefault();
+    // A modified click keeps the browser's own behaviour, such as a new tab.
+    if (!poll || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const href = preview.href;
+    // Preview what the page shows: save a pending or failed setting first, in the autosave queue.
+    window.clearTimeout(questionTimer);
+    const shown = { question: questionValue(), topSize: topValue(), playsOnce: kind === "video" && playsOnce.checked, voterCap: capValue() };
+    const flush = saving.then(async () => {
+      const changes = Object.fromEntries(Object.entries(shown).filter(([key, value]) =>
+        value !== "" && value !== null && poll![key as keyof typeof shown] !== value));
+      if (!Object.keys(changes).length) return true;
+      try {
+        poll = await api<Poll>(`/polls/${poll!.id}`, "PATCH", changes);
+        setSave("Saved");
+        return true;
+      } catch (problem) {
+        showError((problem as Error).message);
+        return false;
+      }
+    });
+    saving = flush;
+    if (await flush) location.href = href;
   });
 
   $("[data-delete]").addEventListener("click", async () => {

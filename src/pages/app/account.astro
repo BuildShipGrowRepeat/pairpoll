@@ -107,7 +107,7 @@ const owner = ownerAccess(auth, env.OWNER_EMAILS);
   remove.addEventListener("click", async () => {
     const ok = await confirmDialog({
       title: "Delete your account?",
-      body: "Your account, every poll, all files and all votes are deleted. Voting links and API keys stop working right away. This can't be undone.",
+      body: "Your account, every poll, all files and all votes are deleted. Voting links and API keys stop working right away. This can't be undone. You can sign up again with this email later, usually after a day.",
       confirm: "Delete account",
       danger: true,
       typed: "delete",

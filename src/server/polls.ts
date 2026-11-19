@@ -73,7 +73,7 @@ export function plainText(value: unknown, limit: number, field: string): string 
     throw new ServerError(400, "invalid_text", `Enter ${field}.`);
   }
   const clean = value.replace(/\s+/g, " ").trim();
-  if (!clean || clean.length > limit || /\p{Cc}/u.test(clean)) {
+  if (!clean || [...clean].length > limit || /\p{Cc}/u.test(clean)) {
     throw new ServerError(400, "invalid_text", `Enter ${field} using 1 to ${limit} characters.`);
   }
   return clean;

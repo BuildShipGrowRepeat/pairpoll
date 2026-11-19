@@ -3,6 +3,7 @@ import { POLL_LIFETIME, utcDay } from "./polls.js";
 import { ABANDONED_UPLOAD_AGE, discardUploads } from "./upload-reservations.js";
 
 const MEDIA_BATCH = 100;
+const MEDIA_ROUNDS = 5;
 const ROW_BATCH = 1000;
 
 export async function runCleanup(db: D1Database, bucket: R2Bucket, now = Date.now()) {
@@ -18,17 +19,20 @@ export async function runCleanup(db: D1Database, bucket: R2Bucket, now = Date.no
   `).bind(now - ABANDONED_UPLOAD_AGE, MEDIA_BATCH).all<{ object_key: string }>();
   await discardUploads(db, bucket, uploads.map((row) => row.object_key), now);
 
-  const { results: items } = await db.prepare(`
-    SELECT i.id, i.object_key, i.poster_key FROM items i JOIN polls p ON p.id = i.poll_id
-    WHERE (i.status = 'deleting' OR p.deleting_at IS NOT NULL)
-      AND NOT EXISTS (SELECT 1 FROM uploads WHERE item_id = i.id)
-    ORDER BY i.created_at, i.id LIMIT ?
-  `).bind(MEDIA_BATCH).all<{ id: string; object_key: string; poster_key: string | null }>();
-  if (items.length) {
+  // A few batches per daily run, kept well under the per-invocation query limit.
+  for (let round = 0; round < MEDIA_ROUNDS; round++) {
+    const { results: items } = await db.prepare(`
+      SELECT i.id, i.object_key, i.poster_key FROM items i JOIN polls p ON p.id = i.poll_id
+      WHERE (i.status = 'deleting' OR p.deleting_at IS NOT NULL)
+        AND NOT EXISTS (SELECT 1 FROM uploads WHERE item_id = i.id)
+      ORDER BY i.created_at, i.id LIMIT ?
+    `).bind(MEDIA_BATCH).all<{ id: string; object_key: string; poster_key: string | null }>();
+    if (!items.length) break;
     const keys = items.flatMap((item) => item.poster_key ? [item.object_key, item.poster_key] : [item.object_key]);
     await bucket.delete(keys);
     await db.prepare("DELETE FROM items WHERE id IN (SELECT value FROM json_each(?))")
       .bind(JSON.stringify(items.map((item) => item.id))).run();
+    if (items.length < MEDIA_BATCH) break;
   }
 
   // Delete child rows in bounded batches. Keep each poll until every stored file and child row is gone.

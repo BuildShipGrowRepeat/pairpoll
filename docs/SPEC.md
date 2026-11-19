@@ -114,9 +114,9 @@ Out of scope still: payments, teams, voter comments, custom branding, other voti
 | Path | What |
 | --- | --- |
 | `/` | Home |
-| `/for/<use>` | 8 use pages: thumbnails, ad creatives, logos, designs, photos, product images, video cuts, app screenshots |
+| `/for/<use>` | 9 use pages: thumbnails, ad creatives, logos, designs, photos, product images, video cuts, app screenshots, pairwise ranking |
 | `/alternatives/<tool>` | 4 pages: PickFu, PollUnit, Lyssna, OpinionX |
-| `/guides/<slug>` | 3 guides: how voting in pairs works; how many voters you need; how to test ads before spending |
+| `/guides/<slug>` | 4 guides: how voting in pairs works; how many voters you need; how to test ads before spending; preference testing vs A/B testing |
 | `/docs`, `/docs/api`, `/docs/cli`, `/docs/mcp`, `/docs/agents` | Agent and developer docs, each also served as plain Markdown at the same path plus `.md` |
 | `/llms.txt` | Index for AI agents |
 | `/about`, `/terms`, `/privacy` | About; terms and privacy are drafts for Vladimir to review |
