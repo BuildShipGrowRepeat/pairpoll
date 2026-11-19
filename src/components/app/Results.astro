@@ -1,0 +1,77 @@
+---
+import type { Results } from "./client";
+
+// Results and management for an open or closed poll. results.ts renders the content from the
+// embedded results and keeps it current while the poll is open.
+interface Props {
+  results: Results;
+}
+const json = JSON.stringify(Astro.props.results).replace(/</g, "\\u003c");
+---
+<div data-results>
+  <script type="application/json" data-initial set:html={json} />
+  <a class="back-link" href="/app">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 15-5-5 5-5"></path></svg>
+    Your polls
+  </a>
+  <div class="page-head">
+    <div>
+      <h1 data-question></h1>
+      <p class="page-head-meta" data-meta></p>
+    </div>
+  </div>
+  <div class="notice notice--danger results-error" role="alert" data-error hidden></div>
+
+  <div class="results">
+    <div class="stack results-main">
+      <section aria-labelledby="ranking-title">
+        <div class="section-title-row">
+          <h2 class="section-title" id="ranking-title">Overall ranking</h2>
+          <p data-ranking-note></p>
+        </div>
+        <div data-ranking></div>
+      </section>
+      <section aria-labelledby="voters-title">
+        <div class="section-title-row">
+          <h2 class="section-title" id="voters-title">Voters</h2>
+          <p data-voters-note></p>
+        </div>
+        <div data-voters></div>
+      </section>
+    </div>
+
+    <aside class="results-side" aria-label="Sharing and actions">
+      <div class="card card--sheet side-block" data-link-block></div>
+      <div class="card side-block" data-share-block></div>
+      <div class="card side-block">
+        <h2>Export</h2>
+        <p>Every voter with their top list, and the overall ranking.</p>
+        <div class="actions" data-export></div>
+      </div>
+      <div class="actions side-actions">
+        <button class="btn btn--secondary" type="button" data-close hidden>Close poll</button>
+        <button class="btn btn--quiet delete-poll" type="button" data-delete>Delete poll</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<style>
+  .results-error {
+    margin-bottom: var(--s-5);
+  }
+
+  .side-actions {
+    margin-top: var(--s-2);
+  }
+
+  .delete-poll {
+    color: var(--danger);
+  }
+</style>
+
+<script>
+  import { mountResults } from "./results";
+
+  mountResults(document.querySelector<HTMLElement>("[data-results]")!);
+</script>

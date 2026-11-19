@@ -1,0 +1,129 @@
+---
+import { env } from "cloudflare:workers";
+import Marketing from "../layouts/Marketing.astro";
+import Notice from "../components/Notice.astro";
+import { authenticateSession } from "../server/auth";
+import "../styles/app.css";
+
+export const prerender = false;
+
+// Signed-in people go straight on to where they were heading.
+const requested = Astro.url.searchParams.get("next") ?? "";
+const next = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/app";
+if (await authenticateSession(env.DB, Astro.request)) return Astro.redirect(next);
+
+const reason = Astro.url.searchParams.get("reason");
+const notices: Record<string, string> = {
+  "signed-out": "You're signed out.",
+  everywhere: "You're signed out on every device.",
+  deleted: "Your account and polls are deleted.",
+  expired: "Your session ended. Sign in again to continue.",
+};
+---
+<Marketing title="Sign in | Pairpoll" description="Sign in to Pairpoll with a link sent to your email." noindex>
+  <div class="wrap auth">
+    <div class="auth-panel" data-signin data-sitekey={env.TURNSTILE_SITE_KEY} data-next={next}>
+      {reason && notices[reason] && <Notice tone="ok">{notices[reason]}</Notice>}
+
+      <section data-step="form">
+        <h1>Sign in</h1>
+        <p class="lead">We'll email you a link. No password. The first link also creates your account.</p>
+        <form novalidate>
+          <div class="field">
+            <label class="field-label" for="email">Email</label>
+            <input class="input" id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-error" />
+            <p class="field-error" id="email-error" aria-live="polite"></p>
+          </div>
+          <div class="turnstile" data-turnstile></div>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Email me a link</button>
+        </form>
+        <p class="auth-foot">Voters never need an account. Only people who create polls sign in.</p>
+      </section>
+
+      <section data-step="sent" hidden>
+        <h1 tabindex="-1">Check your email</h1>
+        <p class="lead">
+          We sent a sign-in link to <strong data-email></strong>. It works once and expires in 15 minutes.
+        </p>
+        <div class="auth-body">
+          <p class="muted small">No email after a few minutes? Check spam, or try again.</p>
+          <div class="actions">
+            <button class="btn btn--secondary" type="button" data-again>Use a different email</button>
+          </div>
+        </div>
+        <div class="dev-hint" data-dev-hint hidden></div>
+      </section>
+    </div>
+  </div>
+</Marketing>
+
+<script>
+  import { api, h } from "../components/app/client";
+  import { createCheck } from "../components/app/turnstile";
+
+  const root = document.querySelector<HTMLElement>("[data-signin]")!;
+  const form = root.querySelector("form")!;
+  const email = form.querySelector<HTMLInputElement>("#email")!;
+  const error = form.querySelector<HTMLElement>("#email-error")!;
+  const submit = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+  const steps = root.querySelectorAll<HTMLElement>("[data-step]");
+  const check = createCheck(root.querySelector("[data-turnstile]")!, root.dataset.sitekey!, "signin");
+  // The link may be opened in this browser later; remember where to go afterwards.
+  localStorage.setItem("pairpoll-next", root.dataset.next!);
+
+  const show = (step: string) => steps.forEach((section) => (section.hidden = section.dataset.step !== step));
+  const fail = (message: string) => {
+    error.textContent = message;
+    email.setAttribute("aria-invalid", "true");
+    email.focus();
+  };
+
+  email.addEventListener("input", () => {
+    error.textContent = "";
+    email.removeAttribute("aria-invalid");
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const address = email.value.trim();
+    if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(address)) {
+      fail("Enter an email address like name@example.com.");
+      return;
+    }
+    submit.disabled = true;
+    submit.textContent = "Sending…";
+    try {
+      const token = await check.token();
+      await api("/auth/link", "POST", { email: address, token });
+      root.querySelector("[data-email]")!.textContent = address;
+      show("sent");
+      root.querySelector<HTMLElement>("[data-step=sent] h1")!.focus();
+      if (import.meta.env.DEV) void showDevLink(address);
+    } catch (problem) {
+      fail((problem as Error).message);
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Email me a link";
+    }
+  });
+
+  root.querySelector("[data-again]")!.addEventListener("click", () => {
+    show("form");
+    email.select();
+  });
+
+  // Local development only: no email provider, so show the link from the dev mailbox.
+  // `import.meta.env.DEV` is false in production builds, so this code is removed there.
+  async function showDevLink(address: string) {
+    const hint = root.querySelector<HTMLElement>("[data-dev-hint]")!;
+    const mail = await api<{ email: string; link: string }[]>("/dev/mail").catch(() => []);
+    const entry = mail.find((message) => message.email === address.toLowerCase());
+    hint.replaceChildren(
+      h("p", null, h("strong", null, "Local development"), ": no email is sent."),
+      entry
+        ? h("p", null, h("a", { href: entry.link, "data-dev-link": "" }, "Open the sign-in link"))
+        : h("p", null, "No link was issued. The check or the per-email limit may have stopped it."),
+    );
+    hint.hidden = false;
+  }
+</script>

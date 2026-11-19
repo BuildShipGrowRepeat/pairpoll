@@ -1,0 +1,100 @@
+---
+import { env } from "cloudflare:workers";
+import Marketing from "../../layouts/Marketing.astro";
+import { authenticateSession } from "../../server/auth";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+// The CLI opens this page with ?code=. Approving gives the CLI its own API key.
+const code = (Astro.url.searchParams.get("code") ?? "").toUpperCase().replace(/[^0-9A-Z]/g, "").slice(0, 8);
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect(`/signin?next=${encodeURIComponent(`/signin/device${code ? `?code=${code}` : ""}`)}`);
+---
+<Marketing title="Approve the CLI | Pairpoll" description="Let the Pairpoll CLI use your account." noindex>
+  <div class="wrap auth">
+    <div class="auth-panel" data-device>
+      <section data-step="form">
+        <h1>Approve the CLI</h1>
+        <p class="lead">
+          Check that this code matches the one in your terminal. Approving lets the CLI create polls and read results as{" "}
+          <strong>{auth.email}</strong>.
+        </p>
+        <form novalidate>
+          <div class="field">
+            <label class="field-label" for="code">Code from the terminal</label>
+            <input
+              class="input device-code"
+              id="code"
+              name="code"
+              value={code}
+              autocomplete="one-time-code"
+              autocapitalize="characters"
+              spellcheck="false"
+              maxlength="9"
+              required
+              aria-describedby="code-error"
+            />
+            <p class="field-error" id="code-error" aria-live="polite"></p>
+          </div>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Approve</button>
+        </form>
+        <p class="auth-foot">Didn't start this yourself? Close this page. Nothing happens unless you approve.</p>
+      </section>
+
+      <section data-step="done" hidden>
+        <h1 tabindex="-1">The CLI is signed in</h1>
+        <p class="lead">Go back to your terminal. You can close this page.</p>
+        <p class="auth-foot">The CLI got its own key, listed as "Pairpoll CLI" under <a href="/app/keys">API keys</a>. Revoke it there at any time.</p>
+      </section>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .device-code {
+    font-family: var(--font-code);
+    font-size: var(--text-xl);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+</style>
+
+<script>
+  import { api, ApiError } from "../../components/app/client";
+
+  const root = document.querySelector<HTMLElement>("[data-device]")!;
+  const form = root.querySelector("form")!;
+  const input = form.querySelector<HTMLInputElement>("#code")!;
+  const error = form.querySelector<HTMLElement>("#code-error")!;
+  const button = form.querySelector<HTMLButtonElement>("button")!;
+
+  const fail = (message: string) => {
+    error.textContent = message;
+    input.setAttribute("aria-invalid", "true");
+    input.focus();
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const code = input.value.toUpperCase().replace(/[\s-]/g, "");
+    if (code.length !== 8) return fail("Enter the 8-character code shown in your terminal.");
+    error.textContent = "";
+    input.removeAttribute("aria-invalid");
+    button.disabled = true;
+    try {
+      await api("/device/approve", "POST", { code });
+      root.querySelector<HTMLElement>("[data-step=form]")!.hidden = true;
+      const done = root.querySelector<HTMLElement>("[data-step=done]")!;
+      done.hidden = false;
+      done.querySelector("h1")!.focus();
+    } catch (problem) {
+      fail(
+        problem instanceof ApiError && problem.code === "invalid_device_code"
+          ? "That code didn't work. It may be mistyped or older than 10 minutes. Start sign-in again in the terminal."
+          : (problem as Error).message,
+      );
+      button.disabled = false;
+    }
+  });
+</script>

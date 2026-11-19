@@ -1,12 +1,127 @@
 ---
 import { env } from "cloudflare:workers";
-import Base from "../../layouts/Base.astro";
+import App from "../../layouts/App.astro";
+import EmptyState from "../../components/EmptyState.astro";
+import PollStatus from "../../components/app/PollStatus.astro";
+import SheetStrip from "../../components/app/SheetStrip.astro";
+import { authenticateSession } from "../../server/auth";
+import { getPoll, listPolls } from "../../server/polls";
+import "../../styles/app.css";
 
 export const prerender = false;
 
-const row = await env.DB.prepare("SELECT value FROM app_meta WHERE key = 'schema'").first<{ value: string }>();
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect("/signin?next=/app");
+
+const summaries = await listPolls(env.DB, auth.accountId);
+const polls = await Promise.all(summaries.map((poll) => getPoll(env.DB, auth.accountId, poll.id)));
+const now = Date.now();
+const daysLeft = (ms: number) => Math.max(1, Math.ceil((ms - now) / 86_400_000));
+const count = (poll: (typeof polls)[number]) => {
+  if (poll.status !== "draft") return `${poll.admittedCount} of ${poll.voterCap} voters`;
+  const noun = poll.kind === "image" ? "image" : "video";
+  return `${poll.items.length} ${poll.items.length === 1 ? noun : `${noun}s`}`;
+};
 ---
-<Base title="Your polls - Pairpoll">
-  <h1>Your polls</h1>
-  <p>Server-rendered placeholder. Database schema: <span id="schema">{row?.value ?? "missing"}</span></p>
-</Base>
+<App title="Your polls">
+  <div class="page-head">
+    <h1>Your polls</h1>
+    {polls.length > 0 && <a class="btn btn--primary" href="/app/new">Create a poll</a>}
+  </div>
+
+  <div class="notice notice--danger list-error" role="alert" data-list-error hidden></div>
+
+  {
+    polls.length === 0 ? (
+      <EmptyState title="No polls yet">
+        Upload 2 to 16 images or videos, ask a question and share one link.
+        <a slot="actions" class="btn btn--primary" href="/app/new">Create a poll</a>
+      </EmptyState>
+    ) : (
+      <ul class="poll-list">
+        {polls.map((poll) => (
+          <li class="poll-row" data-poll={poll.id}>
+            <SheetStrip kind={poll.kind} items={poll.items} />
+            <div>
+              <h2 class="poll-row-title">
+                <a href={`/app/polls/${poll.id}`}>{poll.question}</a>
+              </h2>
+              <p class="poll-row-meta">
+                <PollStatus status={poll.status} full={poll.admittedCount >= poll.voterCap} />
+                <span>{count(poll)}</span>
+                <span class:list={[daysLeft(poll.expiresAt) <= 3 && "expiring"]}>
+                  Deleted in {daysLeft(poll.expiresAt)} {daysLeft(poll.expiresAt) === 1 ? "day" : "days"}
+                </span>
+              </p>
+            </div>
+            <div class="poll-row-actions">
+              <button class="btn btn--quiet btn--sm" type="button" data-duplicate>
+                Duplicate
+              </button>
+              <button class="btn btn--quiet btn--sm" type="button" data-delete>
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</App>
+
+<style>
+  .expiring {
+    color: var(--warn);
+    font-weight: var(--weight-ui);
+  }
+
+  .list-error {
+    margin-bottom: var(--s-5);
+  }
+</style>
+
+<script>
+  import { api, confirmDialog, type Poll } from "../../components/app/client";
+
+  const error = document.querySelector<HTMLElement>("[data-list-error]")!;
+  const fail = (message: string) => {
+    error.textContent = message;
+    error.hidden = false;
+  };
+
+  for (const row of document.querySelectorAll<HTMLElement>("[data-poll]")) {
+    const id = row.dataset.poll!;
+    const question = row.querySelector(".poll-row-title")!.textContent!.trim();
+
+    row.querySelector<HTMLButtonElement>("[data-duplicate]")!.addEventListener("click", async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      button.disabled = true;
+      button.textContent = "Duplicating…";
+      try {
+        const copy = await api<Poll>(`/polls/${id}/duplicate`, "POST");
+        location.href = `/app/polls/${copy.id}`;
+      } catch (problem) {
+        fail((problem as Error).message);
+        button.disabled = false;
+        button.textContent = "Duplicate";
+      }
+    });
+
+    row.querySelector<HTMLButtonElement>("[data-delete]")!.addEventListener("click", async () => {
+      const ok = await confirmDialog({
+        title: "Delete this poll?",
+        body: `"${question}" and all its files and votes will be deleted. The voting link stops working right away.`,
+        confirm: "Delete poll",
+        danger: true,
+      });
+      if (!ok) return;
+      try {
+        await api(`/polls/${id}`, "DELETE");
+        row.remove();
+        if (!document.querySelector("[data-poll]")) location.reload();
+      } catch (problem) {
+        fail((problem as Error).message);
+      }
+    });
+  }
+</script>

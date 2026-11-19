@@ -1,0 +1,148 @@
+---
+import Badge from "../Badge.astro";
+import type { Poll } from "./client";
+
+// Create or edit a draft poll. With no poll, the draft is created when the first file is added.
+// The client script (editor.ts) owns all behaviour; this renders the shell with the saved values.
+interface Props {
+  poll?: Poll;
+}
+const { poll } = Astro.props;
+const kind = poll?.kind ?? "image";
+const json = JSON.stringify(poll ?? null).replace(/</g, "\\u003c");
+---
+<div data-editor>
+  <script type="application/json" data-initial set:html={json} />
+  <a class="back-link" href="/app">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 15-5-5 5-5"></path></svg>
+    Your polls
+  </a>
+
+  <div data-editing>
+    <div class="page-head">
+      <div>
+        <h1 data-title>{poll ? "Edit draft" : "New poll"}</h1>
+        <p class="page-head-meta">
+          <Badge>Draft</Badge>
+          <span class="save-state" data-save-state role="status">{poll ? "Saved" : "Not saved yet"}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="editor">
+      <div class="editor-main">
+        <div class="field">
+          <label class="field-label" for="question">Question</label>
+          <p class="field-hint" id="question-hint">Voters see it above every pair.</p>
+          <input
+            class="input"
+            id="question"
+            maxlength="200"
+            autocomplete="off"
+            placeholder="Which thumbnail would you click?"
+            value={poll?.question ?? ""}
+            aria-describedby="question-hint question-error"
+          />
+          <p class="field-error" id="question-error" aria-live="polite"></p>
+        </div>
+
+        <fieldset class="field fieldset">
+          <legend class="field-label">People compare</legend>
+          <div class="segmented">
+            <input type="radio" name="kind" id="kind-image" value="image" checked={kind === "image"} disabled={Boolean(poll)} />
+            <label for="kind-image">Images</label>
+            <input type="radio" name="kind" id="kind-video" value="video" checked={kind === "video"} disabled={Boolean(poll)} />
+            <label for="kind-video">Videos</label>
+          </div>
+          <p class="field-hint" data-kind-hint hidden={!poll}>Set when the draft was created. For the other kind, create a new poll.</p>
+        </fieldset>
+
+        <section class="items-section" aria-labelledby="items-title">
+          <div class="section-title-row">
+            <h2 class="section-title" id="items-title" data-items-title>{kind === "video" ? "Videos" : "Images"}</h2>
+            <p data-items-count aria-live="polite"></p>
+          </div>
+          <div class="dropzone" data-dropzone>
+            <svg class="dropzone-art" viewBox="0 0 88 40" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="1" y="5" width="38" height="30" rx="4" stroke-dasharray="5 4"></rect>
+              <rect x="49" y="5" width="38" height="30" rx="4" stroke-dasharray="5 4"></rect>
+              <path d="M20 26V14m-5 5 5-5 5 5M68 26V14m-5 5 5-5 5 5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <p><strong data-drop-label>Drop images here</strong></p>
+            <button class="btn btn--secondary" type="button" data-pick>Choose files</button>
+            <p data-drop-hint></p>
+            <input type="file" multiple hidden data-file-input />
+          </div>
+          <ol class="item-list" data-items></ol>
+        </section>
+      </div>
+
+      <aside class="editor-side" aria-label="Settings">
+        <div class="card stack">
+          <fieldset class="field fieldset">
+            <legend class="field-label">Top list size</legend>
+            <p class="field-hint">Each voter ends with this many places.</p>
+            <div class="segmented">
+              {
+                [1, 3, 5].map((size) => (
+                  <>
+                    <input type="radio" name="top" id={`top-${size}`} value={size} checked={(poll?.topSize ?? 3) === size} />
+                    <label for={`top-${size}`}>{size}</label>
+                  </>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <label class="check" data-plays-once-row hidden={kind !== "video"}>
+            <input type="checkbox" id="plays-once" checked={poll ? poll.playsOnce : true} />
+            <span>
+              <span class="check-label">Each video plays once</span>
+              <span class="check-hint">No pausing, skipping or replays. Voting unlocks after both videos in a pair have played.</span>
+            </span>
+          </label>
+
+          <div class="field">
+            <label class="field-label" for="voter-cap">Maximum voters</label>
+            <p class="field-hint" id="voter-cap-hint">1 to 200. Everyone who starts counts.</p>
+            <input
+              class="input input--short"
+              id="voter-cap"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              max="200"
+              value={poll?.voterCap ?? 50}
+              aria-describedby="voter-cap-hint voter-cap-error"
+            />
+            <p class="field-error" id="voter-cap-error" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="stack-sm">
+          <button class="btn btn--primary btn--lg btn--block" type="button" data-open disabled>Open poll</button>
+          <a class="btn btn--secondary btn--block" data-preview aria-disabled="true">Preview as a voter</a>
+          <p class="field-hint" data-open-hint aria-live="polite"></p>
+          <div class="notice notice--danger" role="alert" data-editor-error hidden></div>
+        </div>
+
+        <button class="btn btn--quiet btn--sm delete-draft" type="button" data-delete hidden={!poll}>Delete draft</button>
+      </aside>
+    </div>
+  </div>
+
+  <div data-opened hidden></div>
+</div>
+
+<style>
+  .delete-draft {
+    justify-self: start;
+    color: var(--danger);
+  }
+</style>
+
+<script>
+  import { mountEditor } from "./editor";
+
+  mountEditor(document.querySelector<HTMLElement>("[data-editor]")!);
+</script>

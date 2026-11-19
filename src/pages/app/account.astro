@@ -1,0 +1,117 @@
+---
+import { env } from "cloudflare:workers";
+import App from "../../layouts/App.astro";
+import { authenticateSession } from "../../server/auth";
+import { ownerAccess } from "../../server/owner";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect("/signin?next=/app/account");
+const owner = ownerAccess(auth, env.OWNER_EMAILS);
+---
+<App title="Account">
+  <div class="page-head">
+    <h1>Account</h1>
+  </div>
+
+  <div class="notice notice--danger account-error" role="alert" data-error hidden></div>
+
+  <ul class="settings-list account-list">
+    <li class="settings-row">
+      <div>
+        <h2>Email</h2>
+        <p class="account-email">{auth.email}</p>
+      </div>
+    </li>
+    <li class="settings-row">
+      <div>
+        <h2>Sign out</h2>
+        <p>Sign out of this browser.</p>
+      </div>
+      <button class="btn btn--secondary" type="button" data-signout>Sign out</button>
+    </li>
+    <li class="settings-row">
+      <div>
+        <h2>Sign out everywhere</h2>
+        <p>Sign out of every browser, including this one. Your API keys keep working.</p>
+      </div>
+      <button class="btn btn--secondary" type="button" data-everywhere>Sign out everywhere</button>
+    </li>
+    {
+      owner && (
+        <li class="settings-row">
+          <div>
+            <h2>Service owner</h2>
+            <p>Reports, take-downs and blocked accounts.</p>
+          </div>
+          <a class="btn btn--secondary" href="/app/owner">Open owner page</a>
+        </li>
+      )
+    }
+    <li class="settings-row">
+      <div>
+        <h2>Delete account</h2>
+        <p>Deletes your account, every poll, all files and all votes. Voting links stop working right away.</p>
+      </div>
+      <button class="btn btn--danger" type="button" data-delete>Delete account</button>
+    </li>
+  </ul>
+</App>
+
+<style>
+  .account-error {
+    margin-bottom: var(--s-5);
+    max-width: 40rem;
+  }
+
+  .settings-row .account-email {
+    color: var(--ink);
+    font-size: var(--text-md);
+    overflow-wrap: anywhere;
+  }
+</style>
+
+<script>
+  import { api, confirmDialog } from "../../components/app/client";
+
+  const error = document.querySelector<HTMLElement>("[data-error]")!;
+
+  async function run(button: HTMLButtonElement, path: string, method: string, reason: string) {
+    button.disabled = true;
+    try {
+      await api(path, method);
+      location.replace(`/signin?reason=${reason}`);
+    } catch (problem) {
+      error.textContent = (problem as Error).message;
+      error.hidden = false;
+      button.disabled = false;
+    }
+  }
+
+  const signout = document.querySelector<HTMLButtonElement>("[data-signout]")!;
+  signout.addEventListener("click", () => run(signout, "/auth/logout", "POST", "signed-out"));
+
+  const everywhere = document.querySelector<HTMLButtonElement>("[data-everywhere]")!;
+  everywhere.addEventListener("click", async () => {
+    const ok = await confirmDialog({
+      title: "Sign out everywhere?",
+      body: "Every browser signed in to this account is signed out, including this one. API keys keep working.",
+      confirm: "Sign out everywhere",
+    });
+    if (ok) run(everywhere, "/account/logout-everywhere", "POST", "everywhere");
+  });
+
+  const remove = document.querySelector<HTMLButtonElement>("[data-delete]")!;
+  remove.addEventListener("click", async () => {
+    const ok = await confirmDialog({
+      title: "Delete your account?",
+      body: "Your account, every poll, all files and all votes are deleted. Voting links and API keys stop working right away. This can't be undone.",
+      confirm: "Delete account",
+      danger: true,
+      typed: "delete",
+    });
+    if (ok) run(remove, "/account", "DELETE", "deleted");
+  });
+</script>

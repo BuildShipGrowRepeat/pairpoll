@@ -1,0 +1,68 @@
+---
+import Marketing from "../../layouts/Marketing.astro";
+import "../../styles/app.css";
+
+// The emailed link lands here. Signing in needs a click (a POST), so mail scanners
+// that open links cannot use them up.
+---
+<Marketing title="Finish signing in | Pairpoll" description="Finish signing in to Pairpoll." noindex>
+  <div class="wrap auth">
+    <div class="auth-panel" data-confirm>
+      <section data-step="ready">
+        <h1>Finish signing in</h1>
+        <p class="lead">Sign in to Pairpoll in this browser.</p>
+        <form class="auth-body">
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Sign in</button>
+          <p class="field-error" role="alert" data-error></p>
+        </form>
+      </section>
+
+      <section data-step="invalid" hidden>
+        <h1 tabindex="-1">This link no longer works</h1>
+        <p class="lead">Sign-in links work once and expire after 15 minutes. Ask for a new one.</p>
+        <div class="auth-body">
+          <a class="btn btn--primary btn--lg btn--block" href="/signin">Get a new link</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</Marketing>
+
+<script>
+  import { api, ApiError } from "../../components/app/client";
+
+  const root = document.querySelector<HTMLElement>("[data-confirm]")!;
+  const form = root.querySelector("form")!;
+  const button = form.querySelector("button")!;
+  const error = root.querySelector<HTMLElement>("[data-error]")!;
+  const token = new URLSearchParams(location.search).get("token") ?? "";
+  // Keep the token out of the address bar and browser history.
+  history.replaceState(null, "", location.pathname);
+
+  const invalid = () => {
+    root.querySelector<HTMLElement>("[data-step=ready]")!.hidden = true;
+    const section = root.querySelector<HTMLElement>("[data-step=invalid]")!;
+    section.hidden = false;
+    section.querySelector("h1")!.focus();
+  };
+
+  if (!/^[0-9a-f]{64}$/.test(token)) invalid();
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    button.disabled = true;
+    button.textContent = "Signing in…";
+    error.textContent = "";
+    try {
+      await api("/auth/consume", "POST", { token });
+      const next = localStorage.getItem("pairpoll-next") ?? "/app";
+      localStorage.removeItem("pairpoll-next");
+      location.replace(next.startsWith("/") && !next.startsWith("//") ? next : "/app");
+    } catch (problem) {
+      if (problem instanceof ApiError && problem.code === "invalid_link") return invalid();
+      error.textContent = (problem as Error).message;
+      button.disabled = false;
+      button.textContent = "Sign in";
+    }
+  });
+</script>

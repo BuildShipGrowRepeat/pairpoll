@@ -1,0 +1,42 @@
+---
+import { env } from "cloudflare:workers";
+import App from "../../../layouts/App.astro";
+import EmptyState from "../../../components/EmptyState.astro";
+import Editor from "../../../components/app/Editor.astro";
+import Results from "../../../components/app/Results.astro";
+import { authenticateSession } from "../../../server/auth";
+import { ServerError } from "../../../server/errors";
+import { getPoll } from "../../../server/polls";
+import { getResults } from "../../../server/results";
+import "../../../styles/app.css";
+
+export const prerender = false;
+
+// A draft opens in the editor; an open or closed poll shows its results.
+const id = Astro.params.id ?? "";
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect(`/signin?next=${encodeURIComponent(`/app/polls/${id}`)}`);
+
+let poll: Awaited<ReturnType<typeof getPoll>> | null = null;
+try {
+  poll = await getPoll(env.DB, auth.accountId, id);
+} catch (error) {
+  if (!(error instanceof ServerError) || error.status !== 404) throw error;
+  Astro.response.status = 404;
+}
+const results = poll && poll.status !== "draft" ? await getResults(env.DB, auth.accountId, id) : null;
+---
+<App title={poll ? poll.question : "Poll not found"}>
+  {
+    !poll ? (
+      <EmptyState title="This poll isn't here">
+        It may have been deleted, or it expired 30 days after it was created.
+        <a slot="actions" class="btn btn--primary" href="/app">Your polls</a>
+      </EmptyState>
+    ) : results ? (
+      <Results results={results} />
+    ) : (
+      <Editor poll={poll} />
+    )
+  }
+</App>

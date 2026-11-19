@@ -1,0 +1,42 @@
+---
+import { env } from "cloudflare:workers";
+import Voter from "../../../../layouts/Voter.astro";
+import VoterApp from "../../../../components/voter/VoterApp.astro";
+import { authenticateSession } from "../../../../server/auth";
+import { ServerError } from "../../../../server/errors";
+import { getPoll, publicItemView } from "../../../../server/polls";
+
+export const prerender = false;
+
+// The creator tries the voter flow on their draft. The knockout runs in the browser; nothing is stored.
+const id = Astro.params.id ?? "";
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect(`/signin?next=${encodeURIComponent(`/app/polls/${id}/preview`)}`);
+
+let poll: Awaited<ReturnType<typeof getPoll>>;
+try {
+  poll = await getPoll(env.DB, auth.accountId, id);
+} catch (error) {
+  if (error instanceof ServerError && error.status === 404) return Astro.redirect("/app");
+  throw error;
+}
+if (poll.items.length < 2) return Astro.redirect(`/app/polls/${id}`);
+
+const preview = {
+  code: poll.code,
+  kind: poll.kind,
+  question: poll.question,
+  topSize: poll.topSize,
+  playsOnce: poll.playsOnce,
+  status: "open" as const,
+  // Voters never see file names.
+  items: poll.items.map((item): ReturnType<typeof publicItemView> => {
+    const view: Partial<typeof item> = { ...item };
+    delete view.label;
+    return view as ReturnType<typeof publicItemView>;
+  }),
+};
+---
+<Voter title={`Preview: ${poll.question}`}>
+  <VoterApp poll={preview} previewBack={`/app/polls/${id}`} />
+</Voter>

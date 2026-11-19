@@ -1,0 +1,20 @@
+---
+// A poll's first four items as a small contact sheet. Empty frames fill the rest.
+interface Props {
+  kind: "image" | "video";
+  items: { mediaId: string; posterId: string | null }[];
+}
+const { kind, items } = Astro.props;
+const frames = Array.from({ length: 4 }, (_, index) => items[index]);
+const src = (id: string) => `/api/v1/media/${encodeURIComponent(id)}`;
+---
+<span class="sheet-strip" aria-hidden="true">
+  {
+    frames.map((item) => (
+      <span class="frame">
+        {item && (kind === "image" || item.posterId) && <img src={src(item.posterId ?? item.mediaId)} alt="" loading="lazy" />}
+        {item && kind === "video" && !item.posterId && <video src={`${src(item.mediaId)}#t=0.1`} preload="metadata" muted playsinline />}
+      </span>
+    ))
+  }
+</span>

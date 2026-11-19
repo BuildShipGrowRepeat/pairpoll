@@ -1,0 +1,159 @@
+---
+import { env } from "cloudflare:workers";
+import App from "../../layouts/App.astro";
+import { authenticateSession, listKeys } from "../../server/auth";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+const auth = await authenticateSession(env.DB, Astro.request);
+if (!auth) return Astro.redirect("/signin?next=/app/keys");
+const keys = await listKeys(env.DB, auth);
+const json = JSON.stringify(keys).replace(/</g, "\\u003c");
+---
+<App title="API keys">
+  <div class="page-head">
+    <div>
+      <h1>API keys</h1>
+      <p class="page-head-lead">
+        A key lets a script, the <a href="/docs/cli">CLI</a> or an <a href="/docs/mcp">AI agent</a> create polls and read results
+        for you. Anyone with a key can do that, so keep it private.
+      </p>
+    </div>
+  </div>
+
+  <div class="keys stack">
+    <form class="key-form" data-create novalidate>
+      <div class="field">
+        <label class="field-label" for="key-name">Key name</label>
+        <p class="field-hint" id="key-name-hint">So you know later where it's used, like "Laptop CLI".</p>
+        <div class="key-form-row">
+          <input class="input" id="key-name" name="name" maxlength="80" autocomplete="off" aria-describedby="key-name-hint" placeholder="API key" />
+          <button class="btn btn--primary" type="submit">Create key</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="notice notice--danger" role="alert" data-error hidden></div>
+    <div data-new-key></div>
+
+    <section aria-labelledby="keys-title">
+      <h2 class="section-title" id="keys-title">Your keys</h2>
+      <script type="application/json" data-keys set:html={json} />
+      <ul class="settings-list key-list" data-list></ul>
+      <p class="empty-line" data-empty hidden>No keys yet.</p>
+    </section>
+  </div>
+</App>
+
+<style>
+  .page-head-lead {
+    margin-top: var(--s-2);
+    max-width: 40rem;
+    color: var(--ink-soft);
+  }
+
+  .keys {
+    max-width: 40rem;
+  }
+
+  .key-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .key-form-row .input {
+    flex: 1 1 14rem;
+  }
+
+  .key-list {
+    margin-top: var(--s-4);
+  }
+</style>
+
+<script>
+  import { api, confirmDialog, copyField, announce, dateTime, h } from "../../components/app/client";
+
+  interface Key {
+    id: string;
+    name: string;
+    createdAt: number;
+  }
+
+  const keys: Key[] = JSON.parse(document.querySelector("[data-keys]")!.textContent!);
+  const list = document.querySelector<HTMLElement>("[data-list]")!;
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!;
+  const error = document.querySelector<HTMLElement>("[data-error]")!;
+  const shown = document.querySelector<HTMLElement>("[data-new-key]")!;
+  const form = document.querySelector<HTMLFormElement>("[data-create]")!;
+
+  const fail = (message: string) => {
+    error.textContent = message;
+    error.hidden = !message;
+  };
+
+  function row(key: Key) {
+    const revoke = h("button", { type: "button", class: "btn btn--quiet btn--sm revoke" }, "Revoke");
+    const item = h(
+      "li",
+      { class: "settings-row" },
+      h("div", null, h("h3", { class: "key-name" }, key.name), h("p", null, `Created ${dateTime(key.createdAt)}`)),
+      revoke,
+    );
+    revoke.addEventListener("click", async () => {
+      const ok = await confirmDialog({
+        title: `Revoke "${key.name}"?`,
+        body: "Anything using this key stops working right away. This can't be undone.",
+        confirm: "Revoke key",
+        danger: true,
+      });
+      if (!ok) return;
+      try {
+        await api(`/keys/${encodeURIComponent(key.id)}`, "DELETE");
+        const next = (item.nextElementSibling ?? item.previousElementSibling) as HTMLElement | null;
+        item.remove();
+        empty.hidden = list.children.length > 0;
+        (next?.querySelector("button") ?? form.querySelector("input"))?.focus();
+        announce(`${key.name} revoked.`);
+        fail("");
+      } catch (problem) {
+        fail((problem as Error).message);
+      }
+    });
+    return item;
+  }
+
+  list.replaceChildren(...keys.map(row));
+  empty.hidden = keys.length > 0;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector<HTMLButtonElement>("button")!;
+    const input = form.querySelector<HTMLInputElement>("input")!;
+    button.disabled = true;
+    try {
+      const key = await api<Key & { key: string }>("/keys", "POST", { name: input.value.trim() || undefined });
+      fail("");
+      input.value = "";
+      const heading = h("h2", { tabindex: "-1" }, `Copy "${key.name}" now`);
+      shown.replaceChildren(
+        h(
+          "div",
+          { class: "key-once" },
+          heading,
+          h("p", null, "This is the only time the key is shown. If you lose it, revoke it and create a new one."),
+          copyField(key.key, "New API key", "Copy key"),
+          h("button", { type: "button", class: "btn btn--quiet btn--sm key-done", onclick: () => { shown.replaceChildren(); input.focus(); } }, "I've saved it"),
+        ),
+      );
+      heading.focus();
+      list.insertBefore(row(key), list.firstChild);
+      empty.hidden = true;
+    } catch (problem) {
+      fail((problem as Error).message);
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

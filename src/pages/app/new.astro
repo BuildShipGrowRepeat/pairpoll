@@ -1,0 +1,14 @@
+---
+import { env } from "cloudflare:workers";
+import App from "../../layouts/App.astro";
+import Editor from "../../components/app/Editor.astro";
+import { authenticateSession } from "../../server/auth";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+if (!(await authenticateSession(env.DB, Astro.request))) return Astro.redirect("/signin?next=/app/new");
+---
+<App title="New poll">
+  <Editor />
+</App>

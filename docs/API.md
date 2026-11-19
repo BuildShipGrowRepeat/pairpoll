@@ -55,7 +55,7 @@ All routes in this section require a creator session or API key. An unknown, exp
 | POST `/polls/:id/close` | Closes an open poll; returns the detailed poll. Closing is final. |
 | GET `/polls/:id/results` | Results object, including voter names. |
 | GET `/polls/:id/export?format=json` | Same results object. `format` defaults to `json`; `csv` returns a CSV attachment including voter names. |
-| POST `/polls/:id/sharing` | `{enabled:boolean,shareNames?:boolean}`. Returns the detailed poll and its `shareCode`, or null when disabled. Requires an opened poll. |
+| POST `/polls/:id/sharing` | `{enabled:boolean,shareNames?:boolean}`. Returns the detailed poll and its `shareCode`, or null when disabled. Requires an opened poll. The read-only page is `/results/<shareCode>`. |
 | DELETE `/polls/:id/runs/:run` | Removes the voter and result. An admitted place is not freed. 404 `run_not_found`. |
 
 Settings may return 400 `invalid_kind`, `invalid_text`, `invalid_top_size`, `invalid_plays_once`, `invalid_voter_cap`, or `invalid_settings`. Uploads may return 400 `empty_upload` or `upload_size_mismatch`, 411 `length_required`, 413 `upload_too_large`, 415 `unsupported_media`, or 502 `media_save_failed`. Item operations can return 404 `item_not_found`, 409 `item_limit`, `poster_not_allowed`, or `poster_exists`. Reordering can return 400 `invalid_item_order`. Mutations can return 409 `poll_frozen`, `poll_changed`, `poll_closed`, `poll_not_open`, or `items_not_ready`. Sharing can return 400 `invalid_sharing`; export can return 400 `invalid_format`. Creation or duplication can return 429 `poll_limit`; uploads and duplication can return 429 `upload_limit`. Duplication can return 502 `media_missing` or `media_copy_timeout`.

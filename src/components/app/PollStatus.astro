@@ -1,0 +1,13 @@
+---
+import Badge from "../Badge.astro";
+
+// Status badge for a poll as the creator sees it. An open poll at its voter limit shows "Full".
+interface Props {
+  status: "draft" | "open" | "closed";
+  full?: boolean;
+}
+const { status, full = false } = Astro.props;
+---
+{status === "draft" && <Badge>Draft</Badge>}
+{status === "open" && (full ? <Badge tone="warn">Full</Badge> : <Badge tone="live">Open</Badge>)}
+{status === "closed" && <Badge tone="done">Closed</Badge>}

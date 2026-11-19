@@ -1,0 +1,203 @@
+---
+import { env } from "cloudflare:workers";
+import App from "../../layouts/App.astro";
+import { authenticateSession } from "../../server/auth";
+import { getOwnerOverview } from "../../server/owner";
+import "../../styles/app.css";
+
+export const prerender = false;
+
+// Service owner only (OWNER_EMAILS). Everyone else gets the ordinary "not found" page.
+const auth = await authenticateSession(env.DB, Astro.request);
+const offsetParam = Astro.url.searchParams.get("offset") ?? "0";
+const offset = /^\d{1,6}$/.test(offsetParam) ? Number(offsetParam) : 0;
+const overview = await getOwnerOverview(env.DB, auth, env.OWNER_EMAILS, offset);
+if (!overview) return new Response(null, { status: 404 });
+
+const { counts, reports, accounts } = overview;
+const size = (bytes: number) =>
+  bytes >= 1e9 ? `${(bytes / 1e9).toFixed(1)} GB` : bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.round(bytes / 1e3)} KB`;
+const date = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace("T", " ");
+---
+<App title="Owner">
+  <div class="page-head">
+    <h1>Owner</h1>
+  </div>
+
+  <div class="notice notice--danger owner-error" role="alert" data-error hidden></div>
+
+  <div class="stack owner">
+    <dl class="counts">
+      <div><dt>Accounts</dt><dd>{counts?.accounts ?? 0}</dd></div>
+      <div><dt>Polls</dt><dd>{counts?.polls ?? 0}</dd></div>
+      <div><dt>Voter runs</dt><dd>{counts?.runs ?? 0}</dd></div>
+      <div><dt>Stored files</dt><dd>{size(counts?.storedBytes ?? 0)}</dd></div>
+    </dl>
+
+    <section aria-labelledby="reports-title">
+      <div class="section-title-row">
+        <h2 class="section-title" id="reports-title">Reports</h2>
+        {offset > 0 && <a href="/app/owner">Newest reports</a>}
+      </div>
+      {
+        reports.length === 0 ? (
+          <p class="empty-line">{offset > 0 ? "No older reports." : "No reports."}</p>
+        ) : (
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Reported (UTC)</th>
+                  <th scope="col">Poll</th>
+                  <th scope="col">Reason</th>
+                  <th scope="col">Creator</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {reports.map((report) => (
+                  <tr>
+                    <td class="nowrap">{date(report.createdAt)}</td>
+                    <td class="wrap-text"><a href={`/p/${report.pollCode}`} target="_blank" rel="noopener">{report.question || "(no question)"}</a></td>
+                    <td class="wrap-text">{report.reason}</td>
+                    <td class="wrap-text">
+                      {report.email}
+                      {report.blockedAt && <span class="badge badge--danger">Blocked</span>}
+                    </td>
+                    <td>
+                      <div class="row-actions">
+                        <button class="btn btn--secondary btn--sm" type="button" data-takedown={report.pollId} data-label={report.question}>
+                          Take down
+                        </button>
+                        {!report.blockedAt && report.email !== auth?.email && (
+                          <button class="btn btn--quiet btn--sm danger-text" type="button" data-block={report.accountId} data-label={report.email}>
+                            Block creator
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+      {reports.length === 100 && <p class="more"><a class="btn btn--secondary btn--sm" href={`/app/owner?offset=${offset + 100}`}>Show older reports</a></p>}
+    </section>
+
+    <section aria-labelledby="accounts-title">
+      <div class="section-title-row">
+        <h2 class="section-title" id="accounts-title">Accounts</h2>
+        <p>Newest 100</p>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Email</th>
+              <th scope="col">Joined (UTC)</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {accounts.map((account) => (
+              <tr>
+                <td class="wrap-text">{account.email}</td>
+                <td class="nowrap">{date(account.createdAt)}</td>
+                <td>
+                  {account.blockedAt ? (
+                    <span class="badge badge--danger">Blocked</span>
+                  ) : account.email === auth?.email ? (
+                    <span class="muted small">You</span>
+                  ) : (
+                    <button class="btn btn--quiet btn--sm danger-text" type="button" data-block={account.id} data-label={account.email}>
+                      Block
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</App>
+
+<style>
+  .owner {
+    gap: var(--s-7);
+  }
+
+  .owner-error {
+    margin-bottom: var(--s-5);
+  }
+
+  .nowrap {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--s-2);
+  }
+
+  .danger-text {
+    color: var(--danger);
+  }
+
+  .badge {
+    margin-left: var(--s-2);
+  }
+
+  .more {
+    margin-top: var(--s-4);
+  }
+</style>
+
+<script>
+  import { api, confirmDialog } from "../../components/app/client";
+
+  const error = document.querySelector<HTMLElement>("[data-error]")!;
+
+  async function act(button: HTMLButtonElement, path: string, title: string, body: string, confirm: string) {
+    if (!(await confirmDialog({ title, body, confirm, danger: true }))) return;
+    button.disabled = true;
+    try {
+      await api(path, "POST");
+      location.reload();
+    } catch (problem) {
+      error.textContent = (problem as Error).message;
+      error.hidden = false;
+      button.disabled = false;
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-takedown]")) {
+    button.addEventListener("click", () =>
+      act(
+        button,
+        `/owner/polls/${encodeURIComponent(button.dataset.takedown!)}/takedown`,
+        "Take this poll down?",
+        `"${button.dataset.label}" and its files and votes are deleted. The voting link stops working.`,
+        "Take down",
+      ),
+    );
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-block]")) {
+    button.addEventListener("click", () =>
+      act(
+        button,
+        `/owner/accounts/${encodeURIComponent(button.dataset.block!)}/block`,
+        `Block ${button.dataset.label}?`,
+        "They are signed out everywhere, their API keys stop working and they can't sign in again.",
+        "Block account",
+      ),
+    );
+  }
+</script>
