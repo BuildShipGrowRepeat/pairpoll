@@ -1,6 +1,6 @@
 ---
 seoTitle: "Free PickFu alternative for your own audience | Pairpoll"
-description: "Compare PickFu and Pairpoll for polls with your own audience: how many options each ranks, video support and agent access. Facts linked to PickFu's own pages."
+description: "PickFu and Pairpoll compared for polls with your own audience: options per poll, video and AI agent access. Every PickFu fact links to its source."
 title: "A free alternative to PickFu for your own audience"
 tool: "PickFu"
 blurb: "Rank up to 16 images or videos in pairs with your own audience."
@@ -17,12 +17,12 @@ comparison:
     pairpoll: "2 to 16 options, compared two at a time"
     source: "https://www.pickfu.com/help/which-poll-type-should-i-use.md"
   - topic: "Video"
-    them: "Uploads MP4, MOV and WebM up to 500 MB"
+    them: "Uploads MP4, MOV, WebM and many other formats, up to 500 MB per file"
     pairpoll: "MP4 or WebM, with an option to let each video play only once"
     source: "https://www.pickfu.com/help/how-do-i-add-videos-or-audio-to-my-poll.md"
   - topic: "AI agents"
-    them: "Official MCP server, built around the paid respondent panel; video only as YouTube, Vimeo or Wistia links"
-    pairpoll: "API, CLI and MCP server for polls with your own audience"
+    them: "Official MCP server that creates surveys for its respondent panel and quotes the price before a paid survey goes out"
+    pairpoll: "API, CLI and MCP server for free polls with your own audience"
     source: "https://www.pickfu.com/docs/integrations/mcp-server.md"
 ---
 
@@ -40,3 +40,9 @@ You need answers from strangers who match a target audience, and you don't have 
 ## How the voting differs
 
 PickFu's head to head poll asks about two options at once, and its ranked poll asks people to order up to 8. In Pairpoll each voter sees two items at a time and picks one, over and over, until their top list is settled. [How voting in pairs works](/guides/how-voting-in-pairs-works) explains the details.
+
+## Other comparisons
+
+- [PollUnit alternative](/alternatives/pollunit)
+- [OpinionX alternative](/alternatives/opinionx)
+- [Lyssna alternative](/alternatives/lyssna)

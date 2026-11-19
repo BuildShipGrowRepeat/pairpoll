@@ -1,6 +1,6 @@
 ---
 seoTitle: "How voting in pairs works (pairwise ranking) | Pairpoll"
-description: "What pairwise ranking is, how Pairpoll turns picks between two items into each voter's top list and an overall ranking, and when it is the right kind of poll."
+description: "What pairwise ranking is, how Pairpoll turns picks between two items into each voter's top list and an overall ranking, and when to use it."
 title: "How voting in pairs works"
 blurb: "How picks between two items become each voter's top list and an overall ranking."
 published: 2026-11-19

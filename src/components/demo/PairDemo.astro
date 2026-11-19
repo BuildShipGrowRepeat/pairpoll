@@ -16,6 +16,9 @@ const ids = demo.items.map((item) => item.id);
 const first = replayDemo(ids, []);
 const byId = new Map(demo.items.map((item) => [item.id, item]));
 const [a, b] = (first.pair ?? [ids[0], ids[1]]).map((itemId) => byId.get(itemId)!);
+// Square and tall pictures: narrow the pair so each card stays about as tall as a 16:9 one.
+const [w, h] = demo.ratio.split("/").map(Number);
+const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
 ---
 <div class="pair-demo" id={id} data-demo data-items={JSON.stringify(demo.items)}>
   <div class="pair-demo-head">
@@ -23,7 +26,7 @@ const [a, b] = (first.pair ?? [ids[0], ids[1]]).map((itemId) => byId.get(itemId)
     <p class="pair-demo-count" data-count aria-live="polite">Pick 1 of {first.total}</p>
   </div>
 
-  <div class="duel" data-stage>
+  <div class:list={["duel", { "duel--portrait": w < h }]} data-stage style={pairStyle}>
     <div class="duel-pair">
       <DuelCard id={a.id} src={a.src} alt={a.name} pickLabel={`Pick ${a.name}`} ratio={demo.ratio} />
       <span class="duel-or" aria-hidden="true">or</span>
@@ -80,6 +83,10 @@ const [a, b] = (first.pair ?? [ids[0], ids[1]]).map((itemId) => byId.get(itemId)
     font-weight: var(--weight-ui);
     color: var(--ink-soft);
     font-variant-numeric: tabular-nums;
+  }
+
+  .pair-demo .duel {
+    margin-inline: auto;
   }
 
   .pair-demo-result h3 {

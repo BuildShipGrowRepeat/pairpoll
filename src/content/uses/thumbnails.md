@@ -1,6 +1,6 @@
 ---
 seoTitle: "Thumbnail rater with real votes, free | Pairpoll"
-description: "Upload your YouTube thumbnail options, send one link, and your viewers pick the better of two until their favourites are clear. Free, and voters don't sign up."
+description: "Upload your YouTube thumbnail options and send one link. Your viewers pick the better of two until their favourites are clear. Free, no sign-up to vote."
 title: "Let your viewers pick the thumbnail"
 name: "Thumbnails"
 blurb: "Find the YouTube thumbnail your viewers would click."
