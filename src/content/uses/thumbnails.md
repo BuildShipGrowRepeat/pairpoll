@@ -39,4 +39,5 @@ Pairpoll doesn't test thumbnails on live YouTube traffic. YouTube's own [A/B tes
 
 - [Compare video cuts](/for/video-cuts) to choose the edit behind the thumbnail.
 - [How many voters do you need?](/guides/how-many-voters-do-you-need)
+- [Preference testing vs A/B testing](/guides/preference-testing-vs-ab-testing)
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

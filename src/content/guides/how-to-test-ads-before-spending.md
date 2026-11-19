@@ -15,7 +15,7 @@ A pre-test asks people. You show your ad versions to a group and they choose. It
 
 A live test pays for real impressions. The ad platform shows each version to strangers as they scroll, and you compare clicks, sign-ups or sales. It measures behaviour, which is what you care about in the end, but it takes budget and time.
 
-The two work best together. Use the pre-test to cut eight or twelve versions down to two or three, then run those live.
+The two work best together. Use the pre-test to cut eight or twelve versions down to two or three, then run those live. [Preference testing vs A/B testing](/guides/preference-testing-vs-ab-testing) compares the two kinds of test beyond ads.
 
 ## Step 1: make versions you can compare
 

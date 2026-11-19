@@ -5,6 +5,6 @@ import { getCollection } from "astro:content";
 export const GET: APIRoute = async ({ site }) => {
   const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
   const lines = docs.map((doc) => `- [${doc.data.title}](${new URL(`/docs/${doc.id}.md`, site).href}): ${doc.data.description}`);
-  const body = `# Pairpoll docs\n\nHow to create polls and read results from code, the command line or an AI assistant.\n\n${lines.join("\n")}\n`;
+  const body = `# Pairpoll docs\n\nHow to create polls and read results from code, the command line or an AI assistant. AI agents: start with ${new URL("/docs/agents.md", site).href}, a complete recipe from sign-in to results.\n\n${lines.join("\n")}\n`;
   return new Response(body, { headers: { "Content-Type": "text/markdown; charset=utf-8" } });
 };
