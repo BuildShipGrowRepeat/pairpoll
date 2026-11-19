@@ -5,9 +5,9 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 ## Production (Cloudflare, Vladimir's account)
 
 - Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`.
-- Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`.
+- Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`, `RESEND_API_KEY`.
 - Deploy from this checkout: `npx wrangler d1 migrations apply DB --remote` (if new migrations), `npm run build`, `npx wrangler deploy`. No staging environment.
-- Email: Cloudflare Email Service through the `EMAIL` binding (`src/server/email.ts`), sender `signin@pairpoll.com`. On the Workers Free plan it delivers only to verified destination addresses of the account (the owner's inbox); sign-in for anyone else needs the Workers Paid plan ($5 a month) and `wrangler email sending enable pairpoll.com`. Email Routing is enabled; the rule forwarding `hello@pairpoll.com` to the owner is still to be created (the destination address must be verified first).
+- Email: sign-in links go through Resend's HTTP API (`src/server/email.ts`), sender `signin@pairpoll.com`, free plan shared with another of the owner's domains (3,000 emails a month, 100 a day in total). Domain verified in Resend (Ireland); DKIM, two CNAMEs and DMARC `p=none` are in Cloudflare DNS. Delivery to an outside address checked 19 Nov. Cloudflare Email Routing forwards `hello@pairpoll.com` to the owner.
 
 ## What exists
 
@@ -47,14 +47,12 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Real phones, Safari and Firefox, iOS video and sound rules.
 - H.264 playback in browsers other than the headless Chromium above.
 - Screen readers (labels, focus and keyboard paths were built, not tested with one).
-- In production: sign-in email delivery, Turnstile with real keys, uploads, the cron.
+- In production: uploads, the cron.
 - In production: OAuth discovery and a full Claude or ChatGPT connector sign-in. The KV namespace still needs to be created and its real ID placed in `wrangler.jsonc` before deployment.
 - `astro dev` also serves repository files, so locally `/docs/api.md` returns `docs/API.md` (same path on a case-insensitive disk). The build serves the right page.
 
 ## Still needed
 
-- Sign-in email for strangers: switch `src/server/email.ts` to Resend's free plan (Vladimir declined any paid plan); needs his Resend account and a `RESEND_API_KEY` secret.
-- Google Analytics measurement ID: set the `PUBLIC_GA_ID` default in `astro.config.mjs` once the GA account exists; the consent pop-up stays off until then.
 - Test Claude and ChatGPT connector sign-in against production (OAuth is deployed, not yet tried from the real apps).
 - npm publish of the CLI (the docs then drop the repository alias).
 - Vladimir's review of Terms, Privacy and About.
