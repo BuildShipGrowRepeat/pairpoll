@@ -1,69 +1,74 @@
 # State
 
-Updated 19 Nov 2026. The server API, agent access surfaces and every product page are implemented locally.
+Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built and runs locally. Nothing is deployed or published.
 
 ## What exists
 
-- One Cloudflare Worker built with Astro and `@astrojs/cloudflare`. Entry `src/worker.ts` exports Astro's fetch handler and the bounded daily cleanup job.
-- Bindings in `wrangler.jsonc`: D1 `DB` (placeholder `database_id`), R2 `MEDIA`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and optional comma-separated `OWNER_EMAILS`.
-- `migrations/0002_product.sql` replaces the applied scaffold table with accounts, credentials, polls, items, voter runs, reports, usage and upload bookkeeping.
-- `/api/v1` implements email sign-in, sessions, API keys, CLI device approval, API-key identity, creator polls, uploads, voting, results/export/sharing, media ranges, account deletion and owner moderation. `docs/API.md` is the exact contract.
-- `src/lib/knockout.ts` replays deterministic top-1/3/5 tournaments for 2–16 items. Unit tests cover all supported sizes and observed bye arrangements; Worker tests exercise real local D1 and R2 boundaries.
-- `packages/cli` provides the private `pairpoll` command: device login, local key storage, local file and folder uploads, optional ffmpeg video posters, poll lifecycle, results/CSV and JSON output. It is not published.
-- `/mcp` is a stateless Streamable HTTP MCP server. It requires a bearer API key and exposes eight creator tools backed by the same server functions as REST.
-- Agent docs cover quick start, REST, CLI and MCP. `/llms.txt` indexes the plain Markdown copies.
+- One Cloudflare Worker (Astro 7 + `@astrojs/cloudflare`). `src/worker.ts` serves the site and runs the daily cleanup cron. D1 `DB` for data, R2 `MEDIA` for files, migrations `0001`–`0002`.
+- Voting: `src/lib/knockout.ts` replays top-1/3/5 knockouts for 2–16 items (every size, top size and bye arrangement tested). Plays-once videos, resume in the same browser, voter cap, Turnstile on sign-in and join.
+- REST API `/api/v1` (contract in `docs/API.md`): email sign-in, sessions, API keys, CLI device approval, polls, uploads, voting, results, CSV/JSON export, share links, media with ranges, account deletion, owner moderation.
+- MCP: `/mcp`, stateless Streamable HTTP, bearer API key only, eight tools (`create_poll`, `get_upload_link`, `open_poll`, `close_poll`, `get_results`, `list_polls`, `delete_voter`, `delete_poll`).
+- CLI: `packages/cli` (`pairpoll`), no dependencies, not published. Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete, logout.
+- Creator app: `/signin`, `/signin/confirm`, `/signin/device`, `/app`, `/app/new`, `/app/polls/<id>` (draft editor, then results), `/app/polls/<id>/preview`, `/app/keys`, `/app/account`, `/app/owner` (only for `OWNER_EMAILS`; others get 404).
+- Voters: `/p/<code>` with every state (not open, closed, full, expired, finished, removed) and a report link; shared results `/results/<shareCode>`.
+- Marketing: home, 8 use pages, 4 alternative pages, 3 guides, About, Terms, Privacy, 404, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
+- Design system: `docs/DESIGN.md`. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
+- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke, image poll with two voters, plays-once video poll with a reload).
 
-## UI and marketing site (stage 1)
+## Try it locally
 
-- Brand and design system: `docs/DESIGN.md`. Tokens and shared classes in `src/styles`, components in `src/components`, layouts `Base` (SEO), `Marketing`, `Docs`, `App` (noindex), `Voter` (noindex) in `src/layouts`. Component preview at `/design` (noindex, not in the sitemap; remove before launch if unwanted).
-- Pages: home, `/about`, `/terms`, `/privacy`, 404, hubs `/for`, `/alternatives`, `/guides`, `/docs`, one example entry each (`/for/thumbnails`, `/alternatives/pickfu`, `/guides/how-voting-in-pairs-works`, `/docs/agents`), docs as raw Markdown (`/docs.md`, `/docs/<slug>.md`), `/sitemap.xml`, `robots.txt`, favicon, app icons, default `og.png`.
-- Clean URLs: `build.format: "file"`, `trailingSlash: "never"`; `/about/` redirects to `/about`.
-- **Drafts awaiting Vladimir's review:** Terms and Privacy (plain-language, written from the spec), and the About copy. Contact address `hello@pairpoll.com` is a placeholder.
-- The home page links all eight planned use pages; seven are not written yet and return 404 until their entries exist.
-- The demo (`src/components/demo`) runs `replay` from `src/lib/knockout.ts` (fixed first draw, a new draw on "Start over").
-- Font: Schibsted Grotesk, SIL OFL 1.1, self-hosted (`public/fonts`, licence in `OFL.txt`). Demo artwork in `public/demo` is original placeholder art.
+1. `npm install`, `cp .dev.vars.example .dev.vars` (Turnstile test keys; add `OWNER_EMAILS=you@example.com` to see the owner page), `npm run db:migrate:local`.
+2. `npx astro dev --ignore-lock` (foreground; Astro 7 backgrounds plain `npm run dev` when it detects an agent, stop that with `npx astro dev stop`). Open http://localhost:4321.
+3. Browser: `/signin`, enter any email, click "Open the sign-in link" (dev only, no mail is sent). Create a poll, open it, vote in a private window, watch the results update.
+4. CLI: from the repo root `alias pairpoll="node $PWD/packages/cli/bin/pairpoll.js"`, `export PAIRPOLL_API_URL=http://localhost:4321`, `pairpoll login` (approve the code in the signed-in browser), then `pairpoll create ./folder --question "Which?" --open`. The key is saved in `~/.config/pairpoll/config.json` (mode 0600); `pairpoll logout` deletes the file.
+5. MCP: create a key at `/app/keys`, then `claude mcp add --transport http pairpoll http://localhost:4321/mcp --header "Authorization: Bearer <key>"`. Codex and Cursor setups are on `/docs/mcp`.
+6. Gates: `npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e`. Stop any dev server on port 4321 before e2e; Playwright starts its own.
 
-## Product pages (stage 2)
+## Checked end to end (19 Nov, local dev server)
 
-- Creator: `/signin` (invisible Turnstile, "check your email"; in dev only, a link from the local mailbox), `/signin/confirm` (consumes the link by POST), `/app` (polls), `/app/new` and `/app/polls/<id>` (draft editor, then results with live refresh, voters, sharing, export, close, delete), `/app/polls/<id>/preview` (voter preview, nothing stored), `/app/keys`, `/app/account`, `/signin/device?code=` (CLI approval).
-- Owner: `/app/owner`, linked from Account for `OWNER_EMAILS` only; everyone else gets the 404 page.
-- Voters: `/p/<code>` (intro, pairs, plays-once videos, end top list, all closed/full/expired states, report link) and the shared results page `/results/<shareCode>`.
-- Browser code is plain TypeScript in `src/components/app` and `src/components/voter`; page styles in `src/styles/app.css` and `voter.css`.
-- e2e (`npm run test:e2e`): smoke, an image poll with two voters, and a plays-once video poll including a reload mid-pair. Fixtures in `e2e/fixtures` were made with ffmpeg.
+- CLI: device login approved in a headless browser, whoami, image poll from a folder with `--open`, two voters through the real voter page, results `--json`/`--csv`, list, close, delete, logout; a WebM poll with `--play-once` and ffmpeg posters. Key file 0600, folder 0700.
+- MCP with the official client SDK 2.4.0: tool list, create, upload link (lands on that draft's editor, through sign-in when signed out), open, results, list, delete voter, close, delete. No key and a wrong key get 401. `claude mcp get` connects; `codex mcp add` works.
+- Every curl and CLI example in the docs runs as written; all docs pages, their `.md` copies and `/llms.txt` load.
+- An H.264 MP4 plays-once poll played to the end and was voted on in headless Chromium (revision 1243).
+- Every page type at 1440x900 and 390x844: no overflow, broken images, console errors (other than Turnstile test-widget warnings) or dead internal links.
 
-### Try the whole flow locally
+## Not verified
 
-1. `cp .dev.vars.example .dev.vars` (Turnstile test keys). To see the owner page, add `OWNER_EMAILS=you@example.com`.
-2. `npm run db:migrate:local && npx astro dev --ignore-lock`, then open http://localhost:4321/signin.
-3. Enter any email, then use "Open the sign-in link" under "Check your email" (dev only; no mail is sent).
-4. Create a poll, open it, and open the voting link in a private window to vote. Results update on the poll page.
+- Real phones, Safari and Firefox, iOS video and sound rules.
+- H.264 playback in browsers other than the headless Chromium above.
+- Screen readers (labels, focus and keyboard paths were built, not tested with one).
+- Real email delivery (no provider), real Turnstile (test keys only), production deployment, the cron on Cloudflare.
+- `astro dev` also serves repository files, so locally `/docs/api.md` returns `docs/API.md` (same path on a case-insensitive disk). The build serves the right page.
 
-## How to run
+## Needed before production
 
-See `AGENTS.md` (commands) and `README.md` (setup). Local D1 and R2 state lives in `.wrangler/state` and is shared by `wrangler d1 migrations apply --local`, `astro dev` and `astro preview`.
+- Email provider for sign-in links (fill in `sendSignInEmail` in `src/server/email.ts`).
+- Real Turnstile site key and secret (`TURNSTILE_SITE_KEY` in `wrangler.jsonc`, `TURNSTILE_SECRET_KEY` as a secret).
+- Cloudflare resources: D1 database (replace the placeholder `database_id`), R2 bucket `pairpoll-media`, the pairpoll.com domain; apply migrations remotely.
+- `OWNER_EMAILS` set to Vladimir's address.
+- Analytics provider and its snippet (no snippet exists yet; it would go in `src/layouts/Base.astro`).
+- OAuth for the Claude and ChatGPT chat apps (needs a public URL). Claude Code, Codex and Cursor work with an API key now.
+- npm publish of the CLI (the docs then drop the repository alias) and the GitHub repository.
+- Vladimir's review of Terms, Privacy and About; `hello@pairpoll.com` is a placeholder.
+- Playwright uses the local headless Chromium 1243 (path in `playwright.config.ts`); elsewhere remove `executablePath` and run `npx playwright install chromium`.
 
-## Installed versions
+## Open questions (from docs/SPEC.md)
 
-astro 7.4.13, @astrojs/cloudflare 14.4.9 (uses @cloudflare/vite-plugin and vite 8.3.8), @modelcontextprotocol/server 2.4.0, zod 4.6.7, wrangler 4.165.0 (workerd 1.20261118.1), @cloudflare/vitest-plugin 1.8.5, vitest 5.1.1, @playwright/test 1.65.1, typescript 6.0.3, @astrojs/check 0.9.12, eslint 10.15.0, typescript-eslint 8.73.0, eslint-plugin-astro 3.2.1, @eslint/js 10.0.1, @types/node 24. Node 24.11.1, npm 11.7.0. Compatibility date 2026-11-01 with `nodejs_compat`.
+1. Licence: MIT?
+2. Email provider (for example Resend or Cloudflare's email service).
+3. Analytics (for example PostHog or Cloudflare Web Analytics).
+4. OAuth for the Claude and ChatGPT chat apps after the first deploy.
+5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
+6. Terms, privacy and About text review.
+7. Limits: file sizes, polls per day, 30-day deletion.
 
-## Differences from the spec's assumed stack
+## Versions
 
-The stack is as assumed. Details that changed in current versions:
+astro 7.4.13, @astrojs/cloudflare 14.4.9 (vite 8.3.8), @modelcontextprotocol/server 2.4.0, zod 4.6.7, wrangler 4.165.0 (workerd 1.20261118.1), @cloudflare/vitest-plugin 1.8.5, vitest 5.1.1, @playwright/test 1.65.1, typescript 6.0.3 (`@astrojs/check` and typescript-eslint do not support 7 yet), eslint 10.15.0. Node 24.11.1, npm 11.7.0. Compatibility date 2026-11-01 with `nodejs_compat`.
 
-- Bindings are read with `import { env } from "cloudflare:workers"`; `Astro.locals.runtime.env` was removed in adapter v13.
-- Cron: wrangler `main` points at a custom `src/worker.ts` that wraps `handle` from `@astrojs/cloudflare/handler`; the adapter's old `workerEntryPoint` option is gone.
-- Local dev runs inside workerd through Cloudflare's Vite plugin (not the old `platformProxy`), so dev uses the same local D1/R2 simulators as wrangler.
-- Vitest integration is now `@cloudflare/vitest-plugin` (`cloudflareTest()`), replacing `@cloudflare/vitest-pool-workers`. It cannot load the Astro Worker entry, so Worker-level tests use a stub entry (`test/worker/main.ts`) and test server functions directly against bindings, not full HTTP requests through Astro.
-- TypeScript 6, not 7: `@astrojs/check` and typescript-eslint do not support TypeScript 7 yet.
-- `session: false` in `astro.config.mjs`, otherwise the adapter adds a KV binding for Astro sessions. `imageService: "compile"`, otherwise it adds a Cloudflare Images binding.
-- Astro 7 detects AI agents and backgrounds `astro dev` / `astro preview`; stop with `npx astro dev stop` / `npx astro preview stop`. Playwright starts dev with `--ignore-lock` to keep it in the foreground.
+## Stack notes
 
-## Known gaps
-
-- Playwright uses the headless Chromium already on this Mac (revision 1243, path hard-coded in `playwright.config.ts`); Playwright 1.65 expects 1255. On another machine remove `executablePath` and run `npx playwright install chromium`.
-- Codex `workspace-write` sandbox (checked 19 Nov): `npm test` and `npm run typecheck` pass (wrangler prints a harmless EPERM about its log file in ~/Library/Preferences). `npm run test:e2e` fails: wrangler cannot write its dev registry in ~/Library/Preferences, and even with that redirected, Chromium cannot launch (`MachPortRendezvousServer ... Permission denied`). Run e2e outside the sandbox.
-- Worker-level tests cover server functions against D1 and R2, not Astro route dispatch or the `scheduled` entry end to end.
-- `worker-configuration.d.ts` is generated and git-ignored; `dev`, `build`, `typecheck` and `test` regenerate it.
-- Production email delivery is intentionally unset until a provider is chosen. Local sign-in mail is stored in the dev-only mailbox and logged.
-- OAuth for Claude and ChatGPT chat app connections remains planned for after the first public deployment. Claude Code, Codex and Cursor can use the MCP endpoint with an API key now.
-- `database_id` and `TURNSTILE_SITE_KEY` are placeholders until the first deploy.
+- Bindings: `import { env } from "cloudflare:workers"` (`Astro.locals.runtime` is gone). Binding types come from `npm run types` (git-ignored `worker-configuration.d.ts`).
+- `session: false` and `imageService: "compile"` keep the adapter from adding KV and Images bindings.
+- Worker tests use `@cloudflare/vitest-plugin` with a stub entry; they test server functions, not Astro routing or the `scheduled` entry.
+- Codex `workspace-write` sandbox: typecheck and unit/Worker tests pass; e2e cannot run there (wrangler registry and Chromium launch are blocked).
