@@ -11,7 +11,7 @@ const code = (Astro.url.searchParams.get("code") ?? "").toUpperCase().replace(/[
 const auth = await authenticateSession(env.DB, Astro.request);
 if (!auth) return Astro.redirect(`/signin?next=${encodeURIComponent(`/signin/device${code ? `?code=${code}` : ""}`)}`);
 ---
-<Marketing title="Approve the CLI | Pairpoll" description="Let the Pairpoll CLI use your account." noindex>
+<Marketing title="Approve the CLI | Pairpoll" description="Let the Pairpoll CLI use your account." noindex signedIn>
   <div class="wrap auth">
     <div class="auth-panel" data-device>
       <section data-step="form">

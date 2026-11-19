@@ -264,6 +264,11 @@ pre {
   font-size: var(--text-sm);
 }
 
+.prose td code {
+  /* Long paths in narrow tables wrap instead of widening the page. */
+  overflow-wrap: anywhere;
+}
+
 .prose th,
 .prose td {
   padding: var(--s-2) var(--s-3) var(--s-2) 0;

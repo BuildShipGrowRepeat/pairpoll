@@ -1,6 +1,12 @@
 ---
 import Logo from "./Logo.astro";
 
+interface Props {
+  signedIn?: boolean;
+}
+const { signedIn = false } = Astro.props;
+const account = signedIn ? { href: "/app", label: "Your polls" } : { href: "/signin", label: "Sign in" };
+
 const links = [
   { href: "/for", label: "Uses" },
   { href: "/guides", label: "Guides" },
@@ -23,7 +29,7 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
             </li>
           ))
         }
-        <li><a href="/signin">Sign in</a></li>
+        <li><a href={account.href}>{account.label}</a></li>
       </ul>
     </nav>
     <a class="btn btn--primary btn--sm" href="/app/new">Create a poll</a>
@@ -43,7 +49,7 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
             </li>
           ))
         }
-        <li><a href="/signin">Sign in</a></li>
+        <li><a href={account.href}>{account.label}</a></li>
       </ul>
     </details>
   </div>

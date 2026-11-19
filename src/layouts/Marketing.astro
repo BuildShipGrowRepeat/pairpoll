@@ -5,10 +5,12 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
 // Public pages: home, uses, alternatives, guides, about, legal.
-type Props = ComponentProps<typeof Base>;
+// Server-rendered pages that know the visitor is signed in pass `signedIn`.
+type Props = ComponentProps<typeof Base> & { signedIn?: boolean };
+const { signedIn = false, ...base } = Astro.props;
 ---
-<Base {...Astro.props}>
-  <Header />
+<Base {...base}>
+  <Header signedIn={signedIn} />
   <main id="main">
     <slot />
   </main>

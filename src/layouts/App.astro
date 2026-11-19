@@ -80,6 +80,22 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
     background: var(--sheet);
   }
 
+  @media (max-width: 30rem) {
+    .app-header-row {
+      flex-wrap: nowrap;
+      gap: var(--s-3);
+    }
+
+    .app-header ul {
+      gap: 0;
+      margin-right: -0.5rem;
+    }
+
+    .app-header a:not(.logo) {
+      padding-inline: var(--s-2);
+    }
+  }
+
   .app-main {
     padding-block: var(--s-6) var(--s-8);
   }
