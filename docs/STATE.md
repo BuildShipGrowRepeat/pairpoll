@@ -11,6 +11,16 @@ Updated 19 Nov 2026. Scaffold only: no product features yet.
 - Tests: `test/unit` (Vitest, Node), `test/worker` (Vitest in workerd with real local D1 and R2, migrations applied in a setup file), `e2e` (Playwright against `astro dev`). Each holds one trivial test; replace the unit placeholder with the first real test.
 - `packages/cli`: workspace package `pairpoll`, bin prints its version.
 
+## UI and marketing site (stage 1)
+
+- Brand and design system: `docs/DESIGN.md`. Tokens and shared classes in `src/styles`, components in `src/components`, layouts `Base` (SEO), `Marketing`, `Docs`, `App` (noindex), `Voter` (noindex) in `src/layouts`. Component preview at `/design` (noindex, not in the sitemap; remove before launch if unwanted).
+- Pages: home, `/about`, `/terms`, `/privacy`, 404, hubs `/for`, `/alternatives`, `/guides`, `/docs`, one example entry each (`/for/thumbnails`, `/alternatives/pickfu`, `/guides/how-voting-in-pairs-works`, `/docs/agents`), docs as raw Markdown (`/docs.md`, `/docs/<slug>.md`), `/sitemap.xml`, `robots.txt`, favicon, app icons, default `og.png`.
+- Clean URLs: `build.format: "file"`, `trailingSlash: "never"`; `/about/` redirects to `/about`.
+- **Drafts awaiting Vladimir's review:** Terms and Privacy (plain-language, written from the spec), and the About copy. Contact address `hello@pairpoll.com` is a placeholder.
+- The home page links all eight planned use pages; seven are not written yet and return 404 until their entries exist.
+- The demo (`src/components/demo`) uses its own minimal knockout (`demo-knockout.ts`); swap it for `replay` from `src/lib/knockout.ts` in stage 2.
+- Font: Schibsted Grotesk, SIL OFL 1.1, self-hosted (`public/fonts`, licence in `OFL.txt`). Demo artwork in `public/demo` is original placeholder art.
+
 ## How to run
 
 See `AGENTS.md` (commands) and `README.md` (setup). Local D1 and R2 state lives in `.wrangler/state` and is shared by `wrangler d1 migrations apply --local`, `astro dev` and `astro preview`.
