@@ -1038,3 +1038,49 @@ kbd {
   width: 22px;
   height: 22px;
 }
+
+/* Its menu: Light, Dark, System. A popover in the top layer, placed under the button by its script. */
+.theme-menu {
+  position: absolute;
+  inset: auto;
+  min-width: 10rem;
+  margin: 0;
+  padding: var(--s-2);
+  border: 0;
+  border-radius: var(--r-tile);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow:
+    0 4px 0 var(--edge),
+    0 18px 32px -16px var(--shade);
+}
+
+.theme-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: 44px;
+  padding-inline: var(--s-3);
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.theme-menu button:hover {
+  background: var(--well);
+}
+
+.theme-menu svg {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-menu [aria-pressed="false"] svg {
+  visibility: hidden;
+}

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { signIn } from "./helpers";
 
 test("home renders and the app asks for sign-in", async ({ page }) => {
   await page.goto("/");
@@ -8,16 +9,31 @@ test("home renders and the app asks for sign-in", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
-test("the theme switch overrides the system theme and survives a reload", async ({ page }) => {
+test("the theme menu sets dark, keeps it after a reload and goes back to the system theme", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   const html = page.locator("html");
+  const theme = page.getByRole("button", { name: "Theme", exact: true });
   await expect(html).not.toHaveAttribute("data-theme");
-  await page.getByRole("button", { name: "Switch to the dark theme" }).click();
+  await theme.click();
+  await expect(page.getByRole("button", { name: "System" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Dark" }).click();
   await expect(html).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: "Dark" })).toBeHidden();
   await page.reload();
   await expect(html).toHaveAttribute("data-theme", "dark");
-  await expect(page.getByRole("button", { name: "Switch to the light theme" })).toBeVisible();
+  await theme.click();
+  await expect(page.getByRole("button", { name: "Dark" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "System" }).click();
+  await expect(html).not.toHaveAttribute("data-theme");
+  expect(await page.evaluate(() => localStorage.getItem("pairpoll-theme"))).toBeNull();
+});
+
+test("the app header links home and to the docs, and the app has the site footer", async ({ page }) => {
+  await signIn(page);
+  await expect(page.getByRole("banner").getByRole("link", { name: "Pairpoll home" })).toHaveAttribute("href", "/");
+  await expect(page.getByRole("navigation", { name: "App" }).getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
+  await expect(page.getByRole("contentinfo")).toBeVisible();
 });
 
 test("pages rendered on request are not cached or framed", async ({ request }) => {

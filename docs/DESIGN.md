@@ -6,7 +6,7 @@ Picking between two things should feel like pressing a real key. Clean surfaces,
 
 ## Themes
 
-Light and dark, both complete. `src/styles/tokens.css` defines every colour for light in `:root`, then repeats the dark values twice: under `@media (prefers-color-scheme: dark)` (when no choice is stored) and under `:root[data-theme="dark"]`. The half-circle button (`ThemeToggle`) in every header sets `data-theme` on `<html>` and stores it in localStorage (`pairpoll-theme`); an inline script in `Base.astro` applies it before first paint. Never write a colour outside tokens.css, except fixed white and ink on top of media (video cover, "Played" seal).
+Light and dark, both complete. `src/styles/tokens.css` defines every colour for light in `:root`, then repeats the dark values twice: under `@media (prefers-color-scheme: dark)` (when no choice is stored) and under `:root[data-theme="dark"]`. The half-circle button (`ThemeToggle`) in every header opens a Light / Dark / System menu: Light or Dark sets `data-theme` on `<html>` and stores it in localStorage (`pairpoll-theme`), System (the default) removes both; an inline script in `Base.astro` applies it before first paint. Never write a colour outside tokens.css, except fixed white and ink on top of media (video cover, "Played" seal).
 
 ## Tokens (`src/styles/tokens.css`)
 
@@ -48,7 +48,7 @@ Astro components render shared classes, so client-side TypeScript can build the 
 
 - `Base`: head, theme script and technical SEO. Pass `title`, `description`; `noindex` for app, poll and error pages; `jsonLd` only for facts that are true.
 - `Marketing`: header, footer. `Docs`: side navigation from the docs collection plus a link to the page's Markdown.
-- `App`: creator app shell, always noindex, nav Polls / API keys / Account.
+- `App`: creator app shell, always noindex, nav Polls / API keys / Account / Docs, logo to the home page, site footer.
 - `Voter`: logo and theme switch only, no site navigation, `report` slot in the footer, always noindex.
 
 ## Rules

@@ -2,6 +2,7 @@
 import Base from "./Base.astro";
 import Logo from "../components/Logo.astro";
 import Consent from "../components/Consent.astro";
+import Footer from "../components/Footer.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 
 // Creator app shell: always noindex. Pages put their title row and content in the slot.
@@ -20,7 +21,7 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
 <Base title={`${title} | Pairpoll`} noindex>
   <header class="app-header">
     <div class="wrap app-header-row">
-      <Logo href="/app" />
+      <Logo />
       <nav aria-label="App">
         <ul>
           {
@@ -32,6 +33,7 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
               </li>
             ))
           }
+          <li class="app-nav-docs"><a href="/docs">Docs</a></li>
         </ul>
       </nav>
       <ThemeToggle />
@@ -40,6 +42,7 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
   <main id="main" class="wrap app-main">
     <slot />
   </main>
+  <Footer />
   <Consent />
 </Base>
 
@@ -84,6 +87,11 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
 
   .app-header a[aria-current="page"] {
     background: var(--well);
+  }
+
+  /* Docs sits apart from the app's own pages. */
+  .app-nav-docs a:not(:hover) {
+    color: var(--ink-soft);
   }
 
   /* Phones: the app links get their own row under the logo. */
