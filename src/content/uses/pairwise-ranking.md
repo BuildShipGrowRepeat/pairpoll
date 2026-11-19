@@ -71,5 +71,6 @@ AI agents can create polls and read results through a REST API, a command-line t
 ## Related
 
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)
+- [The paired comparison method](/guides/paired-comparison-method): comparing every pair by hand.
 - [How many voters do you need?](/guides/how-many-voters-do-you-need)
 - [PollUnit](/alternatives/pollunit) and [OpinionX](/alternatives/opinionx) also run pairwise votes. Each page compares that tool with Pairpoll.

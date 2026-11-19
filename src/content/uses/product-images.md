@@ -56,4 +56,5 @@ Yes. Pairpoll is free and open source. Polls, files and votes are deleted 30 day
 
 - [Ad creatives](/for/ad-creatives) for the ads that send people to the listing.
 - [Photos](/for/photos)
+- [Packaging](/for/packaging) for choosing between pack designs.
 - [How many voters do you need?](/guides/how-many-voters-do-you-need)

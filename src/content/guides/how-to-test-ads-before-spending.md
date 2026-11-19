@@ -58,4 +58,4 @@ People asked to judge look harder than people scrolling past. People who know yo
 3. Share the link. Voters type a name and start, with no sign-up. They pick the better of two until their top list is settled.
 4. Read the overall ranking and each voter's top list, then fund the leaders.
 
-[Ad creatives](/for/ad-creatives) shows a sample poll you can try.
+[Ad creatives](/for/ad-creatives) shows a sample poll you can try. For video ads, see [video ad testing](/for/video-ads).

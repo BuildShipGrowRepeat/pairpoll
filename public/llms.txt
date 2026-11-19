@@ -31,8 +31,10 @@ The MCP server takes an API key as `Authorization: Bearer <key>` and works in Cl
 
 ## Optional
 
-- [What you can rank](https://pairpoll.com/for): thumbnails, ad creatives, logos, designs, photos, product images, video cuts, app screenshots
+- [What you can rank](https://pairpoll.com/for): thumbnails, ad creatives, logos, designs, photos, product images, video cuts, app screenshots, packaging, video ads, AI images, and running polls from an AI assistant
 - [Pairwise ranking tool](https://pairpoll.com/for/pairwise-ranking): how the knockout ranks items, and when a tool that compares every pair fits better
-- [Guides](https://pairpoll.com/guides): how voting in pairs works, how many voters you need, how to test ads before spending, preference testing vs A/B testing
-- [Compared with other tools](https://pairpoll.com/alternatives): PickFu, PollUnit, Lyssna, OpinionX
+- [Guides](https://pairpoll.com/guides): how voting in pairs works, how many voters you need, how to test ads before spending, preference testing vs A/B testing, how to choose a YouTube thumbnail, the paired comparison method, MaxDiff vs ranking vs pairwise comparison
+- [Pairpoll for AI assistants](https://pairpoll.com/for/ai-agents): what Claude, ChatGPT or a coding agent can do with Pairpoll's MCP server
+- [StrawPoll alternative](https://pairpoll.com/alternatives/strawpoll): how Pairpoll differs from StrawPoll for image and video polls
+- [Compared with other tools](https://pairpoll.com/alternatives): PickFu, PollUnit, Lyssna, OpinionX, StrawPoll, UXtweak
 - [Source code](https://github.com/BuildShipGrowRepeat/pairpoll)

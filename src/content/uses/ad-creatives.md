@@ -54,6 +54,7 @@ Yes. An agent can create the poll, open it and read the results through the API,
 
 ## Related
 
+- [Video ads](/for/video-ads) for comparing video ads with one play each.
 - [Compare video cuts](/for/video-cuts) if you're choosing between edits of one video ad.
 - [Choose product images](/for/product-images) for the photo on a listing.
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

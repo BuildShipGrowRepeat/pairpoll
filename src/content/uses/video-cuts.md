@@ -57,4 +57,6 @@ They can close the page and come back in the same browser to carry on. A reload 
 
 - [Ad creatives](/for/ad-creatives) for video ads.
 - [Thumbnails](/for/thumbnails)
+- [How to choose a YouTube thumbnail](/guides/how-to-choose-a-youtube-thumbnail)
+- [Video ads](/for/video-ads) for choosing between different ads.
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

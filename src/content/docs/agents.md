@@ -210,4 +210,6 @@ REST errors are JSON: `{"error":{"code":"…","message":"…"}}`. MCP tools retu
 - [CLI reference](/docs/cli)
 - [REST API reference](/docs/api)
 - [MCP server](/docs/mcp)
+- [Let your AI assistant run the poll](/for/ai-agents): the same in plain words, for the person.
+- [Choose the best AI-generated image](/for/ai-images): a common job for an agent that generates images.
 - Every docs page is also plain Markdown: add `.md` to its address, for example `https://pairpoll.com/docs/agents.md`.

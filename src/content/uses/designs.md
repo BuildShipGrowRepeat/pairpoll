@@ -25,6 +25,8 @@ You have several directions for a landing page, a book cover, packaging or a sli
 
 User research tools run preference tests too. [Lyssna's](/alternatives/lyssna) compares up to 6 designs, and Lyssna can also recruit participants for you from its paid panel. Pairpoll does one thing: people compare designs two at a time, up to 16 designs in a poll, and each voter ends with their own top list.
 
+[UXtweak's](/alternatives/uxtweak) preference test also compares up to 6 designs, or up to 2 images on its free plan.
+
 ## What it doesn't do
 
 Pairpoll doesn't collect comments, so it tells you which design people prefer but not why. If you need the reasons, talk to two or three voters afterwards or use a survey tool. It also doesn't test clickable prototypes. You can record a short screen video of each version and run a video poll instead.
@@ -57,5 +59,7 @@ Yes. You can export the results as CSV or JSON, or turn on a read-only results l
 
 - [Logos](/for/logos)
 - [App screenshots](/for/app-screenshots)
+- [Packaging](/for/packaging)
+- [AI-generated images](/for/ai-images)
 - [Preference testing vs A/B testing](/guides/preference-testing-vs-ab-testing)
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

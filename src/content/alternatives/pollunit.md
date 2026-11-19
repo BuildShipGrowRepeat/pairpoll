@@ -54,3 +54,5 @@ In Pairpoll each voter finishes a short knockout, so every voter ends with a com
 - [PickFu alternative](/alternatives/pickfu)
 - [OpinionX alternative](/alternatives/opinionx)
 - [Lyssna alternative](/alternatives/lyssna)
+- [StrawPoll alternative](/alternatives/strawpoll)
+- [UXtweak alternative](/alternatives/uxtweak)

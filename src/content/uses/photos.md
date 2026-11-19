@@ -1,6 +1,6 @@
 ---
 seoTitle: "Photo poll: let people pick your best shots, free | Pairpoll"
-description: "A free picture poll for choosing photos. Upload 2 to 16 shots, send one link, and friends or clients pick the better of two until the best is clear."
+description: "A free photo voting app and picture poll. Upload 2 to 16 shots, send one link, and friends or clients pick the better of two until the best is clear."
 title: "Let people pick the best photo"
 name: "Photos"
 blurb: "Pick the best shots from a set."
@@ -12,6 +12,8 @@ demo: photos
 ## When this helps
 
 You've narrowed a shoot down to a dozen good frames and can't choose between them. Maybe it's the photo for a holiday card, a print for the wall, a headshot for a speaker page, the cover of an album or the shots for your portfolio. You've looked at them too long to see them fresh. Other people haven't.
+
+Pairpoll works as a photo voting app in the browser. Voters don't install anything: they open the link and vote.
 
 ## How a photo poll works
 
@@ -51,4 +53,5 @@ Yes. You see each voter's name, the time and their top list, and you can delete 
 
 - [Product images](/for/product-images) for shop and listing photos.
 - [Designs](/for/designs) for covers and layouts.
+- [StrawPoll alternative](/alternatives/strawpoll): how Pairpoll differs from a classic picture poll.
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)

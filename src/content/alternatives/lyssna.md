@@ -54,3 +54,5 @@ In Pairpoll each voter sees two items at a time and picks one, again and again, 
 - [PickFu alternative](/alternatives/pickfu)
 - [PollUnit alternative](/alternatives/pollunit)
 - [OpinionX alternative](/alternatives/opinionx)
+- [StrawPoll alternative](/alternatives/strawpoll)
+- [UXtweak alternative](/alternatives/uxtweak)

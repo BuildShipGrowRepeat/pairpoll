@@ -81,4 +81,6 @@ The tool descriptions include each input and lifecycle rule. Results are also re
 
 The server does not fetch files from URLs. Use `get_upload_link` and add the local files in your browser. Claude and ChatGPT chat apps cannot pass their attachments to Pairpoll.
 
+For what an assistant can do with Pairpoll, in plain words, see [Let your AI assistant run the poll](/for/ai-agents).
+
 For local API-key testing, set `PAIRPOLL_API_URL=http://localhost:4321`. OAuth-capable clients need the public HTTPS endpoint.

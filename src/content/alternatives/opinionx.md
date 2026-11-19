@@ -36,6 +36,8 @@ comparison:
 - You have more than 16 options. OpinionX sets no limit on Pair Rank options.
 - You run larger research: segmenting results by customer group, MaxDiff, conjoint or pricing studies.
 
+[MaxDiff vs ranking questions vs pairwise comparison](/guides/maxdiff-vs-pairwise-comparison) explains which method fits which kind of list.
+
 ## When Pairpoll is the better choice
 
 - You're comparing videos, with the option that each video plays once per pair before the voter picks.
@@ -51,3 +53,5 @@ A win rate counts how often each option won the pairs it appeared in. In Pairpol
 - [PickFu alternative](/alternatives/pickfu)
 - [PollUnit alternative](/alternatives/pollunit)
 - [Lyssna alternative](/alternatives/lyssna)
+- [StrawPoll alternative](/alternatives/strawpoll)
+- [UXtweak alternative](/alternatives/uxtweak)

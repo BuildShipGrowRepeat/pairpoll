@@ -15,7 +15,7 @@
   },
   "keywords": ["pairpoll", "poll", "cli", "image-poll", "video-poll", "pairwise-ranking", "preference-testing", "ai-agents"],
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "files": ["bin", "src"],
   "bin": {

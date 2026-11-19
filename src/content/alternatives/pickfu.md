@@ -46,3 +46,5 @@ PickFu's head to head poll asks about two options at once, and its ranked poll a
 - [PollUnit alternative](/alternatives/pollunit)
 - [OpinionX alternative](/alternatives/opinionx)
 - [Lyssna alternative](/alternatives/lyssna)
+- [StrawPoll alternative](/alternatives/strawpoll)
+- [UXtweak alternative](/alternatives/uxtweak)

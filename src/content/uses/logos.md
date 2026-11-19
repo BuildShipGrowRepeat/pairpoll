@@ -15,7 +15,7 @@ A designer has sent six logo concepts, or you've made a dozen yourself. The team
 
 ## Why pairs suit logos
 
-Logos differ in small ways: a heavier letter, a rounder mark, a different colour. Those differences are easy to see when two logos sit side by side and hard to see in a grid of twelve. Each voter only ever compares two, then the one they picked meets the next.
+Logos differ in small ways: a heavier letter, a rounder mark, a different colour. Those differences are easy to see when two logos sit side by side and hard to see in a grid of twelve. Each voter only ever compares two at a time, and the ones they pick move on to the next round.
 
 ## How a poll for logos works
 
@@ -57,5 +57,6 @@ Each browser gets one run per poll, and you can delete any entry you don't trust
 ## Related
 
 - [Compare designs](/for/designs) for layouts, covers and mockups.
+- [Packaging](/for/packaging) to test the logo on the pack.
 - [How many voters do you need?](/guides/how-many-voters-do-you-need)
 - [How voting in pairs works](/guides/how-voting-in-pairs-works)
