@@ -4,7 +4,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 ## Production (Cloudflare, Vladimir's account)
 
-- Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`. Zone settings: Always Use HTTPS on, HSTS six months (no subdomains, no preload).
+- Worker `pairpoll` on custom domain pairpoll.com (`www` redirects to it with a Cloudflare redirect rule and a proxied placeholder DNS record; no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`. Zone settings: Always Use HTTPS on, HSTS six months (no subdomains, no preload).
 - Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`, `RESEND_API_KEY`.
 - Deploy from this checkout: `npx wrangler d1 migrations apply DB --remote` (if new migrations), `npm run build`, `npx wrangler deploy`. No staging environment.
 - Email: sign-in links go through Resend's HTTP API (`src/server/email.ts`), sender `signin@pairpoll.com`, free plan shared with another of the owner's domains (3,000 emails a month, 100 a day in total). Domain verified in Resend (Ireland); DKIM, two CNAMEs and DMARC `p=none` are in Cloudflare DNS. Delivery to an outside address checked 19 Nov. Cloudflare Email Routing forwards `hello@pairpoll.com` to the owner.
@@ -68,7 +68,6 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Test Claude and ChatGPT connector sign-in against production (OAuth is deployed, not yet tried from the real apps).
 - npm publish of the CLI (the docs then drop the repository alias).
 - Vladimir's review of Terms and Privacy (About confirmed 19 Nov).
-- `www.pairpoll.com` redirect.
 - E2E on another machine: run `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` to an installed Chromium.
 
 ## Open questions (from docs/SPEC.md)
