@@ -1,6 +1,6 @@
 // Creator results: overall ranking, voters, sharing, export, close and delete, with live refresh.
 import {
-  announce, api, confirmDialog, copyField, dateTime, fromNow, h, loop, plural, thumb, type Poll, type Results,
+  announce, api, confirmDialog, copyField, dateTime, fromNow, h, plural, thumb, type Poll, type Results,
 } from "./client";
 
 const REFRESH = 5000;
@@ -49,17 +49,30 @@ export function mountResults(root: HTMLElement) {
       );
       return;
     }
+    // Where each row was, so rows can glide to their new places after a refresh.
+    const before = new Map(
+      [...root.querySelectorAll<HTMLElement>(".rank-item[data-id]")].map((row) => [row.dataset.id!, row.getBoundingClientRect().top]),
+    );
+    const best = Math.max(1, ...results.ranking.map((entry) => entry.points));
     $("[data-ranking]").replaceChildren(
       h(
         "ol",
         { class: "rank" },
-        results.ranking.map((entry) =>
+        results.ranking.map((entry, index) =>
           h(
             "li",
-            { class: `rank-item${entry.points ? "" : " is-zero"}` },
-            h("span", { class: "rank-place" }, String(entry.rank), entry.rank === 1 && entry.points ? loop("rank-loop") : null),
+            {
+              class: `rank-item${entry.rank === 1 && entry.points ? " is-first" : index >= 3 ? " is-rest" : ""}${entry.points ? "" : " is-zero"}`,
+              dataset: { id: entry.id },
+            },
+            h("span", { class: "rank-place" }, String(entry.rank)),
             h("span", { class: "frame rank-thumb" }, thumb(results.poll.kind, items.get(entry.id)!)),
-            h("span", { class: "rank-name" }, names.get(entry.id) ?? ""),
+            h(
+              "span",
+              { class: "rank-body" },
+              h("span", { class: "rank-name" }, names.get(entry.id) ?? ""),
+              h("span", { class: "rank-bar", "aria-hidden": "true" }, h("i", { style: `--share: ${(entry.points / best) * 100}%` })),
+            ),
             h(
               "span",
               { class: "rank-meta" },
@@ -70,6 +83,12 @@ export function mountResults(root: HTMLElement) {
         ),
       ),
     );
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    for (const row of root.querySelectorAll<HTMLElement>(".rank-item[data-id]")) {
+      const top = before.get(row.dataset.id!);
+      const moved = top === undefined ? 0 : top - row.getBoundingClientRect().top;
+      if (moved) row.animate([{ transform: `translateY(${moved}px)` }, { transform: "none" }], { duration: 480, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+    }
   }
 
   function renderVoters() {

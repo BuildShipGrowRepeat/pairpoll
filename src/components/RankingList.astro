@@ -1,12 +1,12 @@
 ---
-import PickLoop from "./PickLoop.astro";
-
-// Ranked items. Items sharing a place repeat the same number; every first place gets the loop.
+// Ranked items. Items sharing a place repeat the same number; first place is on yellow.
+// `share` (0 to 100) draws the bar under each name.
 export interface RankEntry {
   place: number;
   name: string;
   src?: string;
   meta?: string;
+  share?: number;
 }
 interface Props {
   entries: RankEntry[];
@@ -16,16 +16,20 @@ const { entries, ratio } = Astro.props;
 ---
 <ol class="rank">
   {
-    entries.map((entry) => (
-      <li class="rank-item">
-        <span class="rank-place">
-          {entry.place}
-          {entry.place === 1 && <PickLoop class="rank-loop" />}
-        </span>
+    entries.map((entry, index) => (
+      <li class:list={["rank-item", entry.place === 1 ? "is-first" : index >= 3 && "is-rest"]}>
+        <span class="rank-place">{entry.place}</span>
         <span class="frame rank-thumb" style={ratio ? `--ratio: ${ratio}` : undefined}>
           {entry.src && <img src={entry.src} alt="" loading="lazy" />}
         </span>
-        <span class="rank-name">{entry.name}</span>
+        <span class="rank-body">
+          <span class="rank-name">{entry.name}</span>
+          {entry.share !== undefined && (
+            <span class="rank-bar" aria-hidden="true">
+              <i style={`--share: ${entry.share}%`} />
+            </span>
+          )}
+        </span>
         <span class="rank-meta">{entry.meta}</span>
       </li>
     ))

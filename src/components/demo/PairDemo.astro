@@ -1,6 +1,5 @@
 ---
 import DuelCard from "../DuelCard.astro";
-import PickLoop from "../PickLoop.astro";
 import { demoSets, type DemoSetName } from "./sets";
 import { replay } from "../../lib/knockout";
 
@@ -24,7 +23,12 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
 <div class="pair-demo" id={id} data-demo data-items={JSON.stringify(demo.items)}>
   <div class="pair-demo-head">
     <p class="pair-demo-question">{question ?? demo.question}</p>
-    <p class="pair-demo-count" data-count aria-live="polite">Pick 1 of {first.total}</p>
+    <p class="pair-demo-count">
+      <span class="pegs" aria-hidden="true">
+        {Array.from({ length: first.total }, (_, i) => <span class:list={["peg", i === 0 && "is-now"]} />)}
+      </span>
+      <span data-count aria-live="polite">Pick 1 of {first.total}</span>
+    </p>
   </div>
 
   <div class:list={["duel", { "duel--portrait": w < h }]} data-stage style={pairStyle}>
@@ -48,7 +52,7 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
 
   <template data-rank-template>
     <li class="rank-item">
-      <span class="rank-place"><span data-place></span><PickLoop class="rank-loop" /></span>
+      <span class="rank-place" data-place></span>
       <span class="frame rank-thumb"><img alt="" /></span>
       <span class="rank-name" data-name></span>
       <span class="rank-meta"></span>
@@ -57,32 +61,56 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
 </div>
 
 <style>
+  /* A tray on the well tone; a compact pair: slimmer edges, smaller sticker and "or". */
   .pair-demo {
-    padding: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+    --depth: 5px;
+    --r-tile: 16px;
+    --r-frame: 10px;
+    padding: clamp(1rem, 2.5vw, 2rem);
     border-radius: var(--r-panel);
-    background: var(--sheet);
+    background: var(--well);
+  }
+
+  .pair-demo :global(.duel-face) {
+    padding: 6px;
+  }
+
+  .pair-demo :global(.duel-or) {
+    --or: 36px;
+    font-size: 0.875rem;
+    box-shadow: 0 0 0 4px var(--well);
+  }
+
+  .pair-demo :global(.sticker) {
+    width: 42px;
+    height: 42px;
+  }
+
+  .pair-demo :global(.sticker svg) {
+    width: 22px;
+    height: 22px;
   }
 
   .pair-demo-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--s-1) var(--s-4);
+    display: grid;
+    gap: var(--s-3);
     margin-bottom: var(--s-4);
   }
 
   .pair-demo-question {
-    font-size: var(--text-lg);
+    font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
     font-weight: var(--weight-display);
-    letter-spacing: -0.015em;
-    line-height: var(--leading-snug);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    text-wrap: balance;
   }
 
   .pair-demo-count {
-    font-size: var(--text-sm);
-    font-weight: var(--weight-ui);
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
     color: var(--ink-soft);
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
@@ -90,26 +118,23 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
     margin-inline: auto;
   }
 
-  /* An h2 for the outline, sized like the h3 it used to be. */
+  .pair-demo-result {
+    display: grid;
+    gap: var(--s-4);
+  }
+
   .pair-demo-result h2 {
-    margin-bottom: var(--s-2);
-    font-size: var(--text-lg);
-    line-height: var(--leading-snug);
-    letter-spacing: -0.01em;
+    font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
   }
 
   .pair-demo-result h2:focus {
     outline: none;
   }
 
-  .pair-demo-result .rank {
-    margin-bottom: var(--s-4);
-  }
-
   .pair-demo-note {
     margin-top: var(--s-4);
-    font-size: var(--text-sm);
     color: var(--ink-soft);
+    font-size: var(--text-sm);
   }
 </style>
 
@@ -126,6 +151,7 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
     const cards = [...root.querySelectorAll<HTMLButtonElement>("[data-stage] .duel-card")];
     const stage = root.querySelector<HTMLElement>("[data-stage]")!;
     const count = root.querySelector<HTMLElement>("[data-count]")!;
+    const pegs = [...root.querySelectorAll<HTMLElement>(".peg")];
     const result = root.querySelector<HTMLElement>("[data-result]")!;
     const list = root.querySelector<HTMLOListElement>("[data-rank]")!;
     const template = root.querySelector<HTMLTemplateElement>("[data-rank-template]")!;
@@ -138,6 +164,12 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
     const show = () => {
       const state = replay(ids, seed, picks, 3);
       busy = false;
+      const index = state.matches.length;
+      pegs.forEach((peg, i) => {
+        peg.classList.toggle("is-now", i === index);
+        peg.classList.toggle("is-done", i < index);
+        peg.classList.remove("is-popped");
+      });
       if (state.next) {
         state.next.forEach((itemId, i) => {
           const item = byId.get(itemId)!;
@@ -149,9 +181,13 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
           img.alt = item.name;
           card.classList.remove("is-picked", "is-passed");
         });
-        count.textContent = `Pick ${state.matches.length + 1} of ${state.total}`;
+        count.textContent = `Pick ${index + 1} of ${state.total}`;
         stage.hidden = false;
         result.hidden = true;
+        // The new pair slides in; restart the animation on the same cards.
+        stage.classList.remove("is-dealt");
+        void stage.offsetWidth;
+        if (index > 0) stage.classList.add("is-dealt");
         return;
       }
       list.replaceChildren(
@@ -159,7 +195,7 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
           const item = byId.get(itemId)!;
           const row = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
           row.querySelector("[data-place]")!.textContent = String(i + 1);
-          if (i > 0) row.querySelector(".rank-loop")!.remove();
+          if (i === 0) row.classList.add("is-first");
           row.querySelector("img")!.src = item.src;
           row.querySelector("[data-name]")!.textContent = item.name;
           return row;
@@ -178,8 +214,11 @@ const pairStyle = `max-width: ${(2 * 18 * w) / h + 3}rem`;
         for (const other of cards) {
           other.classList.add(other === card ? "is-picked" : "is-passed");
         }
+        const peg = pegs[picks.length];
+        peg?.classList.replace("is-now", "is-popped");
         picks = [...picks, card.dataset.item!];
-        window.setTimeout(show, reduceMotion.matches ? 250 : 700);
+        // Long enough to see the sticker land; the next pair is usable about 260 ms after the pick.
+        window.setTimeout(show, reduceMotion.matches ? 120 : 260);
       });
     }
 

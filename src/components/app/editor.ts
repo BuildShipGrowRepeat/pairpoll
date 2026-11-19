@@ -1,7 +1,7 @@
 // Draft editor: settings with autosave, uploads one file per request with progress and retry,
 // poster frames for videos, reorder and remove, preview, and opening the poll.
 import {
-  announce, api, ApiError, confirmDialog, copyField, fileSize, h, loop, plural, sheetStrip, thumb, upload, type Item, type Poll,
+  announce, api, ApiError, confirmDialog, copyField, fileSize, h, plural, sheetStrip, sticker, thumb, upload, type Item, type Poll,
 } from "./client";
 
 type Kind = "image" | "video";
@@ -602,7 +602,7 @@ export function mountEditor(root: HTMLElement) {
       h(
         "div",
         { class: "opened" },
-        h("div", { class: "opened-mark" }, sheetStrip(opened.kind, opened.items), loop("opened-loop")),
+        h("div", { class: "opened-mark" }, sheetStrip(opened.kind, opened.items), sticker()),
         h("h1", { tabindex: "-1" }, "Your poll is open"),
         h("p", null, "Send this link to the people you want to ask. They don't need an account."),
         copyField(link, "Voting link"),

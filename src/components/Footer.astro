@@ -68,8 +68,9 @@ const groups = [
   .site-footer {
     margin-top: auto;
     padding-block: var(--s-7) var(--s-5);
-    background: var(--sheet);
-    font-size: var(--text-sm);
+    border-top: 2px solid var(--well);
+    color: var(--ink-soft);
+    font-size: 1rem;
   }
 
   .site-footer-grid {
@@ -81,29 +82,27 @@ const groups = [
   .site-footer-brand p {
     max-width: 22em;
     margin-top: var(--s-3);
-    color: var(--ink-soft);
   }
 
   .site-footer h2 {
-    font-size: var(--text-sm);
-    font-weight: var(--weight-ui);
-    letter-spacing: 0;
     color: var(--ink);
+    font-size: 1rem;
+    font-weight: var(--weight-display);
+    letter-spacing: 0;
   }
 
   .site-footer ul {
-    margin: var(--s-3) 0 0;
+    margin: var(--s-2) 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .site-footer li + li {
-    margin-top: var(--s-2);
-  }
-
-  .site-footer a,
+  .site-footer li a,
   .site-footer-button {
-    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    color: inherit;
     text-decoration: none;
   }
 
@@ -115,21 +114,16 @@ const groups = [
     cursor: pointer;
   }
 
-  .site-footer a:hover,
+  .site-footer li a:hover,
   .site-footer-button:hover {
     color: var(--ink);
     text-decoration: underline;
   }
 
   .site-footer-base {
-    margin-top: var(--s-7);
+    margin-top: var(--s-6);
     padding-top: var(--s-4);
-    border-top: 1px solid var(--line);
-    color: var(--ink-soft);
-  }
-
-  .site-footer-base a {
-    text-decoration: underline;
+    border-top: 2px solid var(--well);
   }
 
   @media (max-width: 47.99rem) {

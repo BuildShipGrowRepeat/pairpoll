@@ -1,5 +1,5 @@
 ---
-import PickLoop from "./PickLoop.astro";
+import Sticker from "./Sticker.astro";
 
 // One side of a pair. Images: the whole card is the pick button.
 // Videos: the video plays inside the frame and a separate button below picks it
@@ -19,18 +19,22 @@ const style = ratio ? `--ratio: ${ratio}` : undefined;
 {
   kind === "image" ? (
     <button type="button" class="duel-card" data-item={id} aria-label={pickLabel}>
-      <span class="frame" style={style}>
-        <img src={src} alt={alt} draggable="false" />
+      <span class="duel-face">
+        <span class="frame" style={style}>
+          <img src={src} alt={alt} draggable="false" />
+        </span>
       </span>
-      <PickLoop class="duel-loop" />
+      <Sticker />
     </button>
   ) : (
     <div class="duel-card" data-item={id}>
-      <div class="frame" style={style}>
-        <video src={src} poster={poster} playsinline preload="metadata" />
+      <div class="duel-face">
+        <div class="frame" style={style}>
+          <video src={src} poster={poster} playsinline preload="metadata" />
+        </div>
       </div>
-      <PickLoop class="duel-loop" />
-      <button type="button" class="btn btn--secondary btn--block duel-pick">
+      <Sticker />
+      <button type="button" class="btn btn--primary btn--block duel-pick">
         {pickLabel}
       </button>
     </div>

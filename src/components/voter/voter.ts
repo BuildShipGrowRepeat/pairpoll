@@ -1,6 +1,6 @@
 // The voter's flow: intro with the rules, name and start; the pairs; the voter's own top list;
 // and every state a poll link can be in. Used by /p/<code> and by the creator's preview.
-import { ApiError, announce, h, loop, mediaUrl, type PublicPoll, type VoterState } from "../app/client";
+import { ApiError, announce, h, mediaUrl, sticker, type PublicPoll, type VoterState } from "../app/client";
 import { createCheck } from "../app/turnstile";
 import { pairCount, type Driver } from "./driver";
 
@@ -77,8 +77,22 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") onVisible?.();
   });
+  // Image pairs on a desktop: the arrow keys or 1 and 2 pick the left or right one.
+  const keys = !isVideo && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let onKey: ((side: number) => void) | null = null;
+  if (keys) {
+    document.addEventListener("keydown", (event) => {
+      const side = ({ ArrowLeft: 0, ArrowRight: 1, "1": 0, "2": 1 } as Record<string, number>)[event.key];
+      // A held key would otherwise pick on every new pair.
+      if (side === undefined || !onKey || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || document.querySelector("dialog[open]")) return;
+      event.preventDefault();
+      onKey(side);
+    });
+  }
 
   const show = (...nodes: Node[]) => {
+    onKey = null;
     stage.replaceChildren(...nodes);
   };
 
@@ -156,7 +170,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     const error = h("p", { class: "field-error", id: "voter-name-error", "aria-live": "polite" });
     const start = h("button", { type: "submit", class: "btn btn--primary btn--lg btn--block" }, "All clear, start");
     const widget = h("div", { class: "turnstile" });
-    const list = h("ul", { class: "rules" }, rules.map((rule) => h("li", null, rule)));
+    const list = h("ol", { class: "rules" }, rules.map((rule) => h("li", null, rule)));
     const form = h(
       "form",
       { class: "intro-form", novalidate: true },
@@ -173,7 +187,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     );
     show(h("section", { class: "intro" }, h("h1", null, poll.question), list, form));
     if (options.sitekey) check = createCheck(widget, options.sitekey, "join");
-    revealRules(list, form);
 
     name.addEventListener("input", () => {
       error.textContent = "";
@@ -199,30 +212,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         fail(thrown, problem);
       }
     });
-  }
-
-  // Lines appear one after another; any tap or key shows everything at once.
-  function revealRules(list: HTMLElement, form: HTMLElement) {
-    if (reduce.matches) return;
-    const lines = [...list.children];
-    list.classList.add("is-revealing");
-    form.classList.add("is-waiting");
-    let index = 0;
-    let timer = 0;
-    const finish = () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("pointerdown", finish);
-      window.removeEventListener("keydown", finish);
-      lines.forEach((line) => line.classList.add("is-shown"));
-      form.classList.remove("is-waiting");
-    };
-    const step = () => {
-      lines[index++].classList.add("is-shown");
-      timer = window.setTimeout(index < lines.length ? step : finish, index < lines.length ? 700 : 450);
-    };
-    timer = window.setTimeout(step, 300);
-    window.addEventListener("pointerdown", finish);
-    window.addEventListener("keydown", finish);
   }
 
   // Pairs ------------------------------------------------------------------------
@@ -253,6 +242,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     const [a, b] = state.pair!.map((id) => items.get(id)!);
     const hadFocus = stage.contains(document.activeElement);
     const statusLine = h("p", { class: "duel-status", role: "status" });
+    const pegs = Array.from({ length: state.total }, (_, i) => h("span", { class: `peg${i < state.index ? " is-done" : i === state.index ? " is-now" : ""}` }));
     const head = h(
       "header",
       { class: "vote-head" },
@@ -260,8 +250,8 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
       h(
         "p",
         { class: "vote-count" },
+        h("span", { class: "pegs", "aria-hidden": "true" }, pegs),
         `Pair ${state.index + 1} of ${state.total}`,
-        h("span", { class: "vote-track", "aria-hidden": "true" }, h("span", { style: `--done: ${state.index / state.total}` })),
       ),
     );
     document.title = `${poll.question} | Pairpoll`;
@@ -276,7 +266,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     const tiles: Tile[] = [a, b].map((item, slot) => (isVideo ? videoTile(item, slot) : imageTile(item, slot)));
     const duel = h(
       "div",
-      { class: `duel${ratio < 1.2 ? " duel--portrait" : ""}`, style: `--ratio-n: ${ratio}` },
+      { class: `duel${ratio < 1.2 ? " duel--portrait" : ""}${entering ? " is-dealt" : ""}`, style: `--ratio-n: ${ratio}` },
       h("div", { class: "duel-pair" }, tiles[0].card, h("span", { class: "duel-or", "aria-hidden": "true" }, "or"), tiles[1].card),
     );
     tiles.forEach((tile) => tile.card.querySelector<HTMLElement>(".frame")!.style.setProperty("--ratio", String(ratio)));
@@ -296,16 +286,19 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         tile.card.classList.add(tile.item.id === winner ? "is-picked" : "is-passed");
         tile.card.querySelectorAll("button").forEach((button) => (button.disabled = true));
       });
+      pegs[current.index]?.classList.replace("is-now", "is-popped");
       say("Picked.");
-      const pause = wait(reduce.matches ? 200 : 650);
+      // Long enough to see the sticker land; the next pair is usable about 260 ms after the pick.
+      const pause = wait(reduce.matches ? 120 : 260);
       try {
         const next = await driver.vote(current, winner);
         await pause;
         render(next, true);
       } catch (error) {
         busy = false;
+        pegs[current.index]?.classList.replace("is-popped", "is-now");
         tiles.forEach((tile) => {
-          tile.card.classList.remove("is-picked", "is-passed");
+          tile.card.classList.remove("is-picked", "is-passed", "is-down");
           tile.card.querySelectorAll("button").forEach((button) => (button.disabled = false));
           tile.sync?.();
         });
@@ -329,7 +322,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
           { type: "button", class: "duel-zoom", "aria-label": `View the ${label} image larger`, title: "View larger", onclick: () => viewLarger(src, label, () => pick(item.id)) },
           svg(ZOOM_ICON, "0 0 20 20", { fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round" }),
         ),
-        loop("duel-loop"),
+        sticker(),
       );
       return { item, card };
     }
@@ -355,10 +348,10 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
       const frame = h("div", { class: "frame" }, video);
       const pickButton = h(
         "button",
-        { type: "button", class: "btn btn--secondary btn--block duel-pick", onclick: () => pick(item.id) },
+        { type: "button", class: "btn btn--primary btn--block duel-pick", onclick: () => pick(item.id) },
         `Pick video ${number}`,
       );
-      const card = h("div", { class: "duel-card", dataset: { item: item.id } }, frame, loop("duel-loop"), pickButton);
+      const card = h("div", { class: "duel-card", dataset: { item: item.id } }, h("div", { class: "duel-face" }, frame), sticker(), pickButton);
       const tile: Tile = { item, card, video, pickButton };
       if (!playsOnce) return tile;
 
@@ -376,15 +369,18 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         h(
           "span",
           null,
-          svg(CHECK_ICON, "0 0 24 24", { fill: "none", stroke: "var(--paper)", "stroke-width": "2.5", "stroke-linecap": "round", "stroke-linejoin": "round" }),
+          svg(CHECK_ICON, "0 0 24 24", { fill: "none", stroke: "#fff", "stroke-width": "2.5", "stroke-linecap": "round", "stroke-linejoin": "round" }),
           "Played",
         ),
       );
       const disc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      for (const [key, value] of Object.entries({ cx: "12", cy: "12", r: "12", fill: "var(--ink)" })) disc.setAttribute(key, value);
+      for (const [key, value] of Object.entries({ cx: "12", cy: "12", r: "12", fill: "#15173a" })) disc.setAttribute(key, value);
       const sealArt = seal.querySelector("svg")!;
       sealArt.insertBefore(disc, sealArt.firstChild);
-      for (const part of [cover, note, seal]) frame.appendChild(part);
+      // A bar along the bottom fills as the video plays, once.
+      const bar = h("span", { class: "bar-play", "aria-hidden": "true" });
+      video.addEventListener("timeupdate", () => bar.style.setProperty("--done", String(video.duration ? video.currentTime / video.duration : 0)));
+      for (const part of [bar, cover, note, seal]) frame.appendChild(part);
 
       const setNote = (...content: (Node | string)[]) => {
         note.replaceChildren(...content);
@@ -399,7 +395,9 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         seal.hidden = !played;
         card.classList.toggle("is-waiting", other);
         card.classList.toggle("is-playing", playing === slot);
-        pickButton.hidden = !current.played.every(Boolean);
+        const ready = current.played.every(Boolean);
+        if (ready && pickButton.hidden) pickButton.classList.add("is-ready");
+        pickButton.hidden = !ready;
         if (played || playing !== slot) setNote();
       };
       tile.sync = sync;
@@ -492,6 +490,19 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     if (playsOnce) {
       const remaining = current.played.findIndex((played) => !played);
       say(remaining === -1 ? "Both played. Pick the one you like more." : current.played.some(Boolean) ? `Now play video ${remaining + 1}.` : "Tap a video to play it. Each plays once.");
+    } else if (keys) {
+      statusLine.replaceChildren(
+        h("span", { class: "visually-hidden" }, `Pair ${current.index + 1} of ${current.total}. `),
+        "Click the one you like more, or press ",
+        h("kbd", null, "←"),
+        " ",
+        h("kbd", null, "→"),
+      );
+      onKey = (side) => {
+        if (busy) return;
+        tiles[side].card.classList.add("is-down");
+        void pick(tiles[side].item.id);
+      };
     } else {
       say(isVideo ? "Watch both, then pick the one you like more." : "Tap the one you like more.");
     }
@@ -531,7 +542,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         : "Your picks are saved. You can close this page.";
     const list = h(
       "ol",
-      { class: `top-list${ranking.length > 1 ? " has-many" : ""}` },
+      { class: `top-list${ranking.length > 1 ? " has-many" : ""}`, dataset: { count: String(ranking.length) } },
       ranking.map((id, place) => {
         const item = items.get(id)!;
         const media = !isVideo || item.posterId
@@ -541,7 +552,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
           "li",
           null,
           h("span", { class: "top-place" }, String(place + 1), h("span", { class: "visually-hidden" }, `: ${noun} ${place + 1} of your list`)),
-          h("div", { class: "top-frame" }, h("span", { class: "frame", style: "--ratio: 16 / 9" }, media), place === 0 ? loop("duel-loop") : null),
+          h("div", { class: "top-frame" }, h("span", { class: "frame", style: "--ratio: 16 / 9" }, media)),
         );
       }),
     );

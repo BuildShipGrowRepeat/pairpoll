@@ -2,6 +2,7 @@
 import Base from "./Base.astro";
 import Logo from "../components/Logo.astro";
 import Consent from "../components/Consent.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 // Creator app shell: always noindex. Pages put their title row and content in the slot.
 interface Props {
@@ -33,6 +34,7 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
           }
         </ul>
       </nav>
+      <ThemeToggle />
     </div>
   </header>
   <main id="main" class="wrap app-main">
@@ -43,62 +45,57 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
 
 <style>
   .app-header {
-    border-bottom: 1px solid var(--line);
+    padding-block: var(--s-4);
   }
 
   .app-header-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--s-2) var(--s-5);
-    min-height: 4rem;
+    gap: var(--s-2) var(--s-3);
+  }
+
+  .app-header-row > :global(.logo) {
+    margin-right: auto;
   }
 
   .app-header ul {
     display: flex;
     gap: var(--s-1);
-    margin: 0 -0.75rem 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .app-header a:not(.logo) {
-    display: block;
-    padding: var(--s-2) var(--s-3);
-    border-radius: var(--r-control);
-    color: var(--ink-soft);
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--s-3);
+    border-radius: 10px;
+    font-weight: 600;
     text-decoration: none;
   }
 
   .app-header a:not(.logo):hover {
-    background: var(--sheet);
+    background: var(--well);
     color: var(--ink);
   }
 
   .app-header a[aria-current="page"] {
-    color: var(--ink);
-    background: var(--sheet);
+    background: var(--well);
   }
 
-  @media (max-width: 30rem) {
-    .app-header-row {
-      flex-wrap: nowrap;
-      gap: var(--s-3);
-    }
-
-    .app-header ul {
-      gap: 0;
-      margin-right: -0.5rem;
-    }
-
-    .app-header a:not(.logo) {
-      padding-inline: var(--s-2);
+  /* Phones: the app links get their own row under the logo. */
+  @media (max-width: 39.99rem) {
+    .app-header nav {
+      order: 3;
+      width: 100%;
+      margin-left: calc(-1 * var(--s-3));
     }
   }
 
   .app-main {
-    padding-block: var(--s-6) var(--s-8);
+    padding-block: var(--s-5) var(--s-8);
   }
 </style>

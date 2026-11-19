@@ -1,5 +1,6 @@
 ---
 import Logo from "./Logo.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 
 interface Props {
   signedIn?: boolean;
@@ -32,6 +33,7 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
         <li><a href={account.href}>{account.label}</a></li>
       </ul>
     </nav>
+    <ThemeToggle />
     <a class="btn btn--primary btn--sm" href="/app/new">Create a poll</a>
     <details class="site-menu">
       <summary aria-label="Menu">
@@ -57,19 +59,21 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
 
 <style>
   .site-header {
-    border-bottom: 1px solid var(--line);
-    background: var(--paper);
+    padding-block: var(--s-4);
   }
 
   .site-header-row {
     display: flex;
     align-items: center;
-    gap: var(--s-5);
-    min-height: 4rem;
+    gap: var(--s-3);
   }
 
-  .site-nav {
-    margin-left: auto;
+  .site-header-row > :global(.logo) {
+    margin-right: auto;
+  }
+
+  .site-header-row > :global(.btn) {
+    margin-bottom: 4px;
   }
 
   .site-nav ul,
@@ -83,23 +87,23 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
 
   .site-nav a,
   .site-menu a {
-    display: block;
-    padding: var(--s-2) var(--s-3);
-    border-radius: var(--r-control);
-    color: var(--ink-soft);
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--s-3);
+    border-radius: 10px;
+    font-weight: 600;
     text-decoration: none;
   }
 
   .site-nav a:hover,
   .site-menu a:hover {
+    background: var(--well);
     color: var(--ink);
-    background: var(--sheet);
   }
 
   .site-nav a[aria-current="page"],
   .site-menu a[aria-current="page"] {
-    color: var(--ink);
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 0.35em;
@@ -113,10 +117,10 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
   .site-menu summary {
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 44px;
+    height: 44px;
     margin-right: -0.5rem;
-    border-radius: var(--r-control);
+    border-radius: 50%;
     list-style: none;
     cursor: pointer;
   }
@@ -125,8 +129,9 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
     display: none;
   }
 
+  .site-menu summary:hover,
   .site-menu[open] summary {
-    background: var(--sheet);
+    background: var(--well);
   }
 
   .site-menu ul {
@@ -137,32 +142,34 @@ const current = (href: string) => path === href || path.startsWith(`${href}/`);
     flex-direction: column;
     min-width: 12rem;
     padding: var(--s-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r-panel);
-    background: var(--paper);
-    box-shadow: 0 12px 32px -16px rgb(29 26 51 / 0.35);
+    border-radius: var(--r-tile);
+    background: var(--surface);
+    box-shadow:
+      0 4px 0 var(--edge),
+      0 18px 32px -16px var(--shade);
   }
 
   .site-menu a {
     padding: var(--s-3);
-    font-size: var(--text-md);
   }
 
   @media (max-width: 47.99rem) {
     .site-header-row {
-      gap: var(--s-3);
+      gap: var(--s-2);
     }
 
     .site-nav {
       display: none;
     }
 
-    .site-header-row > .btn {
-      margin-left: auto;
-    }
-
     .site-menu {
       display: block;
+    }
+  }
+
+  @media (max-width: 23.99rem) {
+    .site-header-row > :global(.btn) {
+      padding-inline: 0.75rem;
     }
   }
 </style>

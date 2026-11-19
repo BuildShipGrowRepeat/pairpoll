@@ -1,7 +1,6 @@
 ---
 import { env } from "cloudflare:workers";
 import Voter from "../../layouts/Voter.astro";
-import PickLoop from "../../components/PickLoop.astro";
 import { ServerError } from "../../server/errors";
 import { getSharedResults } from "../../server/results";
 import "../../styles/app.css";
@@ -20,6 +19,7 @@ if (!results) Astro.response.status = 404;
 
 // A voter's top list is never longer than the poll, so neither are the points.
 const topSize = Math.min(results?.topSize ?? 1, results?.items.length ?? 1);
+const best = Math.max(1, ...(results?.ranking.map((entry) => entry.points) ?? []));
 const plural = (count: number, one: string) => `${count} ${count === 1 ? one : `${one}s`}`;
 const items = new Map(results?.items.map((item) => [item.id, item]));
 const media = (id: string) => {
@@ -47,18 +47,18 @@ const media = (id: string) => {
             <p class="empty-line">No one has finished voting yet. Check back later.</p>
           ) : (
             <ol class="rank">
-              {results.ranking.map((entry) => {
+              {results.ranking.map((entry, index) => {
                 const item = media(entry.id);
                 return (
-                  <li class:list={["rank-item", !entry.points && "is-zero"]}>
-                    <span class="rank-place">
-                      {entry.rank}
-                      {entry.rank === 1 && entry.points > 0 && <PickLoop class="rank-loop" />}
-                    </span>
+                  <li class:list={["rank-item", entry.rank === 1 && entry.points > 0 ? "is-first" : index >= 3 && "is-rest", !entry.points && "is-zero"]}>
+                    <span class="rank-place">{entry.rank}</span>
                     <span class="frame rank-thumb">
                       {item.video ? <video src={`${item.src}#t=0.1`} preload="metadata" muted playsinline /> : <img src={item.src} alt="" loading="lazy" />}
                     </span>
-                    <span class="rank-name">{item.label}</span>
+                    <span class="rank-body">
+                      <span class="rank-name">{item.label}</span>
+                      <span class="rank-bar" aria-hidden="true"><i style={`--share: ${(entry.points / best) * 100}%`}></i></span>
+                    </span>
                     <span class="rank-meta">
                       <span class="rank-points">{plural(entry.points, "point")}</span>
                       {entry.firsts > 0 && plural(entry.firsts, "first place")}
@@ -112,17 +112,23 @@ const media = (id: string) => {
 
 <style>
   .shared {
-    gap: var(--s-7);
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+    max-width: 58rem;
+    padding-top: clamp(0.5rem, 2vw, 1.5rem);
   }
 
   .shared-title {
-    font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+    font-size: clamp(2.25rem, 1.5rem + 3.6vw, 4rem);
     overflow-wrap: anywhere;
-    margin-bottom: var(--s-3);
   }
 
-  .shared .voter-list {
-    margin-top: var(--s-4);
+  .shared .page-head-meta {
+    color: var(--ink);
+    font-size: var(--text-md);
+  }
+
+  .shared .section-title {
+    margin-bottom: var(--s-4);
   }
 
   .shared-note {

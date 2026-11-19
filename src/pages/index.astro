@@ -1,30 +1,20 @@
 ---
+import { getCollection } from "astro:content";
 import Marketing from "../layouts/Marketing.astro";
 import DemoHero from "../components/DemoHero.astro";
-import RankingList from "../components/RankingList.astro";
-import LinkList from "../components/LinkList.astro";
 import { demoSets } from "../components/demo/sets";
 
 const description =
   "A free image and video poll. Upload 2 to 16, share one link, and people pick the better of two. You get every voter's top list and the overall ranking.";
 
-// The eight launch use pages (docs/SPEC.md). Each links to /for/<slug>.
-const uses = [
-  { slug: "thumbnails", name: "Thumbnails", blurb: "Find the YouTube thumbnail your viewers would click." },
-  { slug: "ad-creatives", name: "Ad creatives", blurb: "See which ad your audience prefers before you pay to run it." },
-  { slug: "logos", name: "Logos", blurb: "Let your team or customers choose between logo options." },
-  { slug: "designs", name: "Designs", blurb: "Compare mockups, covers and layouts with real people." },
-  { slug: "photos", name: "Photos", blurb: "Pick the best shots from a set." },
-  { slug: "product-images", name: "Product images", blurb: "Choose the main photo for a product listing." },
-  { slug: "video-cuts", name: "Video cuts", blurb: "Compare different edits of the same video." },
-  { slug: "app-screenshots", name: "App screenshots", blurb: "Choose the screenshots for your app store page." },
-];
+// Every use page, in its own order.
+const uses = (await getCollection("uses")).sort((a, b) => a.data.order - b.data.order);
 
 const art = demoSets.thumbnails.items;
 const sampleRanking = [
-  { place: 1, name: "Rocket launch", src: art[2].src },
-  { place: 2, name: "City at night", src: art[5].src },
-  { place: 3, name: "Sunrise hike", src: art[0].src },
+  { src: art[2].src, share: 100 },
+  { src: art[5].src, share: 70 },
+  { src: art[0].src, share: 45 },
 ];
 
 const jsonLd = {
@@ -43,38 +33,51 @@ const jsonLd = {
 ---
 <Marketing title="Free image and video poll, ranked head to head | Pairpoll" description={description} jsonLd={jsonLd}>
   <DemoHero
-    title="A poll for images and videos, ranked head to head"
-    lead="A free poll with pictures or videos. Upload 2 to 16, send one link, and each person picks the better of two until their top list is settled. You see every voter's list and the overall ranking."
+    title={["Too many good options?", "Let people pick, two at a time."]}
+    lead="A free poll for images and videos. Upload 2 to 16, send one link, and people pick the better of two until their favourites are clear."
+    create="Create a free poll"
+    tryLabel="Try the sample poll"
+    note="Free and open source. Voters don't sign up."
   />
 
   <section class="section wrap" aria-labelledby="how-title">
     <div class="section-head">
       <h2 id="how-title">How it works</h2>
-      <p class="lead">A this or that poll that keeps going: each voter compares two at a time until their favourites are clear. This is called <a href="/for/pairwise-ranking">pairwise ranking</a>.</p>
+      <p class="lead">Choosing from a full grid is hard. Choosing between two is easy, so that is all a voter ever sees.</p>
     </div>
     <ol class="steps">
       <li class="step">
-        <div class="step-art step-art--grid" aria-hidden="true">
-          {art.map((item) => <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>)}
-          <span class="frame"></span>
-          <span class="frame"></span>
+        <div class="step-art" aria-hidden="true">
+          <div class="mini-grid">
+            {art.map((item) => <span><span class="frame"><img src={item.src} alt="" loading="lazy" /></span></span>)}
+            <span class="is-empty"><span class="frame"></span></span>
+            <span class="is-empty"><span class="frame"></span></span>
+          </div>
         </div>
-        <h3><span class="step-n">1</span>Upload your options</h3>
+        <h3>Put your options together</h3>
         <p>Add 2 to 16 images or videos and the question voters will see.</p>
       </li>
       <li class="step">
-        <div class="step-art step-art--link" aria-hidden="true">
-          <span class="link-pill">pairpoll.com/p/7hq2xk</span>
-        </div>
-        <h3><span class="step-n">2</span>Share one link</h3>
-        <p>Send it to your audience, your team or a few friends. Each person picks one of two, again and again.</p>
+        <div class="step-art" aria-hidden="true"><span class="link-key">pairpoll.com/p/7hq2xk</span></div>
+        <h3>Send one link</h3>
+        <p>Share it with friends, your team or your audience. Each person picks the better of two, a few times over.</p>
       </li>
       <li class="step">
         <div class="step-art" aria-hidden="true">
-          <RankingList entries={sampleRanking} />
+          <ol class="mini-rank">
+            {
+              sampleRanking.map((row, i) => (
+                <li>
+                  {i + 1}
+                  <span class="frame"><img src={row.src} alt="" loading="lazy" /></span>
+                  <i style={`--share: ${row.share}%`} />
+                </li>
+              ))
+            }
+          </ol>
         </div>
-        <h3><span class="step-n">3</span>Get the ranking</h3>
-        <p>See each voter's top list and an overall ranking from everyone who finished.</p>
+        <h3>See the favourites</h3>
+        <p>You get each person's top list and an overall ranking.</p>
       </li>
     </ol>
   </section>
@@ -82,218 +85,440 @@ const jsonLd = {
   <section class="section wrap" aria-labelledby="uses-title">
     <div class="section-head">
       <h2 id="uses-title">What you can rank</h2>
-      <p class="lead">Use it as an image poll for anything people can judge by looking, or put video cuts side by side.</p>
+      <p class="lead">Anything people can judge by looking. Images or videos, one kind per poll.</p>
     </div>
-    <LinkList columns={4} items={uses.map((use) => ({ href: `/for/${use.slug}`, name: use.name, blurb: use.blurb }))} />
+    <ul class="uses">
+      {
+        uses.map((use) => (
+          <li>
+            <a class="use" href={`/for/${use.id}`}>
+              <b>{use.data.name}</b>
+              <span>{use.data.blurb}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 
-  <section class="section wrap agents" aria-labelledby="agents-title">
-    <div>
-      <h2 id="agents-title">Your AI agent can run the poll</h2>
-      <p class="lead">
-        Everything you can do in the browser also works for agents: create a poll, add files, share the link and read the
-        results.
-      </p>
-      <p><a href="/docs/agents">Read the agent docs</a></p>
+  <section class="section wrap" aria-labelledby="facts-title">
+    <div class="section-head">
+      <h2 id="facts-title">Good to know</h2>
     </div>
-    <dl class="agents-list">
-      <div>
-        <dt>API</dt>
-        <dd>REST endpoints under <code>/api/v1</code>, with an API key you create in your account.</dd>
-      </div>
-      <div>
-        <dt>CLI</dt>
-        <dd>The <code>pairpoll</code> command creates a poll from a folder of files in one step.</dd>
-      </div>
-      <div>
-        <dt>MCP server</dt>
-        <dd>Connect an assistant that supports MCP, and it can set up polls and fetch results for you.</dd>
-      </div>
+    <dl class="facts">
+      <div><dt>Voters don't sign up</dt><dd>They open the link, type a name and start picking.</dd></div>
+      <div><dt>Top 1, 3 or 5</dt><dd>You choose how long each voter's top list is.</dd></div>
+      <div><dt>Videos can play once</dt><dd>Turn this on and each video plays to the end before a voter can pick.</dd></div>
+      <div><dt>Up to 200 voters</dt><dd>That is the limit for one poll. Each browser votes once.</dd></div>
     </dl>
   </section>
 
-  <section class="section wrap closing" aria-labelledby="free-title">
+  <div class="section wrap">
+    <section class="agents" aria-labelledby="agents-title">
+      <div>
+        <h2 id="agents-title">Your AI agent can run the poll</h2>
+        <p class="lead">
+          Ask your assistant to set up a poll, send you the link and read the results.
+        </p>
+        <ul class="clients" aria-label="Works with">
+          <li>Claude</li>
+          <li>ChatGPT</li>
+          <li>Claude Code</li>
+          <li>Codex</li>
+          <li>Cursor</li>
+        </ul>
+        <p><a href="/docs/agents"><b>Read the agent docs</b></a></p>
+      </div>
+      <div>
+        <pre class="terminal" aria-label="Example command">pairpoll create ./thumbnails \
+  --question "Which thumbnail would you click?" \
+  --top 3 --open</pre>
+        <dl class="agents-list">
+          <div>
+            <dt>MCP server</dt>
+            <dd>
+              Add <code>pairpoll.com/mcp</code> to Claude or ChatGPT as a custom connector and sign in. Claude Code, Codex and
+              Cursor connect with an API key. You add the files in a browser page your assistant links to.
+            </dd>
+          </div>
+          <div>
+            <dt>CLI</dt>
+            <dd>The <code>pairpoll</code> command makes a poll from a folder of files in one step.</dd>
+          </div>
+          <div>
+            <dt>API</dt>
+            <dd>REST endpoints under <code>/api/v1</code>, with an API key you create in your account.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+
+  <section class="section wrap open" aria-labelledby="free-title">
     <h2 id="free-title">Free and open source</h2>
     <p class="lead">
-      Pairpoll is free to use and its <a href="https://github.com/BuildShipGrowRepeat/pairpoll">code is on GitHub</a>.
-      Polls, files and votes are deleted 30 days after a poll is created.
+      Pairpoll is free to use, and its <a href="https://github.com/BuildShipGrowRepeat/pairpoll">code is on GitHub</a>.
+      Polls, files and votes are deleted 30 days after a poll is created. <a href="/about">About Pairpoll</a>
     </p>
-    <div class="actions">
-      <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
-      <a class="btn btn--quiet btn--lg" href="/about">About Pairpoll</a>
-    </div>
   </section>
+
+  <div class="wrap">
+    <section class="cta" aria-labelledby="cta-title">
+      <div>
+        <h2 id="cta-title">Got a few options? Find the favourite.</h2>
+        <p>It's free, and your voters don't need an account.</p>
+      </div>
+      <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
+    </section>
+  </div>
 </Marketing>
 
 <style>
-  .section-head {
-    display: grid;
-    gap: var(--s-4);
-    margin-bottom: var(--s-6);
-  }
-
   /* How it works */
   .steps {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(1.5rem, 3vw, 3rem);
+    gap: var(--s-6) clamp(1.5rem, 3vw, 3rem);
     margin: 0;
     padding: 0;
     list-style: none;
+    counter-reset: step;
   }
 
-  .step h3 {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-3);
-    margin-top: var(--s-5);
-    font-size: var(--text-xl);
-  }
-
-  .step-n {
-    font-variant-numeric: tabular-nums;
-    color: var(--marker-ink);
-  }
-
-  .step p {
-    margin-top: var(--s-2);
-    color: var(--ink-soft);
-    max-width: 24em;
+  .step {
+    counter-increment: step;
   }
 
   .step-art {
     display: grid;
     align-content: center;
-    aspect-ratio: 16 / 10;
-    padding: var(--s-4);
-    border-radius: var(--r-panel);
-    background: var(--sheet);
-    overflow: hidden;
+    min-height: 12rem;
+    padding: 1.25rem;
+    border-radius: 24px;
+    background: var(--well);
   }
 
-  .step-art--grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--s-2);
+  .step h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-top: 1.25rem;
+    font-size: var(--text-xl);
   }
 
-  .step-art--grid .frame:nth-child(n + 7) {
-    background: none;
-    box-shadow: inset 0 0 0 1.5px var(--line-strong);
-    opacity: 0.6;
-  }
-
-  .step-art--link {
+  .step h3::before {
+    content: counter(step);
+    display: grid;
     place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--page);
+    font-size: 1.125rem;
   }
 
-  .link-pill {
-    padding: var(--s-3) var(--s-4);
+  .step p {
+    max-width: 26em;
+    margin-top: var(--s-2);
+    color: var(--ink-soft);
+  }
+
+  .mini-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .mini-grid > span {
+    display: block;
+    padding: 3px;
+    border-radius: 9px;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+  }
+
+  .mini-grid .frame {
+    border-radius: 6px;
+  }
+
+  .mini-grid .is-empty {
+    background: none;
+    box-shadow: inset 0 0 0 2px var(--line);
+  }
+
+  .mini-grid .is-empty .frame {
+    background: none;
+  }
+
+  .link-key {
+    justify-self: center;
+    max-width: 100%;
+    padding: 0.85rem 1.25rem;
     border-radius: var(--r-control);
-    background: var(--paper);
-    box-shadow: 0 0 0 1.5px var(--line);
+    background: var(--surface);
+    box-shadow: 0 4px 0 var(--edge);
     font-weight: var(--weight-ui);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .step-art :global(.rank-item) {
-    grid-template-columns: 2rem 3.5rem 1fr auto;
-    padding-block: 0.45rem;
-    font-size: var(--text-sm);
+  .mini-rank {
+    display: grid;
+    gap: 6px;
+    justify-self: center;
+    width: min(100%, 19rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .step-art :global(.rank-place) {
-    font-size: var(--text-lg);
+  .mini-rank li {
+    display: grid;
+    grid-template-columns: 1.25rem 3.5rem 1fr;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 5px 0.75rem 5px 0.5rem;
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    font-weight: var(--weight-display);
   }
 
-  /* Agents */
+  .mini-rank li:first-child {
+    background: var(--yellow);
+    box-shadow: 0 3px 0 var(--yellow-deep);
+    color: var(--on-yellow);
+  }
+
+  .mini-rank .frame {
+    border-radius: 5px;
+  }
+
+  .mini-rank i {
+    display: block;
+    width: var(--share);
+    height: 6px;
+    border-radius: 3px;
+    background: var(--blue);
+  }
+
+  .mini-rank li:first-child i {
+    background: var(--on-yellow);
+  }
+
+  /* What you can rank: a plain index, each name is a link. */
+  .uses {
+    display: grid;
+    column-gap: clamp(1.5rem, 3vw, 3rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .use {
+    display: block;
+    height: 100%;
+    padding-block: var(--s-4) 1.25rem;
+    border-top: 3px solid var(--ink);
+    text-decoration: none;
+  }
+
+  .use b {
+    display: block;
+    font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem);
+    font-weight: var(--weight-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    transition: transform var(--quick) var(--ease);
+  }
+
+  .use span {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--ink-soft);
+    line-height: 1.35;
+  }
+
+  .use:hover b {
+    transform: translateX(0.4rem);
+  }
+
+  /* Good to know */
+  .facts {
+    display: grid;
+    gap: var(--s-5) clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .facts dt {
+    font-size: 1.3125rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .facts dd {
+    max-width: 24em;
+    margin-top: 0.35rem;
+    color: var(--ink-soft);
+  }
+
+  /* Agents: one dark panel in both themes, because the reader here is often a developer. */
   .agents {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(2rem, 5vw, 5rem);
+    gap: var(--s-6) clamp(2rem, 5vw, 5rem);
     align-items: start;
+    padding: clamp(1.5rem, 4vw, 4rem);
+    border-radius: 32px;
+    background: var(--panel);
+    color: var(--panel-ink);
+  }
+
+  .agents > * {
+    min-width: 0;
   }
 
   .agents .lead {
-    margin-block: var(--s-4);
+    margin-block: 1.25rem;
+    color: var(--panel-soft);
   }
 
-  .agents a {
+  .agents a:hover {
+    color: var(--yellow);
+  }
+
+  .agents :focus-visible {
+    outline-color: var(--yellow);
+  }
+
+  .clients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin: 0 0 var(--s-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .clients li {
+    padding: 0.3rem 0.85rem;
+    border-radius: var(--r-pill);
+    box-shadow: inset 0 0 0 2px var(--panel-line);
     font-weight: var(--weight-ui);
+  }
+
+  .terminal {
+    padding: var(--s-4) 1.125rem;
+    border-radius: 18px;
+    background: var(--terminal);
+    box-shadow: inset 0 0 0 2px var(--panel-line);
+    color: #e9eaff;
+    font: 500 0.9375rem/1.6 var(--mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   .agents-list {
     display: grid;
-    margin: 0;
+    margin-top: var(--s-3);
   }
 
   .agents-list > div {
     display: grid;
-    grid-template-columns: 7.5rem 1fr;
+    grid-template-columns: 7rem 1fr;
     gap: var(--s-4);
-    padding-block: var(--s-4);
-    border-bottom: 1px solid var(--line);
+    padding-block: 0.9rem;
+    border-bottom: 2px solid var(--panel-line);
   }
 
-  .agents-list > div:first-child {
-    padding-top: 0.3rem;
+  .agents-list > div:last-child {
+    border-bottom: 0;
   }
 
   .agents-list dt {
-    font-weight: var(--weight-display);
+    font-weight: 800;
   }
 
   .agents-list dd {
-    color: var(--ink-soft);
+    color: var(--panel-soft);
   }
 
-  .closing .lead {
-    margin-block: var(--s-4) var(--s-6);
+  .agents-list code {
+    color: var(--panel-ink);
   }
 
-  @media (max-width: 63.99rem) {
+  /* Free and open source, then the last call to action on the winner's yellow. */
+  .open .lead {
+    margin-top: var(--s-4);
+  }
+
+  .cta {
+    display: grid;
+    gap: var(--s-5);
+    align-items: center;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+    padding: clamp(1.75rem, 4vw, 4rem);
+    border-radius: 32px;
+    background: var(--yellow);
+    color: var(--on-yellow);
+  }
+
+  .cta h2 {
+    font-size: clamp(2.25rem, 1.5rem + 3.4vw, 4.25rem);
+  }
+
+  .cta p {
+    margin-top: var(--s-3);
+    font-size: 1.1875rem;
+  }
+
+  .cta :focus-visible {
+    outline-color: var(--on-yellow);
+  }
+
+  @media (min-width: 40rem) {
+    .uses,
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 62rem) {
     .steps {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .step-art {
-      aspect-ratio: auto;
-      min-height: 11rem;
-      max-width: 30rem;
+    /* Nine use pages: three rows of three. */
+    .uses {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .facts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .agents {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    }
+
+    .cta {
+      grid-template-columns: minmax(0, 1fr) auto;
     }
   }
 
-
-  /* Tablets: picture beside the text of each step. */
-  @media (min-width: 36rem) and (max-width: 63.99rem) {
-    .step {
-      display: grid;
-      grid-template-columns: 16rem minmax(0, 1fr);
-      grid-template-areas: "art title" "art text";
-      column-gap: var(--s-6);
-    }
-
+  @media (max-width: 39.99rem) {
     .step-art {
-      grid-area: art;
+      min-height: 9.5rem;
     }
 
-    .step h3 {
-      grid-area: title;
-      align-self: end;
+    .agents,
+    .cta {
+      border-radius: 24px;
     }
 
-    .step p {
-      grid-area: text;
-    }
-  }
-
-  @media (max-width: 29.99rem) {
     .agents-list > div {
       grid-template-columns: 1fr;
-      gap: var(--s-1);
+      gap: 0.15rem;
     }
   }
 </style>

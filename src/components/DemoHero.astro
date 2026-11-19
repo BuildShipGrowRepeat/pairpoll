@@ -2,64 +2,86 @@
 import PairDemo from "./demo/PairDemo.astro";
 import type { DemoSetName } from "./demo/sets";
 
-// Top of the home page and use pages: headline, lead, the create action, then the playable demo.
+// Top of the home page and use pages: headline, lead and actions on the left, the playable demo on the right.
+// The home page passes its own headline lines, action names and note.
 interface Props {
-  title: string;
+  title: string | string[];
   lead: string;
   set?: DemoSetName;
   question?: string;
+  create?: string;
+  tryLabel?: string;
+  note?: string;
 }
-const { title, lead, set, question } = Astro.props;
+const {
+  title,
+  lead,
+  set,
+  question,
+  create = "Create a poll",
+  tryLabel = "Try the demo",
+  note = "Voters don't sign up. Files are deleted after 30 days.",
+} = Astro.props;
+const lines = Array.isArray(title) ? title : [title];
 ---
 <section class="demo-hero wrap" aria-labelledby="demo-hero-title">
-  <h1 id="demo-hero-title">{title}</h1>
-  <div class="demo-hero-row">
+  <div class="demo-hero-copy">
+    <h1 id="demo-hero-title">{lines.map((line, i) => <>{i > 0 && " "}<span>{line}</span></>)}</h1>
     <p class="lead">{lead}</p>
-    <div>
-      <div class="actions">
-        <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
-        <a class="btn btn--secondary btn--lg demo-hero-try" href="#demo">Try the demo</a>
-      </div>
-      <p class="demo-hero-note">Voters don't sign up. Files are deleted after 30 days.</p>
+    <div class="actions">
+      <a class="btn btn--primary btn--lg" href="/app/new">{create}</a>
+      <a class="btn btn--secondary btn--lg demo-hero-try" href="#demo">{tryLabel}</a>
     </div>
+    <p class="demo-hero-note">{note}</p>
   </div>
   <PairDemo id="demo" set={set} question={question} />
 </section>
 
 <style>
   .demo-hero {
-    padding-block: clamp(2.5rem, 1rem + 4vw, 4.5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+    display: grid;
+    gap: 2.5rem;
+    padding-block: clamp(1.5rem, 4vw, 4rem) clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .demo-hero > * {
+    min-width: 0;
   }
 
   .demo-hero h1 {
-    max-width: 13em;
+    line-height: 0.96;
   }
 
-  .demo-hero-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--s-5) var(--s-7);
-    align-items: end;
-    margin: var(--s-5) 0 clamp(2rem, 1rem + 3vw, 3.5rem);
+  .demo-hero h1 span {
+    display: block;
   }
 
-  .demo-hero-try {
-    display: none;
+  .demo-hero .lead {
+    margin-block: var(--s-5) var(--s-6);
   }
 
   .demo-hero-note {
-    margin-top: var(--s-3);
-    font-size: var(--text-sm);
+    margin-top: var(--s-4);
     color: var(--ink-soft);
+    font-size: 1rem;
   }
 
-  @media (max-width: 63.99rem) {
-    .demo-hero-row {
-      grid-template-columns: 1fr;
+  @media (min-width: 62rem) {
+    .demo-hero {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 7fr);
+      align-items: center;
+      gap: clamp(2rem, 4vw, 4.5rem);
     }
 
+    /* Beside the demo, a link to it would point at what is already in view. */
     .demo-hero-try {
-      display: inline-flex;
+      display: none;
+    }
+  }
+
+  @media (max-width: 39.99rem) {
+    .demo-hero .actions .btn {
+      flex: 1 1 auto;
     }
   }
 </style>

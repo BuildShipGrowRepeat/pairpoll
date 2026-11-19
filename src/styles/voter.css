@@ -1,11 +1,7 @@
 /*
   Voter page and preview. Global because voter.ts builds the markup.
-  Builds on .duel, .duel-card, .frame and the pick loop from components.css.
+  Builds on .duel, .duel-card, .duel-face, .sticker and .frame from components.css.
 */
-
-[hidden] {
-  display: none !important;
-}
 
 .voter {
   display: grid;
@@ -30,81 +26,63 @@
   color: inherit;
 }
 
-/* Intro: the creator's question is the headline; the rules arrive one line at a time. */
-.intro {
+/* Intro: the creator's question is the headline, then the numbered rules, the name and start. */
+.intro,
+.status {
   display: grid;
-  gap: var(--s-6);
-  max-width: 38rem;
-  padding-top: clamp(0.5rem, 4vh, 3.5rem);
+  gap: var(--s-5);
+  max-width: 36rem;
+  margin-inline: auto;
+  padding-top: clamp(0.5rem, 3vw, 2.5rem);
 }
 
 .intro h1,
 .status h1 {
-  font-size: clamp(2.1rem, 1.4rem + 3.4vw, 3.5rem);
+  font-size: clamp(2.25rem, 1.5rem + 3.4vw, 3.75rem);
   overflow-wrap: anywhere;
 }
 
 .rules {
   display: grid;
-  gap: var(--s-3);
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: var(--text-lg);
+  counter-reset: rule;
+  font-size: 1.125rem;
   line-height: 1.4;
 }
 
 .rules li {
   display: grid;
-  grid-template-columns: 1.25rem 1fr;
+  grid-template-columns: 1.75rem 1fr;
   gap: var(--s-3);
+  align-items: start;
+  counter-increment: rule;
 }
 
 .rules li::before {
-  content: "";
-  width: 0.55rem;
-  height: 0.55rem;
-  margin: 0.55em 0 0 0.2rem;
+  content: counter(rule);
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
-  background: var(--line-strong);
-}
-
-/* Lines wait invisible (keeping their space) until revealed. */
-.rules.is-revealing li {
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 320ms var(--ease),
-    transform 320ms var(--ease);
-}
-
-.rules.is-revealing li.is-shown {
-  opacity: 1;
-  transform: none;
+  background: var(--ink);
+  color: var(--page);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .intro-form {
   display: grid;
-  gap: var(--s-4);
-  max-width: 26rem;
-  transition: opacity 320ms var(--ease);
-}
-
-.intro-form.is-waiting {
-  opacity: 0;
-  pointer-events: none;
+  gap: var(--s-3);
 }
 
 /* Status screens: closed, full, not open yet, expired, removed. */
-.status {
-  display: grid;
-  gap: var(--s-4);
-  max-width: 34rem;
-  padding-top: clamp(0.5rem, 4vh, 3.5rem);
-}
-
 .status h1 {
-  font-size: var(--text-2xl);
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
 }
 
 .status p {
@@ -115,20 +93,25 @@
 
 .status-art {
   width: 5.5rem;
-  color: var(--line-strong);
+  color: var(--line);
 }
 
 /* Pair screen */
+.vote {
+  display: grid;
+  gap: var(--s-4);
+}
+
 .vote-head {
   display: grid;
-  gap: var(--s-2);
+  gap: var(--s-3);
 }
 
 .vote-question {
-  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  font-size: clamp(1.625rem, 1.1rem + 2vw, 2.75rem);
   font-weight: var(--weight-display);
-  letter-spacing: -0.02em;
-  line-height: var(--leading-snug);
+  letter-spacing: -0.025em;
+  line-height: 1;
   overflow-wrap: anywhere;
   text-wrap: balance;
 }
@@ -137,9 +120,8 @@
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-ui);
   color: var(--ink-soft);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -147,59 +129,18 @@
   outline: none;
 }
 
-.vote-track {
-  flex: 1;
-  max-width: 12rem;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--sheet-deep);
-  overflow: hidden;
-}
-
-.vote-track > span {
-  display: block;
-  height: 100%;
-  width: calc(var(--done) * 100%);
-  background: var(--ink);
-  transition: width var(--draw) var(--ease);
-}
-
-.vote {
-  display: grid;
-  gap: var(--s-5);
-}
-
 /*
-  The pair may be wider than the text column (up to 80rem), but never so wide that
-  both items no longer fit in the window's height: tall items make the pair narrower.
+  The pair may be wider than the text column, but never so wide that both items no longer
+  fit in the window's height: tall items make the pair narrower.
 */
 .vote .duel {
-  --duel-w: min(calc(100vw - 2 * var(--gutter)), 80rem, max(18rem, calc((100dvh - 16rem) * var(--ratio-n, 1.78) * 2 + 3rem)));
+  --duel-w: min(100%, max(18rem, calc((100dvh - 17rem) * var(--ratio-n, 1.78) * 2 + 4rem)));
   width: var(--duel-w);
-  margin-inline: calc((100% - var(--duel-w)) / 2);
+  margin-inline: auto;
 }
 
 .vote .duel--portrait .duel-pair {
-  gap: var(--s-2);
-}
-
-.duel-hit {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-frame);
-  background: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.duel-hit:focus-visible {
-  outline: none;
-}
-
-.duel-hit:focus-visible .frame {
-  box-shadow: 0 0 0 3px var(--focus);
+  gap: var(--s-3);
 }
 
 .duel-card .frame > img,
@@ -208,34 +149,44 @@
   user-select: none;
 }
 
-/* "View larger" sits on the image's corner. */
+/* "View larger" sits on the picture's lower corner. */
 .duel-zoom {
   position: absolute;
-  top: var(--s-2);
-  right: var(--s-2);
+  left: 16px;
+  bottom: calc(var(--depth) + 16px);
+  z-index: 2;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 0;
-  border-radius: var(--r-control);
-  background: rgb(255 255 255 / 0.92);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--edge);
   color: var(--ink);
-  box-shadow: 0 2px 8px -2px rgb(29 26 51 / 0.35);
   cursor: zoom-in;
+  transition:
+    transform var(--press),
+    box-shadow var(--press);
+}
+
+.duel-zoom:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--edge);
 }
 
 .duel-zoom svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
 }
 
-.duel-zoom:hover {
-  background: var(--paper);
+.duel-card.is-picked .duel-zoom,
+.duel-card.is-passed .duel-zoom {
+  visibility: hidden;
 }
 
-/* Video tiles */
+/* Video tiles: a cover with a play key, a bar that fills once, a "Played" seal. */
 .tile-cover,
 .tile-note,
 .tile-seal {
@@ -252,49 +203,54 @@
 
 .tile-cover {
   width: 100%;
-  background: rgb(29 26 51 / 0.18);
-  color: var(--paper);
+  border-radius: inherit;
+  background: rgb(13 15 32 / 0.4);
+  color: #fff;
   font-weight: var(--weight-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
 .tile-cover:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: -3px;
+  outline: 3px solid #fff;
+  outline-offset: -6px;
 }
 
 .tile-play {
   display: grid;
   place-items: center;
-  width: 4rem;
-  height: 4rem;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: var(--ink);
-  box-shadow: 0 6px 20px -6px rgb(29 26 51 / 0.6);
-  transition: transform var(--quick) var(--ease);
+  background: #fff;
+  box-shadow: 0 5px 0 #c5cbec;
+  transition:
+    transform var(--press),
+    box-shadow var(--press);
 }
 
 .tile-play svg {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-left: 3px;
+  width: 28px;
+  height: 28px;
+  margin-left: 4px;
 }
 
-@media (hover: hover) {
-  .tile-cover:hover .tile-play {
-    transform: scale(1.06);
-  }
+.tile-play svg path {
+  fill: #15173a;
 }
 
-.tile-cover:active .tile-play {
-  transform: scale(0.96);
+.tile-cover:active:not([disabled]) .tile-play {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #c5cbec;
 }
 
 .tile-cover-label {
-  padding: 0.1rem 0.6rem;
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  padding: 0.15rem 0.6rem;
   border-radius: var(--r-pill);
-  background: rgb(29 26 51 / 0.72);
+  background: #15173a;
   font-size: var(--text-sm);
 }
 
@@ -307,32 +263,31 @@
 }
 
 .tile-note {
-  background: rgb(29 26 51 / 0.62);
-  color: var(--paper);
+  background: rgb(13 15 32 / 0.7);
+  color: #fff;
   font-size: var(--text-sm);
   font-weight: var(--weight-ui);
 }
 
 .tile-note .btn {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
 }
 
 .tile-seal {
   pointer-events: none;
-  background: rgb(255 255 255 / 0.35);
+  background: rgb(13 15 32 / 0.6);
 }
 
 .tile-seal > span {
   display: flex;
   align-items: center;
   gap: var(--s-2);
-  padding: 0.35rem 0.9rem 0.35rem 0.4rem;
+  padding: 0.4rem 0.9rem 0.4rem 0.5rem;
   border-radius: var(--r-pill);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: var(--text-sm);
+  background: #fff;
+  color: #15173a;
   font-weight: var(--weight-ui);
-  box-shadow: 0 6px 18px -8px rgb(29 26 51 / 0.5);
+  animation: stamp 200ms var(--spring);
 }
 
 .tile-seal svg {
@@ -340,11 +295,28 @@
   height: 1.5rem;
 }
 
+.bar-play {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  height: 8px;
+  background: rgb(13 15 32 / 0.4);
+  pointer-events: none;
+}
+
+.bar-play::after {
+  content: "";
+  display: block;
+  width: calc(var(--done, 0) * 100%);
+  height: 100%;
+  background: var(--yellow);
+}
+
 .spinner {
   width: 1.75rem;
   height: 1.75rem;
   border: 3px solid rgb(255 255 255 / 0.35);
-  border-top-color: var(--paper);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -355,48 +327,53 @@
   }
 }
 
+/* A loading spinner is content, not decoration: with reduced motion it turns slowly instead of stopping. */
 @media (prefers-reduced-motion: reduce) {
   .spinner {
-    animation-duration: 2.4s;
+    animation-duration: 2.4s !important;
+    animation-iteration-count: infinite !important;
   }
 }
 
 /* While one video plays, the other waits quietly. */
-.duel-card.is-waiting .frame {
-  opacity: 0.55;
+.duel-card.is-waiting .duel-face {
+  opacity: 0.45;
 }
 
-.duel-card .frame {
-  transition:
-    box-shadow var(--quick) var(--ease),
-    transform var(--quick) var(--ease),
-    opacity var(--draw) var(--ease);
-}
-
-.duel-card.is-playing .frame {
-  box-shadow: 0 0 0 2px var(--ink);
+.duel-card.is-playing .duel-face {
+  box-shadow:
+    0 var(--depth) 0 var(--edge),
+    0 0 0 3px var(--blue),
+    0 16px 22px -14px var(--shade);
 }
 
 .duel-pick {
-  margin-top: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.duel-pick.is-ready {
+  animation: ready 240ms var(--spring);
+}
+
+@keyframes ready {
+  from {
+    transform: translateY(3px) scale(0.94);
+  }
 }
 
 .duel-card.is-picked .duel-pick {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-  opacity: 1;
+  background: var(--yellow);
+  box-shadow: 0 1px 0 var(--yellow-deep);
+  color: var(--on-yellow);
 }
 
 .vote .duel-status {
   margin-top: 0;
   text-align: center;
-  font-size: var(--text-md);
 }
 
 .vote .duel-status.is-error {
-  color: var(--danger);
-  font-weight: 500;
+  color: var(--error);
 }
 
 /* Larger view of an image. */
@@ -410,22 +387,25 @@
   max-width: 100%;
   max-height: calc(100dvh - 9rem);
   margin-inline: auto;
-  border-radius: var(--r-frame);
+  border-radius: 14px;
 }
 
 .viewer .actions {
   justify-content: center;
-  margin-top: var(--s-3);
+  padding-top: var(--s-4);
 }
 
-/* End: the voter's own top list. */
+/* End: the voter's own top list (.top-list is in components.css). */
 .done {
   display: grid;
   gap: var(--s-5);
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
 }
 
 .done h1 {
-  font-size: var(--text-2xl);
+  font-size: clamp(2.5rem, 1.6rem + 4vw, 4.25rem);
 }
 
 .done h1:focus {
@@ -433,76 +413,20 @@
 }
 
 .done-question {
-  margin-bottom: var(--s-3);
+  margin-bottom: var(--s-2);
   color: var(--ink-soft);
-  font-weight: var(--weight-ui);
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .done-lead {
-  margin-top: var(--s-2);
+  margin-top: var(--s-3);
   color: var(--ink-soft);
-}
-
-.top-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-5) var(--s-4);
-  margin: var(--s-3) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.top-list:not(.has-many) {
-  grid-template-columns: minmax(0, 30rem);
-}
-
-.top-list li {
-  display: grid;
-  align-content: start;
-  gap: var(--s-2);
-}
-
-.top-list .top-place {
-  font-size: var(--text-lg);
-  font-weight: var(--weight-display);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-.top-list li:first-child .top-place {
-  font-size: var(--text-xl);
-}
-
-.top-list .top-frame {
-  position: relative;
-}
-
-.top-list .top-frame .duel-loop {
-  opacity: 1;
-  clip-path: circle(150% at 16% 6%);
-  animation: draw-pick var(--draw) var(--ease) 200ms both;
-}
-
-@keyframes draw-pick {
-  from {
-    clip-path: circle(0% at 16% 6%);
-  }
-}
-
-/* First place leads the list at full width; the rest sit smaller beneath it. */
-.top-list.has-many li:first-child {
-  grid-column: 1 / -1;
-  max-width: 30rem;
-}
-
-@media (min-width: 40rem) {
-  .top-list.has-many {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+  font-size: 1.125rem;
 }
 
 .report-link {
+  min-height: 44px;
   padding: 0;
   border: 0;
   background: none;

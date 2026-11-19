@@ -1,6 +1,7 @@
 ---
 import Base from "./Base.astro";
 import Logo from "../components/Logo.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 // Voter page shell: noindex, no site navigation, one narrow column so the pair gets the screen.
 // The page fills the `report` slot with its "Report this poll" link.
@@ -10,6 +11,10 @@ interface Props {
 const { title } = Astro.props;
 ---
 <Base title={title} noindex description="Pick the better of two until your top list is settled.">
+  <header class="voter-header">
+    <Logo />
+    <ThemeToggle />
+  </header>
   <main id="main" class="voter-main">
     <slot />
   </main>
@@ -20,11 +25,25 @@ const { title } = Astro.props;
 </Base>
 
 <style>
-  .voter-main {
+  .voter-header,
+  .voter-main,
+  .voter-footer {
     width: 100%;
-    max-width: 60rem;
+    max-width: 72rem;
     margin-inline: auto;
-    padding: var(--s-5) var(--gutter) var(--s-7);
+    padding-inline: var(--gutter);
+  }
+
+  .voter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding-block: var(--s-4);
+  }
+
+  .voter-main {
+    padding-block: var(--s-2) var(--s-7);
   }
 
   .voter-footer {
@@ -33,12 +52,10 @@ const { title } = Astro.props;
     justify-content: space-between;
     align-items: center;
     gap: var(--s-3);
-    width: 100%;
-    max-width: 60rem;
-    margin-inline: auto;
-    padding: var(--s-4) var(--gutter) var(--s-5);
-    font-size: var(--text-sm);
+    padding-block: var(--s-4) var(--s-5);
+    border-top: 2px solid var(--well);
     color: var(--ink-soft);
+    font-size: var(--text-sm);
   }
 
   .voter-footer > span {
@@ -47,11 +64,16 @@ const { title } = Astro.props;
     gap: var(--s-2);
   }
 
+  .voter-footer :global(.logo) {
+    gap: 0.35rem;
+    min-height: 0;
+  }
+
   .voter-footer :global(.logo-word) {
     font-size: 1.05rem;
   }
 
-  .voter-footer :global(.logo svg) {
+  .voter-footer :global(.mark) {
     width: 22px;
     height: 22px;
   }

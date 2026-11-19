@@ -16,14 +16,14 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--paper);
+  background: var(--page);
   color: var(--ink);
   font-family: var(--font);
   font-size: var(--text-md);
   font-weight: var(--weight-body);
   line-height: var(--leading-body);
   font-kerning: normal;
-  font-variant-numeric: proportional-nums;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -41,7 +41,8 @@ ol,
 figure,
 blockquote,
 dl,
-dd {
+dd,
+pre {
   margin: 0;
 }
 
@@ -56,17 +57,17 @@ h3 {
 
 h1 {
   font-size: var(--text-3xl);
+  letter-spacing: -0.035em;
 }
 
 h2 {
   font-size: var(--text-2xl);
-  letter-spacing: -0.02em;
 }
 
 h3 {
   font-size: var(--text-lg);
-  line-height: var(--leading-snug);
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
 
 p {
@@ -82,12 +83,12 @@ video {
 
 a {
   color: inherit;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
 }
 
 a:hover {
-  text-decoration-thickness: 2px;
+  color: var(--link-hover);
 }
 
 button,
@@ -101,17 +102,22 @@ textarea {
 code,
 kbd,
 pre {
-  font-family: var(--font-code);
+  font-family: var(--mono);
   font-size: 0.9em;
 }
 
 :focus-visible {
   outline: 3px solid var(--focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--marker-wash);
+  background: var(--yellow);
+  color: var(--on-yellow);
+}
+
+[hidden] {
+  display: none !important;
 }
 
 .visually-hidden {
@@ -132,9 +138,9 @@ pre {
   top: -4rem;
   z-index: 10;
   padding: var(--s-2) var(--s-4);
-  background: var(--ink);
-  color: var(--paper);
   border-radius: var(--r-control);
+  background: var(--ink);
+  color: var(--page);
   font-weight: var(--weight-ui);
   text-decoration: none;
 }
@@ -145,25 +151,26 @@ pre {
 
 /* Page width and vertical rhythm. */
 .wrap {
-  width: 100%;
-  max-width: calc(var(--page) + 2 * var(--gutter));
+  width: min(100%, var(--wrap));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
 
 .section {
-  padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+  padding-block: clamp(2.5rem, 5vw, 4.25rem);
 }
 
-.section + .section {
-  border-top: 1px solid var(--line);
+.section-head {
+  display: grid;
+  gap: var(--s-4);
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
 }
 
 .lead {
-  font-size: var(--text-lg);
-  line-height: 1.45;
+  max-width: 36em;
   color: var(--ink-soft);
-  max-width: 34em;
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
+  line-height: 1.45;
 }
 
 .muted {
@@ -184,9 +191,10 @@ pre {
 }
 
 .prose h2 {
+  margin-top: 2em;
   font-size: var(--text-xl);
-  margin-top: 2.2em;
-  letter-spacing: -0.015em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .prose h3 {
@@ -200,7 +208,7 @@ pre {
 
 .prose ul,
 .prose ol {
-  padding-left: 1.3em;
+  padding-left: 1.4em;
 }
 
 .prose ol {
@@ -216,9 +224,9 @@ pre {
 .prose ol > li::before {
   content: counter(item);
   position: absolute;
-  left: -1.3em;
-  font-weight: var(--weight-ui);
-  color: var(--ink-faint);
+  left: -1.4em;
+  font-weight: var(--weight-display);
+  color: var(--ink-soft);
 }
 
 .prose li + li {
@@ -226,37 +234,41 @@ pre {
 }
 
 .prose li::marker {
-  color: var(--ink-faint);
+  color: var(--ink-soft);
 }
 
 .prose a {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .prose blockquote {
   padding-left: var(--s-4);
-  border-left: 3px solid var(--line);
+  border-left: 4px solid var(--line);
   color: var(--ink-soft);
 }
 
 .prose code {
   padding: 0.1em 0.35em;
-  background: var(--sheet);
-  border-radius: 4px;
+  border-radius: 6px;
+  background: var(--well);
   overflow-wrap: anywhere;
 }
 
 .prose pre {
-  padding: var(--s-4);
-  background: var(--sheet);
-  border-radius: var(--r-control);
+  padding: var(--s-4) 1.125rem;
+  border-radius: 18px;
+  /* Over the inline background of Astro's code highlighting, so code sits on the terminal colour. */
+  background: var(--terminal) !important;
+  box-shadow: inset 0 0 0 2px var(--panel-line);
+  color: #e9eaff;
   overflow-x: auto;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .prose pre code {
   padding: 0;
   background: none;
+  color: inherit;
 }
 
 .prose table {
@@ -273,12 +285,29 @@ pre {
 .prose th,
 .prose td {
   padding: var(--s-2) var(--s-3) var(--s-2) 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--well);
   text-align: left;
   vertical-align: top;
 }
 
+.prose th {
+  border-bottom-color: var(--line);
+}
+
 .prose hr {
   border: 0;
-  border-top: 1px solid var(--line);
+  border-top: 2px solid var(--well);
+}
+
+/* Reduced motion: state changes still show, nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
 }

@@ -1,0 +1,35 @@
+---
+// Light or dark. The page follows the device until this is used; the choice is kept in localStorage
+// and applied before first paint by the inline script in Base.astro.
+---
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"></circle>
+    <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"></path>
+  </svg>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const dark = window.matchMedia("(prefers-color-scheme: dark)");
+  const current = () => root.dataset.theme || (dark.matches ? "dark" : "light");
+
+  for (const toggle of document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")) {
+    const label = () => {
+      const text = `Switch to the ${current() === "dark" ? "light" : "dark"} theme`;
+      toggle.setAttribute("aria-label", text);
+      toggle.title = text;
+    };
+    toggle.addEventListener("click", () => {
+      root.dataset.theme = current() === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem("pairpoll-theme", root.dataset.theme);
+      } catch {
+        // Private windows may have no storage; the choice then lasts for this page only.
+      }
+      label();
+    });
+    dark.addEventListener("change", label);
+    label();
+  }
+</script>

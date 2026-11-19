@@ -118,19 +118,14 @@ function flatten(children: Child[]): (Node | string)[] {
   });
 }
 
-// The grease-pencil loop (same path as PickLoop.astro). Static markup, no user text.
-const LOOP_PATH = "M16 9C40 1 80 0 94 9 102 16 101 80 95 90 86 102 24 101 9 94 0 88-1 30 4 18 9 7 26 0 44-1";
-export function loop(className: string): SVGSVGElement {
+// The yellow check sticker that lands on a pick (same markup as Sticker.astro). Static markup, no user text.
+export function sticker(): HTMLElement {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", className);
-  svg.setAttribute("viewBox", "0 0 100 100");
-  svg.setAttribute("preserveAspectRatio", "none");
-  svg.setAttribute("aria-hidden", "true");
-  svg.setAttribute("focusable", "false");
+  for (const [key, value] of Object.entries({ viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "3.6", "stroke-linecap": "round", "stroke-linejoin": "round" })) svg.setAttribute(key, value);
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", LOOP_PATH);
+  path.setAttribute("d", "M5 12.5l4.5 4.5L19 7.5");
   svg.appendChild(path);
-  return svg;
+  return h("span", { class: "sticker", "aria-hidden": "true" }, svg);
 }
 
 const relative = new Intl.RelativeTimeFormat("en", { numeric: "auto" });

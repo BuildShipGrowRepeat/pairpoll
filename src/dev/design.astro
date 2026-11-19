@@ -8,7 +8,7 @@ import Notice from "../components/Notice.astro";
 import EmptyState from "../components/EmptyState.astro";
 import DuelCard from "../components/DuelCard.astro";
 import RankingList from "../components/RankingList.astro";
-import PickLoop from "../components/PickLoop.astro";
+import Sticker from "../components/Sticker.astro";
 import { demoSets } from "../components/demo/sets";
 
 // Component preview for builders and review. Served at /design by `astro dev` only (see astro.config.mjs).
@@ -93,20 +93,27 @@ const art = demoSets.thumbnails.items;
           <DuelCard src={art[0].src} alt={art[0].name} pickLabel="Pick the first one" />
           <span class="duel-or" aria-hidden="true">or</span>
           <div class="duel-card is-picked" style="cursor: default">
-            <span class="frame"><img src={art[2].src} alt={art[2].name} /></span>
-            <PickLoop class="duel-loop" />
+            <span class="duel-face"><span class="frame"><img src={art[2].src} alt={art[2].name} /></span></span>
+            <Sticker />
           </div>
         </div>
       </div>
+      <p class="duel-status pegs-row">
+        <span class="pegs" aria-hidden="true">
+          <span class="peg is-done"></span><span class="peg is-done"></span><span class="peg is-now"></span><span class="peg"></span>
+        </span>
+        Pick 3 of 4
+      </p>
     </section>
 
     <section>
       <h2>Ranking</h2>
       <RankingList
         entries={[
-          { place: 1, name: art[2].name, src: art[2].src, meta: "12 points" },
-          { place: 1, name: art[5].name, src: art[5].src, meta: "12 points" },
-          { place: 3, name: art[0].name, src: art[0].src, meta: "7 points" },
+          { place: 1, name: art[2].name, src: art[2].src, meta: "12 points", share: 100 },
+          { place: 1, name: art[5].name, src: art[5].src, meta: "12 points", share: 100 },
+          { place: 3, name: art[0].name, src: art[0].src, meta: "7 points", share: 58 },
+          { place: 4, name: art[1].name, src: art[1].src, meta: "2 points", share: 17 },
         ]}
       />
     </section>
@@ -162,6 +169,12 @@ const art = demoSets.thumbnails.items;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
     gap: var(--s-4);
+  }
+
+  .pegs-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
   }
 
   .grid p {

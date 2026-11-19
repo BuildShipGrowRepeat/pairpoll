@@ -4,7 +4,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 ## Production (Cloudflare, Vladimir's account)
 
-- Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`.
+- Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`. Zone settings: Always Use HTTPS on, HSTS six months (no subdomains, no preload).
 - Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`, `RESEND_API_KEY`.
 - Deploy from this checkout: `npx wrangler d1 migrations apply DB --remote` (if new migrations), `npm run build`, `npx wrangler deploy`. No staging environment.
 - Email: sign-in links go through Resend's HTTP API (`src/server/email.ts`), sender `signin@pairpoll.com`, free plan shared with another of the owner's domains (3,000 emails a month, 100 a day in total). Domain verified in Resend (Ireland); DKIM, two CNAMEs and DMARC `p=none` are in Cloudflare DNS. Delivery to an outside address checked 19 Nov. Cloudflare Email Routing forwards `hello@pairpoll.com` to the owner.
@@ -21,8 +21,8 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Marketing: home, 9 use pages, 4 alternative pages, 4 guides, About, Terms, Privacy, 404, 500, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
 - Analytics: Cloudflare Web Analytics beacon on every page; Google Analytics 4 only after Accept in a blocking consent pop-up (Marketing, Docs and App layouts, not voter pages), choice in localStorage, "Cookie settings" in the footer. IDs `PUBLIC_GA_ID` and `PUBLIC_CF_BEACON_TOKEN` in `astro.config.mjs` (`env.schema`); empty turns each off.
 - Pages rendered on request send `Cache-Control: no-store` and `frame-ancestors 'none'` (`src/middleware.ts`). All HTML sends `nosniff` and a `Referrer-Policy`; `public/_headers` also sets long caching for fonts and one day for icons and `og.png`.
-- Design system: `docs/DESIGN.md`. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
-- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation, analytics consent pop-up).
+- Design system: `docs/DESIGN.md` (typeface Gabarito, self-hosted; blue for actions, yellow for the pick and first place). Light and dark themes on every page: default follows the device, the header switch overrides it and is kept in localStorage. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
+- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation, analytics consent pop-up, theme switch).
 
 ## Try it locally
 
@@ -61,7 +61,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 - Test Claude and ChatGPT connector sign-in against production (OAuth is deployed, not yet tried from the real apps).
 - npm publish of the CLI (the docs then drop the repository alias).
-- Vladimir's review of Terms, Privacy and About.
+- Vladimir's review of Terms and Privacy (About confirmed 19 Nov).
 - `www.pairpoll.com` redirect.
 - E2E on another machine: run `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` to an installed Chromium.
 
