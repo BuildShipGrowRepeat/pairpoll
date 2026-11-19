@@ -3,7 +3,7 @@ import Marketing from "../layouts/Marketing.astro";
 import PageIntro from "../components/PageIntro.astro";
 
 // DRAFT awaiting Vladimir's review (see docs/STATE.md). Written from docs/SPEC.md.
-// Update when the email provider and analytics are chosen, and when the contact address exists.
+// Update when the email provider changes and when the contact address exists.
 ---
 <Marketing
   title="Privacy | Pairpoll"
@@ -44,10 +44,17 @@ import PageIntro from "../components/PageIntro.astro";
         is used to limit abuse, for example how often sign-in links can be requested.
       </p>
 
+      <h2>Analytics</h2>
+      <p>
+        Cloudflare Web Analytics counts page visits on every page without cookies. Google Analytics runs on our own pages
+        only if you click Accept in the cookie pop-up, and never on voting pages. You can change your choice with "Cookie
+        settings" at the bottom of the page.
+      </p>
+
       <h2>Cookies</h2>
       <p>
-        Two kinds, both needed for the service to work: a sign-in cookie for poll creators, and the voter cookie described
-        above. There are no advertising cookies.
+        Two kinds are needed for the service to work: a sign-in cookie for poll creators, and the voter cookie described
+        above. Google Analytics cookies are added only if you accept them. There are no advertising cookies.
       </p>
 
       <h2>When data is deleted</h2>

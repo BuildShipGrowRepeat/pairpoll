@@ -3,6 +3,7 @@ import type { ComponentProps } from "astro/types";
 import Base from "./Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Consent from "../components/Consent.astro";
 
 // Public pages: home, uses, alternatives, guides, about, legal.
 // Server-rendered pages that know the visitor is signed in pass `signedIn`.
@@ -15,4 +16,5 @@ const { signedIn = false, ...base } = Astro.props;
     <slot />
   </main>
   <Footer />
+  <Consent />
 </Base>

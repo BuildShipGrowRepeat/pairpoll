@@ -8,7 +8,7 @@
   "kv_namespaces": [
     {
       "binding": "OAUTH_KV",
-      "id": "REPLACE_WITH_OAUTH_KV_NAMESPACE_ID"
+      "id": "57e11fb96b1643c79b0352cca086987b"
     }
   ],
   "d1_databases": [

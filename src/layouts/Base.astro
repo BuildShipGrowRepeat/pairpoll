@@ -2,6 +2,7 @@
 import "../styles/tokens.css";
 import "../styles/base.css";
 import "../styles/components.css";
+import { PUBLIC_CF_BEACON_TOKEN } from "astro:env/client";
 
 // Document shell with technical SEO. Every public page passes its own title and description.
 // Pages that must stay out of search (polls, the creator app, errors) set noindex.
@@ -66,5 +67,15 @@ const ld = jsonLd ? JSON.stringify(jsonLd).replace(/</g, "\\u003c") : undefined;
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
+    {
+      PUBLIC_CF_BEACON_TOKEN && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: PUBLIC_CF_BEACON_TOKEN })}
+        />
+      )
+    }
   </body>
 </html>

@@ -19,9 +19,10 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Creator app: `/signin`, `/signin/confirm`, `/signin/device`, `/app`, `/app/new`, `/app/polls/<id>` (draft editor, then results), `/app/polls/<id>/preview`, `/app/keys`, `/app/account`, `/app/owner` (only for `OWNER_EMAILS`; others get 404).
 - Voters: `/p/<code>` with every state (not open, closed, full, expired, finished, removed) and a report link; shared results `/results/<shareCode>`.
 - Marketing: home, 8 use pages, 4 alternative pages, 3 guides, About, Terms, Privacy, 404, 500, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
+- Analytics: Cloudflare Web Analytics beacon on every page; Google Analytics 4 only after Accept in a blocking consent pop-up (Marketing, Docs and App layouts, not voter pages), choice in localStorage, "Cookie settings" in the footer. IDs `PUBLIC_GA_ID` and `PUBLIC_CF_BEACON_TOKEN` in `astro.config.mjs` (`env.schema`); empty turns each off.
 - Pages rendered on request send `Cache-Control: no-store` and `frame-ancestors 'none'` (`src/middleware.ts`).
 - Design system: `docs/DESIGN.md`. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
-- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation).
+- Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation, analytics consent pop-up).
 
 ## Try it locally
 
@@ -52,9 +53,9 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 ## Still needed
 
-- Workers Paid plan and Email Sending for the domain, so strangers can sign in (decision pending).
-- Analytics (no snippet yet; it would go in `src/layouts/Base.astro`).
-- Create the production `OAUTH_KV` namespace, replace its placeholder ID in `wrangler.jsonc`, then deploy and test Claude and ChatGPT connector sign-in.
+- Sign-in email for strangers: switch `src/server/email.ts` to Resend's free plan (Vladimir declined any paid plan); needs his Resend account and a `RESEND_API_KEY` secret.
+- Google Analytics measurement ID: set the `PUBLIC_GA_ID` default in `astro.config.mjs` once the GA account exists; the consent pop-up stays off until then.
+- Test Claude and ChatGPT connector sign-in against production (OAuth is deployed, not yet tried from the real apps).
 - npm publish of the CLI (the docs then drop the repository alias).
 - Vladimir's review of Terms, Privacy and About.
 - `www.pairpoll.com` redirect.
@@ -62,10 +63,10 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 
 ## Open questions (from docs/SPEC.md)
 
-1. Workers Paid plan ($5 a month) so sign-in emails reach everyone.
+1. (settled) No paid plan; sign-in emails go through Resend's free plan.
 2. (settled) Licence MIT; email through Cloudflare.
-3. Analytics (for example PostHog or Cloudflare Web Analytics).
-4. (built locally) OAuth for Claude and ChatGPT apps; production KV creation and live verification remain.
+3. (settled) Analytics: Google Analytics 4 with consent, plus Cloudflare Web Analytics.
+4. (built) OAuth for Claude and ChatGPT apps; live verification from the real apps remains.
 5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
 6. Terms, privacy and About text review.
 7. Limits: file sizes, polls per day, 30-day deletion.
