@@ -178,6 +178,11 @@ async function route(request: Request, path: string) {
       return json({ ok: true }, 200, { "Set-Cookie": clearSessionCookie() });
     }
   }
+  if (root === "whoami" && parts.length === 1) {
+    method(request, "GET");
+    const auth = await creator(request);
+    return json({ email: auth.email });
+  }
   if (root === "polls") {
     if (!id && parts.length === 1) {
       method(request, "GET", "POST");

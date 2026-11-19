@@ -21,6 +21,7 @@ Results have `poll`, `items`, `ranking`, `runs`, and `finished`. Ranking entries
 | Method and path | Access | Request and success response |
 | --- | --- | --- |
 | GET `/health` | Public | `{"ok":true}`. |
+| GET `/whoami` | Creator | `{email}` for the browser session or API key. |
 | POST `/auth/link` | Public | `{email, token}` where `token` is the Turnstile response for action `signin`. Always returns `{"ok":true}`, including invalid, throttled, blocked, or unverified requests. |
 | POST `/auth/consume` | Sign-in token | `{token}` from the confirmation link. Sets a session cookie and returns `{email}`. 400 `invalid_link` if invalid, expired or used. |
 | POST `/auth/logout` | Session | Revokes this session and clears the cookie. |

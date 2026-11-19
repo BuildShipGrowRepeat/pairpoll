@@ -5,7 +5,11 @@ export default defineConfig({
   test: {
     projects: [
       {
-        test: { name: "unit", include: ["test/unit/**/*.test.ts"], environment: "node" },
+        test: {
+          name: "unit",
+          include: ["test/unit/**/*.test.ts", "packages/cli/test/**/*.test.js"],
+          environment: "node",
+        },
       },
       {
         plugins: [

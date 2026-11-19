@@ -5,5 +5,9 @@
   "type": "module",
   "bin": {
     "pairpoll": "bin/pairpoll.js"
+  },
+  "exports": {
+    ".": "./src/main.js",
+    "./args": "./src/args.js"
   }
 }
