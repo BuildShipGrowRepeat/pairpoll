@@ -1,6 +1,6 @@
 # State
 
-Updated 19 Nov 2026. The server API and agent access surfaces are implemented locally; browser UI work continues separately.
+Updated 19 Nov 2026. The server API, agent access surfaces and every product page are implemented locally.
 
 ## What exists
 
@@ -20,8 +20,23 @@ Updated 19 Nov 2026. The server API and agent access surfaces are implemented lo
 - Clean URLs: `build.format: "file"`, `trailingSlash: "never"`; `/about/` redirects to `/about`.
 - **Drafts awaiting Vladimir's review:** Terms and Privacy (plain-language, written from the spec), and the About copy. Contact address `hello@pairpoll.com` is a placeholder.
 - The home page links all eight planned use pages; seven are not written yet and return 404 until their entries exist.
-- The demo (`src/components/demo`) uses its own minimal knockout (`demo-knockout.ts`); swap it for `replay` from `src/lib/knockout.ts` in stage 2.
+- The demo (`src/components/demo`) runs `replay` from `src/lib/knockout.ts` (fixed first draw, a new draw on "Start over").
 - Font: Schibsted Grotesk, SIL OFL 1.1, self-hosted (`public/fonts`, licence in `OFL.txt`). Demo artwork in `public/demo` is original placeholder art.
+
+## Product pages (stage 2)
+
+- Creator: `/signin` (invisible Turnstile, "check your email"; in dev only, a link from the local mailbox), `/signin/confirm` (consumes the link by POST), `/app` (polls), `/app/new` and `/app/polls/<id>` (draft editor, then results with live refresh, voters, sharing, export, close, delete), `/app/polls/<id>/preview` (voter preview, nothing stored), `/app/keys`, `/app/account`, `/signin/device?code=` (CLI approval).
+- Owner: `/app/owner`, linked from Account for `OWNER_EMAILS` only; everyone else gets the 404 page.
+- Voters: `/p/<code>` (intro, pairs, plays-once videos, end top list, all closed/full/expired states, report link) and the shared results page `/results/<shareCode>`.
+- Browser code is plain TypeScript in `src/components/app` and `src/components/voter`; page styles in `src/styles/app.css` and `voter.css`.
+- e2e (`npm run test:e2e`): smoke, an image poll with two voters, and a plays-once video poll including a reload mid-pair. Fixtures in `e2e/fixtures` were made with ffmpeg.
+
+### Try the whole flow locally
+
+1. `cp .dev.vars.example .dev.vars` (Turnstile test keys). To see the owner page, add `OWNER_EMAILS=you@example.com`.
+2. `npm run db:migrate:local && npx astro dev --ignore-lock`, then open http://localhost:4321/signin.
+3. Enter any email, then use "Open the sign-in link" under "Check your email" (dev only; no mail is sent).
+4. Create a poll, open it, and open the voting link in a private window to vote. Results update on the poll page.
 
 ## How to run
 
