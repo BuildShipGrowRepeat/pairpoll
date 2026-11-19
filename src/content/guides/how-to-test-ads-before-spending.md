@@ -1,13 +1,13 @@
 ---
-seoTitle: "How to test ads before spending money | Pairpoll"
-description: "Test ad creatives before you spend: make comparable versions, ask the right people, read the result honestly, then pay to run only the strongest few."
+seoTitle: "Ad pre-testing: how to test ads before spending | Pairpoll"
+description: "Ad pre-testing in six steps: make comparable versions, ask the right people, read the result honestly, then pay to run only the strongest few."
 title: "How to test ads before spending"
 blurb: "Cut a long list of ad versions down before you pay to run any of them."
 published: 2026-11-19
 order: 3
 ---
 
-An ad test usually means paying to run several versions on the ad platform and seeing which one gets clicks or sales. That's the real test, but every version you run costs money. Testing before you spend means asking people which versions they prefer, so you only pay to run the strongest few.
+An ad test usually means paying to run several versions on the ad platform and seeing which one gets clicks or sales. That's the real test, but every version you run costs money. Testing before you spend, also called ad pre-testing, means asking people which versions they prefer, so you only pay to run the strongest few.
 
 ## Two kinds of ad test
 

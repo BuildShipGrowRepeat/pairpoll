@@ -1,6 +1,6 @@
 ---
-seoTitle: "Logo poll: let your team or customers vote, free | Pairpoll"
-description: "Put your logo options in a free poll and share one link. Your team or customers pick the better of two until their favourites are clear. No voter sign-up."
+seoTitle: "Free logo survey: let your team or customers vote | Pairpoll"
+description: "A free logo survey in one link. Your team or customers pick the better of two logos until their favourites are clear. No voter sign-up."
 title: "Let your team or customers vote on the logo"
 name: "Logos"
 blurb: "Let your team or customers choose between logo options."
