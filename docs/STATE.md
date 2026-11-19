@@ -7,7 +7,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`.
 - Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`.
 - Deploy from this checkout: `npx wrangler d1 migrations apply DB --remote` (if new migrations), `npm run build`, `npx wrangler deploy`. No staging environment.
-- Email: Cloudflare Email Service through the `EMAIL` binding (`src/server/email.ts`), sender `signin@pairpoll.com`. On the Workers Free plan it delivers only to verified destination addresses of the account (the owner's inbox); sign-in for anyone else needs the Workers Paid plan ($5 a month) and `wrangler email sending enable pairpoll.com`. Email Routing forwards `hello@pairpoll.com` to the owner.
+- Email: Cloudflare Email Service through the `EMAIL` binding (`src/server/email.ts`), sender `signin@pairpoll.com`. On the Workers Free plan it delivers only to verified destination addresses of the account (the owner's inbox); sign-in for anyone else needs the Workers Paid plan ($5 a month) and `wrangler email sending enable pairpoll.com`. Email Routing is enabled; the rule forwarding `hello@pairpoll.com` to the owner is still to be created (the destination address must be verified first).
 
 ## What exists
 
