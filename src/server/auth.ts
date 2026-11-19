@@ -107,7 +107,7 @@ export async function requestSignInLink(
 
   const link = new URL("/signin/confirm", request.url);
   link.searchParams.set("token", token);
-  await sendSignInEmail(db, request, credentialId, link.href, input.dev);
+  await sendSignInEmail(db, request, credentialId, email, link.href, input.dev);
 }
 
 export async function consumeSignInLink(

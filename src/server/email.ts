@@ -1,14 +1,28 @@
+import { env } from "cloudflare:workers";
 import { isLocalDevelopment } from "./security";
 
 export async function sendSignInEmail(
   db: D1Database,
   request: Request,
   credentialId: string,
+  to: string,
   link: string,
   dev: boolean,
 ): Promise<void> {
-  // Real delivery can be added here once a provider is chosen.
-  if (!isLocalDevelopment(request, dev)) return;
+  if (!isLocalDevelopment(request, dev)) {
+    // Cloudflare Email Service. A failed send is logged, never shown: the page must not reveal which emails exist.
+    try {
+      await env.EMAIL.send({
+        from: { email: "signin@pairpoll.com", name: "Pairpoll" },
+        to,
+        subject: "Your Pairpoll sign-in link",
+        text: `Open this link to sign in to Pairpoll:\n\n${link}\n\nIt works once and expires in 15 minutes. If you did not ask for it, ignore this email.`,
+      });
+    } catch (error) {
+      console.error("Sign-in email failed:", (error as { code?: string }).code, (error as Error).message);
+    }
+    return;
+  }
 
   const stored = await db.prepare(`
     INSERT INTO dev_mail (credential_id, link)

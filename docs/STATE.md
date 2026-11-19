@@ -1,6 +1,13 @@
 # State
 
-Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built and runs locally. Nothing is deployed or published.
+Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pairpoll.com; code public at https://github.com/BuildShipGrowRepeat/pairpoll (MIT).
+
+## Production (Cloudflare, Vladimir's account)
+
+- Worker `pairpoll` on custom domain pairpoll.com (no `www`, no workers.dev URL), cron 03:00 daily, D1 `pairpoll` (weur), R2 `pairpoll-media` (weur), invisible Turnstile widget `pairpoll`.
+- Secrets on the Worker: `TURNSTILE_SECRET_KEY`, `OWNER_EMAILS`.
+- Deploy from this checkout: `npx wrangler d1 migrations apply DB --remote` (if new migrations), `npm run build`, `npx wrangler deploy`. No staging environment.
+- Email: Cloudflare Email Service through the `EMAIL` binding (`src/server/email.ts`), sender `signin@pairpoll.com`. On the Workers Free plan it delivers only to verified destination addresses of the account (the owner's inbox); sign-in for anyone else needs the Workers Paid plan ($5 a month) and `wrangler email sending enable pairpoll.com`. Email Routing forwards `hello@pairpoll.com` to the owner.
 
 ## What exists
 
@@ -38,25 +45,23 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built and runs locally. Not
 - Real phones, Safari and Firefox, iOS video and sound rules.
 - H.264 playback in browsers other than the headless Chromium above.
 - Screen readers (labels, focus and keyboard paths were built, not tested with one).
-- Real email delivery (no provider), real Turnstile (test keys only), production deployment, the cron on Cloudflare.
+- In production: sign-in email delivery, Turnstile with real keys, uploads, the cron.
 - `astro dev` also serves repository files, so locally `/docs/api.md` returns `docs/API.md` (same path on a case-insensitive disk). The build serves the right page.
 
-## Needed before production
+## Still needed
 
-- Email provider for sign-in links (fill in `sendSignInEmail` in `src/server/email.ts`).
-- Real Turnstile site key and secret (`TURNSTILE_SITE_KEY` in `wrangler.jsonc`, `TURNSTILE_SECRET_KEY` as a secret).
-- Cloudflare resources: D1 database (replace the placeholder `database_id`), R2 bucket `pairpoll-media`, the pairpoll.com domain; apply migrations remotely.
-- `OWNER_EMAILS` set to Vladimir's address.
-- Analytics provider and its snippet (no snippet exists yet; it would go in `src/layouts/Base.astro`).
-- OAuth for the Claude and ChatGPT chat apps (needs a public URL). Claude Code, Codex and Cursor work with an API key now.
-- npm publish of the CLI (the docs then drop the repository alias) and the GitHub repository.
-- Vladimir's review of Terms, Privacy and About; `hello@pairpoll.com` is a placeholder.
-- Playwright uses the local headless Chromium 1243 (path in `playwright.config.ts`); elsewhere remove `executablePath` and run `npx playwright install chromium`.
+- Workers Paid plan and Email Sending for the domain, so strangers can sign in (decision pending).
+- Analytics (no snippet yet; it would go in `src/layouts/Base.astro`).
+- OAuth for the Claude and ChatGPT chat apps. Claude Code, Codex and Cursor work with an API key now.
+- npm publish of the CLI (the docs then drop the repository alias).
+- Vladimir's review of Terms, Privacy and About.
+- `www.pairpoll.com` redirect.
+- E2E on another machine: run `npx playwright install chromium`, or set `PLAYWRIGHT_CHROMIUM_PATH` to an installed Chromium.
 
 ## Open questions (from docs/SPEC.md)
 
-1. Licence: MIT?
-2. Email provider (for example Resend or Cloudflare's email service).
+1. Workers Paid plan ($5 a month) so sign-in emails reach everyone.
+2. (settled) Licence MIT; email through Cloudflare.
 3. Analytics (for example PostHog or Cloudflare Web Analytics).
 4. OAuth for the Claude and ChatGPT chat apps after the first deploy.
 5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
