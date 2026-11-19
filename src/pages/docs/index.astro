@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import Docs from "../../layouts/Docs.astro";
+import LinkList from "../../components/LinkList.astro";
+
+const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
+---
+<Docs
+  title="Pairpoll docs for developers and AI agents | Pairpoll"
+  description="Docs for using Pairpoll from code and AI agents: the REST API, the pairpoll CLI and the MCP server. Every page is also available as plain Markdown."
+  markdownHref="/docs.md"
+>
+  <h1>Docs</h1>
+  <p class="lead">How to create polls and read results from code, the command line or an AI assistant. Every page is also plain Markdown: add <code>.md</code> to its address.</p>
+  <div class="docs-list">
+    <LinkList columns={2} items={docs.map((doc) => ({ href: `/docs/${doc.id}`, name: doc.data.title, blurb: doc.data.description }))} />
+  </div>
+</Docs>
+
+<style>
+  h1 {
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  }
+
+  .lead {
+    margin-top: var(--s-4);
+  }
+
+  .docs-list {
+    margin-top: var(--s-6);
+  }
+</style>

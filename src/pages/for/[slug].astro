@@ -1,0 +1,56 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import DemoHero from "../../components/DemoHero.astro";
+import LinkList from "../../components/LinkList.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+export async function getStaticPaths() {
+  const uses = await getCollection("uses");
+  return uses.map((use) => ({ params: { slug: use.id }, props: { use } }));
+}
+
+const { use } = Astro.props as { use: CollectionEntry<"uses"> };
+const { Content } = await render(use);
+const others = (await getCollection("uses"))
+  .filter((other) => other.id !== use.id)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<Marketing title={use.data.seoTitle} description={use.data.description}>
+  <DemoHero title={use.data.title} lead={use.data.lead} set={use.data.demo} question={use.data.demoQuestion} />
+
+  <div class="wrap use-body">
+    <div class="prose">
+      <Content />
+    </div>
+  </div>
+
+  {
+    others.length > 0 && (
+      <section class="wrap use-others" aria-labelledby="others-title">
+        <h2 id="others-title">Other things to rank</h2>
+        <LinkList
+          columns={4}
+          items={others.map((other) => ({ href: `/for/${other.id}`, name: other.data.name, blurb: other.data.blurb }))}
+        />
+      </section>
+    )
+  }
+  <CtaBand />
+</Marketing>
+
+<style>
+  .use-body {
+    padding-block: var(--s-7) var(--s-8);
+    border-top: 1px solid var(--line);
+  }
+
+  .use-others {
+    padding-bottom: var(--s-8);
+  }
+
+  .use-others h2 {
+    margin-bottom: var(--s-5);
+    font-size: var(--text-xl);
+  }
+</style>

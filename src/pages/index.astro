@@ -1,7 +1,298 @@
 ---
-import Base from "../layouts/Base.astro";
+import Marketing from "../layouts/Marketing.astro";
+import DemoHero from "../components/DemoHero.astro";
+import RankingList from "../components/RankingList.astro";
+import LinkList from "../components/LinkList.astro";
+import { demoSets } from "../components/demo/sets";
+
+const description =
+  "Upload 2 to 16 images or videos and share one link. People pick the better of two until their top list is set, and you get the overall ranking. Free.";
+
+// The eight launch use pages (docs/SPEC.md). Each links to /for/<slug>.
+const uses = [
+  { slug: "thumbnails", name: "Thumbnails", blurb: "Find the YouTube thumbnail your viewers would click." },
+  { slug: "ad-creatives", name: "Ad creatives", blurb: "See which ad your audience prefers before you pay to run it." },
+  { slug: "logos", name: "Logos", blurb: "Let your team or customers choose between logo options." },
+  { slug: "designs", name: "Designs", blurb: "Compare mockups, covers and layouts with real people." },
+  { slug: "photos", name: "Photos", blurb: "Pick the best shots from a set." },
+  { slug: "product-images", name: "Product images", blurb: "Choose the main photo for a product listing." },
+  { slug: "video-cuts", name: "Video cuts", blurb: "Compare different edits of the same video." },
+  { slug: "app-screenshots", name: "App screenshots", blurb: "Choose the screenshots for your app store page." },
+];
+
+const art = demoSets.thumbnails.items;
+const sampleRanking = [
+  { place: 1, name: "Rocket launch", src: art[2].src },
+  { place: 2, name: "City at night", src: art[5].src },
+  { place: 3, name: "Sunrise hike", src: art[0].src },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Pairpoll",
+  url: "https://pairpoll.com/",
+  description: "A free poll for images and videos, ranked head to head.",
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  author: { "@type": "Person", name: "Vladimir Terekhov" },
+};
 ---
-<Base title="Pairpoll">
-  <h1>Pairpoll</h1>
-  <p>Prerendered placeholder home page.</p>
-</Base>
+<Marketing title="Pairpoll: free image and video poll, ranked head to head" description={description} jsonLd={jsonLd}>
+  <DemoHero
+    title="Images and videos, ranked head to head"
+    lead="A free poll with pictures or videos. Upload 2 to 16, send one link, and each person picks the better of two until their top list is settled. You see every voter's list and the overall ranking."
+  />
+
+  <section class="section wrap" aria-labelledby="how-title">
+    <div class="section-head">
+      <h2 id="how-title">How it works</h2>
+      <p class="lead">A this or that poll that keeps going: each voter compares two at a time until their favourites are clear. This is called pairwise ranking.</p>
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <div class="step-art step-art--grid" aria-hidden="true">
+          {art.map((item) => <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>)}
+          <span class="frame"></span>
+          <span class="frame"></span>
+        </div>
+        <h3><span class="step-n">1</span>Upload your options</h3>
+        <p>Add 2 to 16 images or videos and the question voters will see.</p>
+      </li>
+      <li class="step">
+        <div class="step-art step-art--link" aria-hidden="true">
+          <span class="link-pill">pairpoll.com/p/7hq2xk</span>
+        </div>
+        <h3><span class="step-n">2</span>Share one link</h3>
+        <p>Send it to your audience, your team or a few friends. Each person picks one of two, again and again.</p>
+      </li>
+      <li class="step">
+        <div class="step-art" aria-hidden="true">
+          <RankingList entries={sampleRanking} />
+        </div>
+        <h3><span class="step-n">3</span>Get the ranking</h3>
+        <p>See each voter's top list and an overall ranking from everyone who finished.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section wrap" aria-labelledby="uses-title">
+    <div class="section-head">
+      <h2 id="uses-title">What you can rank</h2>
+      <p class="lead">Use it as an image poll for anything people can judge by looking, or put video cuts side by side.</p>
+    </div>
+    <LinkList columns={4} items={uses.map((use) => ({ href: `/for/${use.slug}`, name: use.name, blurb: use.blurb }))} />
+  </section>
+
+  <section class="section wrap agents" aria-labelledby="agents-title">
+    <div>
+      <h2 id="agents-title">Your AI agent can run the poll</h2>
+      <p class="lead">
+        Everything you can do in the browser also works for agents: create a poll, add files, share the link and read the
+        results.
+      </p>
+      <p><a href="/docs/agents">Read the agent docs</a></p>
+    </div>
+    <dl class="agents-list">
+      <div>
+        <dt>API</dt>
+        <dd>REST endpoints under <code>/api/v1</code>, with an API key you create in your account.</dd>
+      </div>
+      <div>
+        <dt>CLI</dt>
+        <dd>The <code>pairpoll</code> command creates a poll from a folder of files in one step.</dd>
+      </div>
+      <div>
+        <dt>MCP server</dt>
+        <dd>Connect an assistant that supports MCP, and it can set up polls and fetch results for you.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="section wrap closing" aria-labelledby="free-title">
+    <h2 id="free-title">Free and open source</h2>
+    <p class="lead">
+      Pairpoll is free to use and its code is open. It's a personal project by Vladimir Terekhov, built at Attract Group.
+      Polls, files and votes are deleted 30 days after a poll is created.
+    </p>
+    <div class="actions">
+      <a class="btn btn--primary btn--lg" href="/app/new">Create a poll</a>
+      <a class="btn btn--quiet btn--lg" href="/about">About Pairpoll</a>
+    </div>
+  </section>
+</Marketing>
+
+<style>
+  .section-head {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: var(--s-6);
+  }
+
+  /* How it works */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step h3 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+    font-size: var(--text-xl);
+  }
+
+  .step-n {
+    font-variant-numeric: tabular-nums;
+    color: var(--marker-ink);
+  }
+
+  .step p {
+    margin-top: var(--s-2);
+    color: var(--ink-soft);
+    max-width: 24em;
+  }
+
+  .step-art {
+    display: grid;
+    align-content: center;
+    aspect-ratio: 16 / 10;
+    padding: var(--s-4);
+    border-radius: var(--r-panel);
+    background: var(--sheet);
+    overflow: hidden;
+  }
+
+  .step-art--grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-2);
+  }
+
+  .step-art--grid .frame:nth-child(n + 7) {
+    background: none;
+    box-shadow: inset 0 0 0 1.5px var(--line-strong);
+    opacity: 0.6;
+  }
+
+  .step-art--link {
+    place-items: center;
+  }
+
+  .link-pill {
+    padding: var(--s-3) var(--s-4);
+    border-radius: var(--r-control);
+    background: var(--paper);
+    box-shadow: 0 0 0 1.5px var(--line);
+    font-weight: var(--weight-ui);
+    white-space: nowrap;
+  }
+
+  .step-art :global(.rank-item) {
+    grid-template-columns: 2rem 3.5rem 1fr auto;
+    padding-block: 0.45rem;
+    font-size: var(--text-sm);
+  }
+
+  .step-art :global(.rank-place) {
+    font-size: var(--text-lg);
+  }
+
+  /* Agents */
+  .agents {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .agents .lead {
+    margin-block: var(--s-4);
+  }
+
+  .agents a {
+    font-weight: var(--weight-ui);
+  }
+
+  .agents-list {
+    display: grid;
+    margin: 0;
+  }
+
+  .agents-list > div {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .agents-list > div:first-child {
+    padding-top: 0.3rem;
+  }
+
+  .agents-list dt {
+    font-weight: var(--weight-display);
+  }
+
+  .agents-list dd {
+    color: var(--ink-soft);
+  }
+
+  .closing .lead {
+    margin-block: var(--s-4) var(--s-6);
+  }
+
+  @media (max-width: 63.99rem) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+
+    .step-art {
+      aspect-ratio: auto;
+      min-height: 11rem;
+      max-width: 30rem;
+    }
+
+    .agents {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  /* Tablets: picture beside the text of each step. */
+  @media (min-width: 36rem) and (max-width: 63.99rem) {
+    .step {
+      display: grid;
+      grid-template-columns: 16rem minmax(0, 1fr);
+      grid-template-areas: "art title" "art text";
+      column-gap: var(--s-6);
+    }
+
+    .step-art {
+      grid-area: art;
+    }
+
+    .step h3 {
+      grid-area: title;
+      align-self: end;
+    }
+
+    .step p {
+      grid-area: text;
+    }
+  }
+
+  @media (max-width: 29.99rem) {
+    .agents-list > div {
+      grid-template-columns: 1fr;
+      gap: var(--s-1);
+    }
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import LinkList from "../../components/LinkList.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+const alternatives = (await getCollection("alternatives")).sort((a, b) => a.data.order - b.data.order);
+---
+<Marketing
+  title="Free alternatives to paid poll and preference test tools | Pairpoll"
+  description="How Pairpoll compares with other tools for image and video polls and preference tests. Each page lists facts from the other tool's own site, with links."
+>
+  <div class="wrap">
+    <PageIntro
+      title="Pairpoll compared with other tools"
+      lead="Each page compares one tool with Pairpoll, using facts from that tool's own pages, and says when the other tool fits better."
+    />
+    <LinkList
+      columns={2}
+      items={alternatives.map((alt) => ({ href: `/alternatives/${alt.id}`, name: `${alt.data.tool} alternative`, blurb: alt.data.blurb }))}
+    />
+  </div>
+  <div class="spacer"></div>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .spacer {
+    height: var(--s-8);
+  }
+</style>

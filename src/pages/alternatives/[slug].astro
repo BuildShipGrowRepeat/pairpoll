@@ -1,0 +1,173 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+export async function getStaticPaths() {
+  const alternatives = await getCollection("alternatives");
+  return alternatives.map((alt) => ({ params: { slug: alt.id }, props: { alt } }));
+}
+
+const { alt } = Astro.props as { alt: CollectionEntry<"alternatives"> };
+const { Content } = await render(alt);
+const checked = alt.data.checked.toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+---
+<Marketing title={alt.data.seoTitle} description={alt.data.description}>
+  <div class="wrap">
+    <PageIntro title={alt.data.title} lead={alt.data.lead}>
+      <div class="actions intro-actions">
+        <a class="btn btn--primary btn--lg" href="/app/new">Create a free poll</a>
+      </div>
+    </PageIntro>
+
+    <section aria-labelledby="compare-title" class="compare">
+      <h2 id="compare-title">{alt.data.tool} and Pairpoll side by side</h2>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden">Topic</span></th>
+              <th scope="col">{alt.data.tool}</th>
+              <th scope="col">Pairpoll</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              alt.data.comparison.map((row) => (
+                <tr>
+                  <th scope="row">{row.topic}</th>
+                  <td data-label={alt.data.tool}>
+                    {row.them}
+                    <a class="source" href={row.source} rel="noopener">
+                      Source<span class="visually-hidden">: {alt.data.tool}, {row.topic}</span>
+                    </a>
+                  </td>
+                  <td data-label="Pairpoll">{row.pairpoll}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="checked">
+        Facts about {alt.data.tool} checked on {checked} on {alt.data.tool}'s own pages. Plans change, so check the source
+        before you decide.
+      </p>
+    </section>
+
+    <div class="prose alt-body">
+      <Content />
+    </div>
+  </div>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .intro-actions {
+    margin-top: var(--s-5);
+  }
+
+  .compare {
+    margin-top: var(--s-5);
+  }
+
+  .compare h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--s-4);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    padding-top: 0;
+    border-bottom: 1.5px solid var(--ink);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-display);
+  }
+
+  tbody th {
+    width: 26%;
+    font-weight: var(--weight-ui);
+  }
+
+  td {
+    width: 37%;
+    color: var(--ink-soft);
+  }
+
+  td:last-child {
+    color: var(--ink);
+  }
+
+  .source {
+    display: block;
+    width: fit-content;
+    margin-top: var(--s-1);
+    font-size: var(--text-sm);
+  }
+
+  .checked {
+    margin-top: var(--s-4);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+
+  /* Phones: one block per topic, each value labelled with its tool. */
+  @media (max-width: 39.99rem) {
+    thead {
+      display: none;
+    }
+
+    table,
+    tbody,
+    tr,
+    th,
+    td {
+      display: block;
+      width: auto;
+    }
+
+    tr {
+      padding-block: var(--s-4);
+      border-bottom: 1px solid var(--line);
+    }
+
+    tbody th,
+    td {
+      width: auto;
+      padding: 0;
+      border: 0;
+    }
+
+    td {
+      margin-top: var(--s-2);
+    }
+
+    td::before {
+      content: attr(data-label) ": ";
+      font-weight: var(--weight-ui);
+      color: var(--ink);
+    }
+  }
+
+  .alt-body {
+    padding-block: var(--s-7) var(--s-8);
+  }
+</style>

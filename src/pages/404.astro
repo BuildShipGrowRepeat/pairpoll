@@ -1,0 +1,29 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+---
+<Marketing title="Page not found | Pairpoll" description="This page doesn't exist." noindex>
+  <div class="wrap not-found">
+    <div class="empty">
+      <svg class="empty-art" viewBox="0 0 88 40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" aria-hidden="true">
+        <rect x="1" y="5" width="38" height="30" rx="4"></rect>
+        <rect x="49" y="5" width="38" height="30" rx="4"></rect>
+      </svg>
+      <h1>This page doesn't exist</h1>
+      <p>The address may be mistyped, or the page has moved. If someone sent you a poll link, ask them for a fresh one.</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="/">Go to the home page</a>
+        <a class="btn btn--secondary" href="/app/new">Create a poll</a>
+      </div>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .not-found {
+    padding-block: var(--s-8);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+  }
+</style>

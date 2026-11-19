@@ -1,0 +1,68 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import PageIntro from "../components/PageIntro.astro";
+import CtaBand from "../components/CtaBand.astro";
+
+// Draft copy for Vladimir's review. The contact address is a placeholder until pairpoll.com is set up.
+// Descriptions of the other projects come from each site's own title or meta description (checked 19 Nov 2026).
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "About Pairpoll",
+  mainEntity: {
+    "@type": "Person",
+    name: "Vladimir Terekhov",
+    worksFor: { "@type": "Organization", name: "Attract Group", url: "https://attractgroup.com" },
+  },
+};
+---
+<Marketing
+  title="About Pairpoll | Pairpoll"
+  description="Pairpoll is a free, open-source poll for images and videos, ranked head to head. A personal project by Vladimir Terekhov, built at Attract Group."
+  jsonLd={jsonLd}
+>
+  <div class="wrap">
+    <PageIntro title="About Pairpoll" />
+    <div class="prose about">
+      <p>
+        Pairpoll is a free, open-source poll for images and videos, ranked head to head. You upload a few options, send one
+        link, and each person picks the better of two until their top list is settled.
+      </p>
+      <p>
+        It's a personal project by Vladimir Terekhov, built at <a href="https://attractgroup.com">Attract Group</a>. It
+        grew out of a small tool he made so a few people could choose the best of nine ad videos.
+      </p>
+
+      <h2>Free and open source</h2>
+      <p>
+        Pairpoll is free to use and its code is open. Polls, files and votes are deleted 30 days after a poll is created.
+        Read what is stored in the <a href="/privacy">privacy notice</a>.
+      </p>
+
+      <h2>Other projects</h2>
+      <p>
+        Vladimir also makes <a href="https://getkira.com">Kira-AI</a> (AI voice interviews for high-volume hiring),
+        <a href="https://viralix.video">Viralix</a> (a marketplace for AI video ads) and
+        <a href="https://milltrue.com">MillTrue</a> (order-to-production software for make-to-order manufacturers).
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions, or a poll that breaks the rules: <a href="mailto:hello@pairpoll.com">hello@pairpoll.com</a>. Every poll
+        also has a "Report this poll" link.
+      </p>
+    </div>
+  </div>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .about {
+    padding-bottom: var(--s-8);
+  }
+
+  .about > p:first-child {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+  }
+</style>

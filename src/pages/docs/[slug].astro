@@ -1,0 +1,24 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Docs from "../../layouts/Docs.astro";
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs.map((doc) => ({ params: { slug: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props as { doc: CollectionEntry<"docs"> };
+const { Content } = await render(doc);
+---
+<Docs title={doc.data.seoTitle} description={doc.data.description} markdownHref={`/docs/${doc.id}.md`}>
+  <article class="prose">
+    <h1>{doc.data.title}</h1>
+    <Content />
+  </article>
+</Docs>
+
+<style>
+  h1 {
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.25rem);
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+export async function getStaticPaths() {
+  const guides = await getCollection("guides");
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide } }));
+}
+
+const { guide } = Astro.props as { guide: CollectionEntry<"guides"> };
+const { Content } = await render(guide);
+const { title, description, published, updated } = guide.data;
+const format = (date: Date) =>
+  date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const iso = (date: Date) => date.toISOString().slice(0, 10);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: title,
+  description,
+  datePublished: iso(published),
+  dateModified: iso(updated ?? published),
+  author: { "@type": "Person", name: "Vladimir Terekhov" },
+  publisher: { "@type": "Organization", name: "Pairpoll", url: "https://pairpoll.com/" },
+};
+---
+<Marketing title={guide.data.seoTitle} description={description} ogType="article" jsonLd={jsonLd}>
+  <article class="wrap guide">
+    <header>
+      <h1>{title}</h1>
+      <p class="guide-date">
+        {
+          updated ? (
+            <>
+              Updated <time datetime={iso(updated)}>{format(updated)}</time>
+            </>
+          ) : (
+            <time datetime={iso(published)}>{format(published)}</time>
+          )
+        }
+      </p>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <p class="guide-more"><a href="/guides">All guides</a></p>
+  </article>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .guide {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) var(--s-8);
+  }
+
+  .guide h1 {
+    max-width: 14em;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  }
+
+  .guide-date {
+    margin: var(--s-4) 0 var(--s-6);
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+  }
+
+  .guide .prose > :global(:first-child) {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+  }
+
+  .guide-more {
+    margin-top: var(--s-7);
+    font-weight: var(--weight-ui);
+  }
+</style>

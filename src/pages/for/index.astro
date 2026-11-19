@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import LinkList from "../../components/LinkList.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+const uses = (await getCollection("uses")).sort((a, b) => a.data.order - b.data.order);
+---
+<Marketing
+  title="What you can rank with Pairpoll: image and video polls | Pairpoll"
+  description="Use Pairpoll as an image poll or video poll: thumbnails, ad creatives, logos, designs, photos and more, ranked head to head by the people you choose."
+>
+  <div class="wrap">
+    <PageIntro
+      title="What you can rank"
+      lead="Anything people can judge by looking. Each page shows how a poll works for that kind of choice."
+    />
+    <LinkList columns={3} items={uses.map((use) => ({ href: `/for/${use.id}`, name: use.data.name, blurb: use.data.blurb }))} />
+  </div>
+  <div class="spacer"></div>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .spacer {
+    height: var(--s-8);
+  }
+</style>

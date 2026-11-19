@@ -1,0 +1,83 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import PageIntro from "../components/PageIntro.astro";
+
+// DRAFT awaiting Vladimir's review (see docs/STATE.md). Plain-language terms written from docs/SPEC.md.
+---
+<Marketing
+  title="Terms | Pairpoll"
+  description="The rules for using Pairpoll: what you may upload, how long polls last, what happens to rule-breaking polls, and the limits of the free service."
+>
+  <div class="wrap">
+    <PageIntro title="Terms" lead="The rules for using Pairpoll, in plain words." />
+    <div class="prose legal">
+      <p class="legal-date">Last updated 19 November 2026</p>
+
+      <h2>The service</h2>
+      <p>
+        Pairpoll lets you upload images or videos, share a link and let people rank them by picking one of two. It's free.
+        It's provided as it is, without guarantees, and it may change or stop.
+      </p>
+
+      <h2>What you upload</h2>
+      <p>Only upload files you have the right to share. Don't use Pairpoll for:</p>
+      <ul>
+        <li>anything illegal, or sexual content involving minors;</li>
+        <li>harassing, threatening or exposing people;</li>
+        <li>content that copies someone else's work without permission;</li>
+        <li>malware, spam or attempts to break the service.</li>
+      </ul>
+      <p>
+        We may remove a poll or block an account that breaks these rules, without notice. Anyone can report a poll from the
+        link on its page.
+      </p>
+
+      <h2>How long polls last</h2>
+      <p>
+        Every poll, with its files and votes, is deleted automatically 30 days after it was created. Keep your own copies
+        of your files and any results you want to keep.
+      </p>
+
+      <h2>Limits</h2>
+      <p>
+        To keep the service free and fair, there are limits on file sizes, on how many polls you can make, and on voters per
+        poll. The app shows them where they apply.
+      </p>
+
+      <h2>Voters</h2>
+      <p>
+        When you vote, the poll's creator sees the name you type and your top list. Don't type anything in your name you
+        wouldn't want them to see.
+      </p>
+
+      <h2>API keys and agents</h2>
+      <p>
+        Treat API keys like passwords. You're responsible for what is done with your keys, including by AI agents you
+        connect. You can revoke a key at any time in your account.
+      </p>
+
+      <h2>Liability</h2>
+      <p>
+        Pairpoll isn't liable for lost data, for decisions you make based on poll results, or for content other people
+        upload, as far as the law allows.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        These terms may change. The date at the top shows the latest version. Questions:
+        <a href="mailto:hello@pairpoll.com">hello@pairpoll.com</a>.
+      </p>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .legal {
+    padding-bottom: var(--s-8);
+  }
+
+  .legal-date {
+    color: var(--ink-soft);
+    font-size: var(--text-sm);
+  }
+</style>

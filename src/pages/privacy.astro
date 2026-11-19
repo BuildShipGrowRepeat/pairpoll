@@ -1,0 +1,81 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import PageIntro from "../components/PageIntro.astro";
+
+// DRAFT awaiting Vladimir's review (see docs/STATE.md). Written from docs/SPEC.md.
+// Update when the email provider and analytics are chosen, and when the contact address exists.
+---
+<Marketing
+  title="Privacy | Pairpoll"
+  description="What Pairpoll stores about creators and voters, who can see it, and when it is deleted. Polls, files and votes are deleted 30 days after a poll is created."
+>
+  <div class="wrap">
+    <PageIntro title="Privacy" lead="What Pairpoll stores, who can see it, and when it's deleted." />
+    <div class="prose legal">
+      <p class="legal-date">Last updated 19 November 2026</p>
+
+      <h2>Who runs Pairpoll</h2>
+      <p>Pairpoll is run by Vladimir Terekhov. Questions about your data: <a href="mailto:hello@pairpoll.com">hello@pairpoll.com</a>.</p>
+
+      <h2>If you create polls</h2>
+      <ul>
+        <li>Your email address, so you can sign in with a one-time link. There is no password.</li>
+        <li>Your polls: the question, the settings and the images or videos you upload.</li>
+        <li>Sign-in links, sessions and API keys, stored only in a form that can't be turned back into the original.</li>
+        <li>Counts used for limits, such as how many polls you created today and how much you uploaded.</li>
+      </ul>
+
+      <h2>If you vote</h2>
+      <ul>
+        <li>The name you type, your picks and when you voted.</li>
+        <li>A cookie that recognises your browser for that poll, so you can close the page and carry on later, and so each browser votes once.</li>
+      </ul>
+      <p>
+        You don't sign up to vote. Your name and your top list are visible to the person who made the poll. They can also
+        choose to share the overall result with others, without voter names unless they decide to include them.
+      </p>
+
+      <h2>Reports</h2>
+      <p>If you report a poll, we keep what you wrote so we can review it.</p>
+
+      <h2>Abuse checks</h2>
+      <p>
+        Pairpoll uses Cloudflare Turnstile, an invisible check, when you sign in and when you start voting. Your IP address
+        is used to limit abuse, for example how often sign-in links can be requested.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        Two kinds, both needed for the service to work: a sign-in cookie for poll creators, and the voter cookie described
+        above. There are no advertising cookies.
+      </p>
+
+      <h2>When data is deleted</h2>
+      <ul>
+        <li>Every poll, with its files, votes and voter names, is deleted automatically 30 days after it was created.</li>
+        <li>A poll's creator can delete a voter's entry, or the whole poll, at any time.</li>
+        <li>You can delete your account, and all your polls with it, from your account settings.</li>
+      </ul>
+
+      <h2>Where it's stored</h2>
+      <p>
+        Pairpoll runs on Cloudflare. Data is kept in Cloudflare's database and file storage. Sign-in emails are sent through
+        an email delivery service.
+      </p>
+
+      <h2>What we don't do</h2>
+      <p>We don't sell your data and don't show ads.</p>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .legal {
+    padding-bottom: var(--s-8);
+  }
+
+  .legal-date {
+    color: var(--ink-soft);
+    font-size: var(--text-sm);
+  }
+</style>

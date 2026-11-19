@@ -1,0 +1,26 @@
+---
+import { getCollection } from "astro:content";
+import Marketing from "../../layouts/Marketing.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import LinkList from "../../components/LinkList.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+const guides = (await getCollection("guides")).sort((a, b) => a.data.order - b.data.order);
+---
+<Marketing
+  title="Guides to image polls and pairwise ranking | Pairpoll"
+  description="Short guides on voting in pairs: how pairwise ranking works, how many voters you need, and how to test images and videos with your own audience."
+>
+  <div class="wrap">
+    <PageIntro title="Guides" lead="Short answers to the questions that come up when you rank images or videos with real people." />
+    <LinkList columns={2} items={guides.map((guide) => ({ href: `/guides/${guide.id}`, name: guide.data.title, blurb: guide.data.blurb }))} />
+  </div>
+  <div class="spacer"></div>
+  <CtaBand />
+</Marketing>
+
+<style>
+  .spacer {
+    height: var(--s-8);
+  }
+</style>
