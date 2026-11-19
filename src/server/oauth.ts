@@ -28,7 +28,8 @@ import { consumeRateLimit, requestIp } from "./security.js";
 export { MCP_SCOPE };
 const HOUR = 60 * 60 * 1000;
 const TOKEN_BODY_LIMIT = 8 * 1024;
-const TOKEN_RATE_LIMIT = 120;
+// Hosted connectors (Claude, ChatGPT) refresh many users' tokens from a few shared addresses.
+const TOKEN_RATE_LIMIT = 3000;
 const NOT_FOUND_HANDLER: ExportedHandler<Env> = {
   fetch: () => new Response("Not found", { status: 404 }),
 };

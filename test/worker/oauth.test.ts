@@ -450,7 +450,7 @@ test("registration, authorization and token attempts are limited per IP", async 
   expect(await consumeAuthorizationRateLimit(env.DB, authorizationRequest)).toBe(false);
 
   const tokenIp = "198.51.100.43";
-  for (let attempt = 0; attempt < 120; attempt++) {
+  for (let attempt = 0; attempt < 3000; attempt++) {
     const response = await dispatch(new Request(`${ORIGIN}/oauth/token`, {
       method: "POST",
       headers: {
