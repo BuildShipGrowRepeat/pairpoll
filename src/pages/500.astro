@@ -1,0 +1,28 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+---
+<Marketing title="Something went wrong | Pairpoll" description="Pairpoll couldn't finish this request." noindex>
+  <div class="wrap server-error">
+    <div class="empty">
+      <svg class="empty-art" viewBox="0 0 88 40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" aria-hidden="true">
+        <rect x="1" y="5" width="38" height="30" rx="4"></rect>
+        <rect x="49" y="5" width="38" height="30" rx="4"></rect>
+      </svg>
+      <h1>Something went wrong</h1>
+      <p>Pairpoll couldn't finish this request. It's a problem on our side. Wait a moment and reload the page.</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="/">Go to the home page</a>
+      </div>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .server-error {
+    padding-block: var(--s-8);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+  }
+</style>

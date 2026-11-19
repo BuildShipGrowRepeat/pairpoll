@@ -192,7 +192,8 @@ export function mountResults(root: HTMLElement) {
       const next = await api<Results>(`/polls/${id}/results`);
       if (JSON.stringify(next) === JSON.stringify(results)) return;
       const newlyFinished = next.finished - results.finished;
-      const statusChanged = next.poll.status !== results.poll.status || next.poll.shareCode !== results.poll.shareCode;
+      const statusChanged = next.poll.status !== results.poll.status || next.poll.shareCode !== results.poll.shareCode
+        || next.poll.shareNames !== results.poll.shareNames;
       results = next;
       render();
       if (statusChanged) renderSide();

@@ -381,28 +381,6 @@
   margin-top: var(--s-3);
 }
 
-/* Pick buttons rise in once both videos have played. */
-.duel-pick.is-new {
-  animation: rise 360ms var(--ease) both;
-}
-
-.duel-card:last-child .duel-pick.is-new {
-  animation-delay: 70ms;
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .duel-pick.is-new {
-    animation: none;
-  }
-}
-
 .duel-card.is-picked .duel-pick {
   background: var(--ink);
   border-color: var(--ink);

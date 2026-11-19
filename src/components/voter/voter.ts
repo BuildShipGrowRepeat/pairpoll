@@ -151,7 +151,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
       autocomplete: "name",
       maxlength: "60",
       required: true,
-      value: localStorage.getItem("pairpoll-name") ?? "",
       "aria-describedby": "voter-name-hint voter-name-error",
     });
     const error = h("p", { class: "field-error", id: "voter-name-error", "aria-live": "polite" });
@@ -165,7 +164,7 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
         "div",
         { class: "field" },
         h("label", { class: "field-label", for: "voter-name" }, "Your name"),
-        h("p", { class: "field-hint", id: "voter-name-hint" }, options.previewBack ? "In the preview, any name works." : "Only the person who made this poll sees it."),
+        h("p", { class: "field-hint", id: "voter-name-hint" }, options.previewBack ? "In the preview, any name works." : "The person who made this poll sees your name. They can choose to show it to others with the results."),
         name,
         error,
       ),
@@ -193,7 +192,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
       start.textContent = "Starting…";
       try {
         const state = await driver.join(value, () => (check ? check.token() : Promise.resolve("")));
-        localStorage.setItem("pairpoll-name", value);
         render(state, true);
       } catch (thrown) {
         start.disabled = false;
@@ -289,7 +287,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
     };
 
     show(h("section", { class: "vote" }, head, duel, statusLine));
-    if (entering && !reduce.matches) duel.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: "ease-out" });
 
     // Picking ----------------------------------------------------------------------
     async function pick(winner: string) {
@@ -468,7 +465,6 @@ export function mountVoter(root: HTMLElement, options: VoterOptions) {
           current = next;
           tiles.forEach((t) => t.sync?.());
           if (current.played.every(Boolean)) {
-            tiles.forEach((t) => t.pickButton?.classList.add("is-new"));
             say("Both played. Pick the one you like more.");
             if (stage.contains(document.activeElement) || document.activeElement === document.body) tiles[0].pickButton?.focus();
           } else {

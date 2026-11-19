@@ -17,8 +17,8 @@ if (!auth) return Astro.redirect(`/signin?next=${encodeURIComponent(`/signin/dev
       <section data-step="form">
         <h1>Approve the CLI</h1>
         <p class="lead">
-          Check that this code matches the one in your terminal. Approving lets the CLI create polls and read results as{" "}
-          <strong>{auth.email}</strong>.
+          Check that this code matches the one in your terminal. Approving lets the CLI act as{" "}
+          <strong>{auth.email}</strong>: create, open, close and delete polls, read results and remove voters.
         </p>
         <form novalidate>
           <div class="field">
