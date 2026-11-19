@@ -19,7 +19,7 @@ export default defineConfig({
   env: {
     schema: {
       // Google Analytics 4 measurement ID ("G-..."), loaded only after the visitor accepts.
-      PUBLIC_GA_ID: envField.string({ context: "client", access: "public", default: "" }),
+      PUBLIC_GA_ID: envField.string({ context: "client", access: "public", default: "G-LYRW064R1D" }),
       // Cloudflare Web Analytics site token, no cookies, on every page.
       PUBLIC_CF_BEACON_TOKEN: envField.string({ context: "client", access: "public", default: "21e84da553d04f3eac5d3a063435af7d" }),
     },
