@@ -14,7 +14,7 @@ Keep it private. Send it as `Authorization: Bearer <key>`.
 
 ## 2. Pick the shortest path
 
-For local files, use the CLI:
+For local files, use the CLI. It is not on npm yet, so first set it up from the repository as shown in the [CLI reference](/docs/cli). Then:
 
 ```sh
 export PAIRPOLL_API_URL=http://localhost:4321

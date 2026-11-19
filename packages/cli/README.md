@@ -4,10 +4,14 @@ The `pairpoll` command creates image and video polls, uploads local files and re
 
 ## Run it from this repository
 
+The CLI has no dependencies. From the repository root:
+
 ```sh
-npm install
-npm exec --workspace pairpoll -- pairpoll --help
+alias pairpoll="node $PWD/packages/cli/bin/pairpoll.js"
+pairpoll --help
 ```
+
+The alias works from any folder, so relative file paths resolve where you run the command. (`npm exec --workspace pairpoll` runs inside `packages/cli`, where relative paths break.)
 
 The package is private and is not published to npm.
 

@@ -18,6 +18,7 @@ Every request needs a Pairpoll API key as a bearer token.
 
 ```sh
 export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_KEY=ppk_your_key
 claude mcp add --transport http pairpoll "$PAIRPOLL_API_URL/mcp" \
   --header "Authorization: Bearer $PAIRPOLL_API_KEY"
 ```
@@ -28,6 +29,7 @@ Run `claude mcp get pairpoll` to check it.
 
 ```sh
 export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_KEY=ppk_your_key
 codex mcp add pairpoll \
   --url "$PAIRPOLL_API_URL/mcp" \
   --bearer-token-env-var PAIRPOLL_API_KEY

@@ -42,7 +42,7 @@ curl "$PAIRPOLL_API_URL/api/v1/polls" \
   }'
 ```
 
-`kind` is `image` or `video`. `question` is 1 to 200 characters. `topSize` is 1, 3 or 5. `voterCap` is 1 to 200. `playsOnce` can be true only for videos.
+Keep the returned `id` for the next requests, for example `POLL_ID=<id>`. `kind` is `image` or `video`. `question` is 1 to 200 characters. `topSize` is 1, 3 or 5. `voterCap` is 1 to 200. `playsOnce` can be true only for videos.
 
 Upload one raw file per request. Do not use multipart:
 
@@ -86,7 +86,7 @@ All endpoints below accept a creator session or bearer API key unless marked ses
 | `POST` | `/polls/:id/open` | Open a ready draft. |
 | `POST` | `/polls/:id/close` | Close voting permanently. |
 | `GET` | `/polls/:id/results` | Read ranking and voter runs. |
-| `GET` | `/polls/:id/export?format=json|csv` | Export results. |
+| `GET` | `/polls/:id/export?format=json\|csv` | Export results. |
 | `POST` | `/polls/:id/sharing` | Send `{enabled,shareNames?}` for a public result link. |
 | `DELETE` | `/polls/:id/runs/:run` | Remove one voter result. |
 
