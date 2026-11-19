@@ -3,13 +3,13 @@ import { env } from "cloudflare:workers";
 import Marketing from "../layouts/Marketing.astro";
 import Notice from "../components/Notice.astro";
 import { authenticateSession } from "../server/auth";
+import { localPath } from "../lib/local-path";
 import "../styles/app.css";
 
 export const prerender = false;
 
 // Signed-in people go straight on to where they were heading.
-const requested = Astro.url.searchParams.get("next") ?? "";
-const next = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/app";
+const next = localPath(Astro.url.searchParams.get("next"));
 if (await authenticateSession(env.DB, Astro.request)) return Astro.redirect(next);
 
 const reason = Astro.url.searchParams.get("reason");

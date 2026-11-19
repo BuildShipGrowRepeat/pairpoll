@@ -30,6 +30,7 @@ import "../../styles/app.css";
 
 <script>
   import { api, ApiError } from "../../components/app/client";
+  import { localPath } from "../../lib/local-path";
 
   const root = document.querySelector<HTMLElement>("[data-confirm]")!;
   const form = root.querySelector("form")!;
@@ -55,9 +56,9 @@ import "../../styles/app.css";
     error.textContent = "";
     try {
       await api("/auth/consume", "POST", { token });
-      const next = localStorage.getItem("pairpoll-next") ?? "/app";
+      const next = localPath(localStorage.getItem("pairpoll-next"));
       localStorage.removeItem("pairpoll-next");
-      location.replace(next.startsWith("/") && !next.startsWith("//") ? next : "/app");
+      location.replace(next);
     } catch (problem) {
       if (problem instanceof ApiError && problem.code === "invalid_link") return invalid();
       error.textContent = (problem as Error).message;
