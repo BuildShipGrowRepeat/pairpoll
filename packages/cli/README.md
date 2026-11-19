@@ -2,9 +2,18 @@
 
 The `pairpoll` command creates image and video polls, uploads local files and reads results.
 
+## Install
+
+```sh
+npm install -g pairpoll
+pairpoll --help
+```
+
+It needs Node.js 22 or newer and has no dependencies.
+
 ## Run it from this repository
 
-The CLI has no dependencies. From the repository root:
+From the repository root:
 
 ```sh
 alias pairpoll="node $PWD/packages/cli/bin/pairpoll.js"
@@ -12,8 +21,6 @@ pairpoll --help
 ```
 
 The alias works from any folder, so relative file paths resolve where you run the command. (`npm exec --workspace pairpoll` runs inside `packages/cli`, where relative paths break.)
-
-The package is not published to npm.
 
 ## Sign in
 

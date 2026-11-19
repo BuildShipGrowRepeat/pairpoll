@@ -15,7 +15,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - Voting: `src/lib/knockout.ts` replays top-1/3/5 knockouts for 2–16 items (every size, top size and bye arrangement tested). Plays-once videos, resume in the same browser, voter cap, Turnstile on sign-in and join.
 - REST API `/api/v1` (contract in `docs/API.md`): email sign-in, sessions, API keys, CLI device approval, polls, uploads, voting, results, CSV/JSON export, share links, media with ranges, account deletion, owner moderation.
 - MCP: `/mcp`, stateless Streamable HTTP, eight tools (`create_poll`, `get_upload_link`, `open_poll`, `close_poll`, `get_results`, `list_polls`, `delete_voter`, `delete_poll`). Existing API keys still work. Claude and ChatGPT apps use OAuth 2.1 authorization code with PKCE S256, refresh tokens, resource indicators, CIMD or DCR, one MCP-only scope, consent, and connected-app revocation at `/app/keys`.
-- CLI: `packages/cli` (`pairpoll`), no dependencies, package fields ready for npm but not published. Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete-voter, delete, logout. Checks file sizes before creating a poll.
+- CLI: `packages/cli` (`pairpoll`), no dependencies, published to npm as `pairpoll` 1.0.0 (publish from `packages/cli` with `npm publish --access public`; the owner's npm account uses a security key). Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete-voter, delete, logout. Checks file sizes before creating a poll.
 - App header: logo links to `/`, nav has a Docs link, and the site footer shows on app pages.
 - Creator app: `/signin`, `/signin/confirm`, `/signin/device`, `/app`, `/app/new`, `/app/polls/<id>` (draft editor, then results), `/app/polls/<id>/preview`, `/app/keys`, `/app/account`, `/app/owner` (only for `OWNER_EMAILS`; others get 404).
 - Voters: `/p/<code>` with every state (not open, closed, full, expired, finished, removed) and a report link; shared results `/results/<shareCode>`.
@@ -61,8 +61,8 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 ## Listings
 
 - Published in the official MCP registry as `com.pairpoll/pairpoll` (proof file `public/.well-known/mcp-registry-auth`; the signing key is on the owner's machine outside the repository; bump `version` in `server.json` before each `mcp-publisher publish`).
-- Listed on Glama as `com.pairpoll/pairpoll` (not yet claimed by the owner).
-- Submitted 19 Nov: awesome-cloudflare-selfhosted (issue 72), Astro showcase thread, awesome-remote-mcp-servers (pull request 5255, checks passed, waiting for merge).
+- Listed on Glama as `com.pairpoll/pairpoll`, claimed by the owner (proof file `public/.well-known/glama.json`). Its health check still fails with 401: it needs a test profile (API key or OAuth) set by the owner.
+- Submitted 19 Nov: awesome-cloudflare-selfhosted (issue 72), Astro showcase thread, awesome-remote-mcp-servers (pull request 5255, checks passed, waiting for merge). Submitted 20 Nov: mcpservers.org (free review, about two weeks), AlternativeTo (free review queue). Dev.to article saved as an unpublished draft.
 
 ## Still needed
 

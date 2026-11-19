@@ -6,10 +6,10 @@ nav: "CLI"
 order: 3
 ---
 
-The `pairpoll` command is for people and agents with local file access. The package is not published to npm yet. Until it is, run it from a checkout of the Pairpoll repository. It needs Node.js 22 or newer and nothing else:
+The `pairpoll` command is for people and agents with local file access. It needs Node.js 22 or newer and nothing else:
 
 ```sh
-alias pairpoll="node /path/to/pairpoll/packages/cli/bin/pairpoll.js"
+npm install -g pairpoll
 pairpoll --help
 ```
 

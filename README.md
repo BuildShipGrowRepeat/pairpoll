@@ -46,6 +46,7 @@ Tools: `create_poll`, `get_upload_link`, `open_poll`, `close_poll`, `get_results
 **CLI**, for polls made from local files:
 
 ```sh
+npm install -g pairpoll
 pairpoll login
 pairpoll create ./thumbnails --question "Which thumbnail would you click?" --top 3 --open
 pairpoll results <poll-id> --json

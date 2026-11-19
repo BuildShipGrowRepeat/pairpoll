@@ -61,15 +61,13 @@ Send the key as `Authorization: Bearer <key>`. Never put it in a URL.
 
 ## Step 3a: the CLI
 
-The CLI is not on npm yet. It needs Node.js 22 or newer and no other packages:
+The CLI needs Node.js 22 or newer and no other packages:
 
 ```sh
-git clone https://github.com/BuildShipGrowRepeat/pairpoll.git
-alias pairpoll="node $PWD/pairpoll/packages/cli/bin/pairpoll.js"
-export PAIRPOLL_API_URL=https://pairpoll.com
+npm install -g pairpoll
 ```
 
-If your shell does not keep aliases or variables between commands, call `node <path>/packages/cli/bin/pairpoll.js` directly and add `--api-url https://pairpoll.com` to each command.
+Without a global install, run `npx pairpoll` in place of `pairpoll`.
 
 Sign in as in step 2, then create and open the poll in one command. Pass files, a folder, or both. A folder adds its non-hidden direct files in name order:
 
