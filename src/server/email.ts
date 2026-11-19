@@ -10,16 +10,21 @@ export async function sendSignInEmail(
   dev: boolean,
 ): Promise<void> {
   if (!isLocalDevelopment(request, dev)) {
-    // Cloudflare Email Service. A failed send is logged, never shown: the page must not reveal which emails exist.
+    // Resend HTTP API. A failed send is logged, never shown: the page must not reveal which emails exist.
     try {
-      await env.EMAIL.send({
-        from: { email: "signin@pairpoll.com", name: "Pairpoll" },
-        to,
-        subject: "Your Pairpoll sign-in link",
-        text: `Open this link to sign in to Pairpoll:\n\n${link}\n\nIt works once and expires in 15 minutes. If you did not ask for it, ignore this email.`,
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: "Pairpoll <signin@pairpoll.com>",
+          to,
+          subject: "Your Pairpoll sign-in link",
+          text: `Open this link to sign in to Pairpoll:\n\n${link}\n\nIt works once and expires in 15 minutes. If you did not ask for it, ignore this email.`,
+        }),
       });
+      if (!response.ok) console.error("Sign-in email failed:", response.status, await response.text());
     } catch (error) {
-      console.error("Sign-in email failed:", (error as { code?: string }).code, (error as Error).message);
+      console.error("Sign-in email failed:", (error as Error).message);
     }
     return;
   }

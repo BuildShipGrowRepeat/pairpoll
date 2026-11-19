@@ -33,7 +33,6 @@
     // Public site key of the invisible Turnstile widget. Local dev overrides it from .dev.vars.
     "TURNSTILE_SITE_KEY": "0x4AAAAAAGIYYC3sGM26hmFd"
   },
-  "send_email": [{ "name": "EMAIL" }],
   "routes": [
     { "pattern": "pairpoll.com", "custom_domain": true }
   ],
@@ -42,6 +41,7 @@
   "secrets": {
     // Set with `wrangler secret put`; locally from .dev.vars.
     // OWNER_EMAILS: comma-separated service-owner accounts (a space disables the owner routes).
-    "required": ["TURNSTILE_SECRET_KEY", "OWNER_EMAILS"]
+    // RESEND_API_KEY: sends sign-in emails; not needed locally (dev shows the link instead).
+    "required": ["TURNSTILE_SECRET_KEY", "OWNER_EMAILS", "RESEND_API_KEY"]
   }
 }
