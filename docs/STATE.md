@@ -34,6 +34,7 @@ The stack is as assumed. Details that changed in current versions:
 ## Known gaps
 
 - Playwright uses the headless Chromium already on this Mac (revision 1243, path hard-coded in `playwright.config.ts`); Playwright 1.65 expects 1255. On another machine remove `executablePath` and run `npx playwright install chromium`.
+- Codex `workspace-write` sandbox (checked 19 Nov): `npm test` and `npm run typecheck` pass (wrangler prints a harmless EPERM about its log file in ~/Library/Preferences). `npm run test:e2e` fails: wrangler cannot write its dev registry in ~/Library/Preferences, and even with that redirected, Chromium cannot launch (`MachPortRendezvousServer ... Permission denied`). Run e2e outside the sandbox.
 - Worker-level tests do not cover the Astro routes or the `scheduled` handler end to end; the e2e test covers routes.
 - `worker-configuration.d.ts` is generated and git-ignored; `dev`, `build`, `typecheck` and `test` regenerate it.
 - No real schema, auth, email, Turnstile check, media upload, CLI commands, MCP endpoint, content collections or design yet.
