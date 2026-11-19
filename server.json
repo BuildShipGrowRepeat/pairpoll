@@ -1,0 +1,34 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.BuildShipGrowRepeat/pairpoll",
+  "title": "Pairpoll",
+  "description": "Free polls for images and videos ranked head to head: create a poll, share a link, read results.",
+  "version": "1.0.0",
+  "websiteUrl": "https://pairpoll.com/docs/agents",
+  "repository": {
+    "url": "https://github.com/BuildShipGrowRepeat/pairpoll",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://pairpoll.com/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Pairpoll API key from https://pairpoll.com/app/keys",
+          "value": "Bearer {api_key}",
+          "isRequired": true,
+          "isSecret": true,
+          "variables": {
+            "api_key": {
+              "description": "Pairpoll API key (starts with ppk_)",
+              "isRequired": true,
+              "isSecret": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
