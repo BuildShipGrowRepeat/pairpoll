@@ -1,29 +1,30 @@
 ---
 seoTitle: "Pairpoll for AI agents: API, CLI and MCP | Pairpoll"
-description: "How AI agents create image and video polls in Pairpoll, add files, share the link and read results through the REST API, the pairpoll CLI and the MCP server."
+description: "Choose the Pairpoll REST API, command-line tool or MCP server to create image and video polls, share them and read ranked results."
 title: "Pairpoll for AI agents"
 nav: "Agents"
-order: 1
+order: 2
 ---
 
-An agent can do everything a creator does in the browser. It works on behalf of a signed-in creator, using an API key the creator makes in their account.
+Agents can create a poll, add files, open voting, read results, remove a voter, close a poll and delete it. Every method acts for one Pairpoll creator through an API key.
 
-## What an agent can do
+## Choose a way in
 
-- Create a poll and set the question, the top size and the voter limit.
-- Add images or videos.
-- Open the poll and share its link.
-- List polls and read results: the overall ranking and each voter's top list.
-- Delete a voter's entry, close a poll or delete it.
+**Use the CLI for local files.** It can take files or a folder, upload each item, open the poll and print the share link in one command. It is the simplest option for a coding agent with shell access.
 
-## Three ways in
+**Use the REST API for direct integration.** It exposes every creator action under `/api/v1`. Use it when your program already handles HTTP and local file bytes.
 
-**REST API.** Endpoints live under `/api/v1`. Send the API key as a bearer token.
+**Use MCP from an agent client.** The remote Streamable HTTP server is at `/mcp`. Its tools create and manage polls without a custom integration.
 
-**CLI.** The `pairpoll` command signs in through your browser: you approve a short code, and the CLI stores an API key in a file only you can read. It can create a poll from a folder of files in one command.
+## Files in chat apps
 
-**MCP server.** The remote server is at `/mcp` (Streamable HTTP) and takes the same API key as a bearer token. Chat apps can't pass attached files to it, so the tool that adds items returns a link to an upload page for the draft poll.
+Claude and ChatGPT chat apps cannot pass an attached image or video to this MCP server. Pairpoll also does not fetch files from URLs. The MCP flow creates a draft and returns a browser upload page. Upload the files there, then ask the agent to open the poll.
 
-## Status
+Coding agents that can read local files should use the CLI or REST API instead.
 
-This page is an overview. Reference pages for the API, the CLI and the MCP tools come next.
+## Start here
+
+- [Quick start](/docs/quick-start)
+- [CLI reference](/docs/cli)
+- [REST API reference](/docs/api)
+- [MCP server](/docs/mcp)

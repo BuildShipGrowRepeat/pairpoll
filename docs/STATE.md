@@ -1,15 +1,17 @@
 # State
 
-Updated 19 Nov 2026. The complete server API is implemented locally; UI, CLI and MCP work continue separately.
+Updated 19 Nov 2026. The server API and agent access surfaces are implemented locally; browser UI work continues separately.
 
 ## What exists
 
 - One Cloudflare Worker built with Astro and `@astrojs/cloudflare`. Entry `src/worker.ts` exports Astro's fetch handler and the bounded daily cleanup job.
 - Bindings in `wrangler.jsonc`: D1 `DB` (placeholder `database_id`), R2 `MEDIA`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and optional comma-separated `OWNER_EMAILS`.
 - `migrations/0002_product.sql` replaces the applied scaffold table with accounts, credentials, polls, items, voter runs, reports, usage and upload bookkeeping.
-- `/api/v1` implements email sign-in, sessions, API keys, CLI device approval, creator polls, uploads, voting, results/export/sharing, media ranges, account deletion and owner moderation. `docs/API.md` is the exact contract.
+- `/api/v1` implements email sign-in, sessions, API keys, CLI device approval, API-key identity, creator polls, uploads, voting, results/export/sharing, media ranges, account deletion and owner moderation. `docs/API.md` is the exact contract.
 - `src/lib/knockout.ts` replays deterministic top-1/3/5 tournaments for 2–16 items. Unit tests cover all supported sizes and observed bye arrangements; Worker tests exercise real local D1 and R2 boundaries.
-- `packages/cli`: workspace package `pairpoll`, bin prints its version.
+- `packages/cli` provides the private `pairpoll` command: device login, local key storage, local file and folder uploads, optional ffmpeg video posters, poll lifecycle, results/CSV and JSON output. It is not published.
+- `/mcp` is a stateless Streamable HTTP MCP server. It requires a bearer API key and exposes eight creator tools backed by the same server functions as REST.
+- Agent docs cover quick start, REST, CLI and MCP. `/llms.txt` indexes the plain Markdown copies.
 
 ## UI and marketing site (stage 1)
 
@@ -27,7 +29,7 @@ See `AGENTS.md` (commands) and `README.md` (setup). Local D1 and R2 state lives 
 
 ## Installed versions
 
-astro 7.4.13, @astrojs/cloudflare 14.4.9 (uses @cloudflare/vite-plugin and vite 8.3.8), wrangler 4.165.0 (workerd 1.20261118.1), @cloudflare/vitest-plugin 1.8.5, vitest 5.1.1, @playwright/test 1.65.1, typescript 6.0.3, @astrojs/check 0.9.12, eslint 10.15.0, typescript-eslint 8.73.0, eslint-plugin-astro 3.2.1, @eslint/js 10.0.1, @types/node 24. Node 24.11.1, npm 11.7.0. Compatibility date 2026-11-01 with `nodejs_compat`.
+astro 7.4.13, @astrojs/cloudflare 14.4.9 (uses @cloudflare/vite-plugin and vite 8.3.8), @modelcontextprotocol/server 2.4.0, zod 4.6.7, wrangler 4.165.0 (workerd 1.20261118.1), @cloudflare/vitest-plugin 1.8.5, vitest 5.1.1, @playwright/test 1.65.1, typescript 6.0.3, @astrojs/check 0.9.12, eslint 10.15.0, typescript-eslint 8.73.0, eslint-plugin-astro 3.2.1, @eslint/js 10.0.1, @types/node 24. Node 24.11.1, npm 11.7.0. Compatibility date 2026-11-01 with `nodejs_compat`.
 
 ## Differences from the spec's assumed stack
 
@@ -48,5 +50,5 @@ The stack is as assumed. Details that changed in current versions:
 - Worker-level tests cover server functions against D1 and R2, not Astro route dispatch or the `scheduled` entry end to end.
 - `worker-configuration.d.ts` is generated and git-ignored; `dev`, `build`, `typecheck` and `test` regenerate it.
 - Production email delivery is intentionally unset until a provider is chosen. Local sign-in mail is stored in the dev-only mailbox and logged.
-- CLI commands and MCP are still built separately against `docs/API.md`.
+- OAuth for Claude and ChatGPT chat app connections remains planned for after the first public deployment. Claude Code, Codex and Cursor can use the MCP endpoint with an API key now.
 - `database_id` and `TURNSTILE_SITE_KEY` are placeholders until the first deploy.

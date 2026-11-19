@@ -1,0 +1,20 @@
+# Pairpoll
+
+Pairpoll is a free poll for images and videos, ranked head to head.
+Creators upload 2 to 16 items and share one voter link.
+Each voter picks between pairs. Pairpoll returns each voter's top list and an overall ranking.
+Agents can use the REST API, CLI or remote MCP server.
+
+## Documentation
+
+- /docs.md
+- /docs/quick-start.md
+- /docs/agents.md
+- /docs/cli.md
+- /docs/api.md
+- /docs/mcp.md
+
+## Machine endpoints
+
+- REST API: /api/v1
+- MCP Streamable HTTP: /mcp
