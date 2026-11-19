@@ -17,7 +17,7 @@ Keep it private. Send it as `Authorization: Bearer <key>`.
 For local files, use the CLI. It is not on npm yet, so first set it up from the repository as shown in the [CLI reference](/docs/cli). Then:
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 export PAIRPOLL_API_KEY=ppk_your_key
 pairpoll create ./images --question "Which image is strongest?" --top 3 --open
 ```

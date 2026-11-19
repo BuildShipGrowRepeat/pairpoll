@@ -16,11 +16,11 @@ pairpoll --help
 ## Sign in
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 pairpoll login
 ```
 
-Pairpoll is not deployed yet, so set the local API URL first. The command prints a short code and browser URL, waits for approval, then stores the API key in a private config file. On macOS and Linux the default is `~/.config/pairpoll/config.json`. On Windows it is in the Pairpoll folder under `%APPDATA%`.
+The CLI has no default server, so set the API URL first. For a local server, use `http://localhost:4321`. The command prints a short code and browser URL, waits for approval, then stores the API key in a private config file. On macOS and Linux the default is `~/.config/pairpoll/config.json`. On Windows it is in the Pairpoll folder under `%APPDATA%`.
 
 ```sh
 pairpoll whoami
@@ -70,7 +70,7 @@ The voter ID is a run `id` from `pairpoll results <poll-id> --json`. Removing a 
 Add `--json` to any command for machine-readable output. Login emits one JSON line while waiting and one after approval. Errors use standard error. Usage errors exit with code 2. Other failures exit with code 1.
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 export PAIRPOLL_API_KEY=ppk_your_key
 pairpoll --json list
 ```

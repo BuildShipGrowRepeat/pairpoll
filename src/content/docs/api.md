@@ -6,10 +6,10 @@ nav: "API"
 order: 4
 ---
 
-The current local base path is `http://localhost:4321/api/v1`. Set the base URL explicitly until Pairpoll is deployed. JSON uses UTF-8. Send a creator API key with every creator request:
+The base path is `https://pairpoll.com/api/v1`. For a local server, use `http://localhost:4321/api/v1`. JSON uses UTF-8. Send a creator API key with every creator request:
 
 ```sh
-export PAIRPOLL_API_URL=http://localhost:4321
+export PAIRPOLL_API_URL=https://pairpoll.com
 export PAIRPOLL_API_KEY=ppk_your_key
 curl "$PAIRPOLL_API_URL/api/v1/whoami" \
   -H "Authorization: Bearer $PAIRPOLL_API_KEY"
