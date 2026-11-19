@@ -1,6 +1,6 @@
 /* global process */
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 
 export default defineConfig({
@@ -14,6 +14,16 @@ export default defineConfig({
     imageService: "compile",
     ...(process.env.E2E_STATE_DIR && { persistState: { path: process.env.E2E_STATE_DIR } }),
   }),
+  // Analytics IDs, set here and baked into the build. Empty turns that analytics off.
+  // An environment variable of the same name overrides the default (the e2e server sets a test GA ID).
+  env: {
+    schema: {
+      // Google Analytics 4 measurement ID ("G-..."), loaded only after the visitor accepts.
+      PUBLIC_GA_ID: envField.string({ context: "client", access: "public", default: "" }),
+      // Cloudflare Web Analytics site token, no cookies, on every page.
+      PUBLIC_CF_BEACON_TOKEN: envField.string({ context: "client", access: "public", default: "" }),
+    },
+  },
   // Without this the adapter adds a KV binding for Astro sessions; we keep state in D1.
   session: false,
   integrations: [

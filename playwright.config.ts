@@ -10,12 +10,18 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     // Optional: reuse an already installed Chromium instead of running `npx playwright install chromium`.
     launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+    // The e2e server has a test GA ID, so the consent pop-up would cover every page; answer it up front.
+    // e2e/consent.spec.ts starts without this to test the pop-up itself.
+    storageState: {
+      cookies: [],
+      origins: [{ origin: `http://localhost:${port}`, localStorage: [{ name: "pairpoll-analytics", value: "rejected" }] }],
+    },
   },
   webServer: {
     // --ignore-lock keeps Astro in the foreground: Astro 7 backgrounds `astro dev` when it detects an AI agent.
     command: `rm -rf ${stateDir} && npx wrangler d1 migrations apply DB --local --persist-to ${stateDir} && npx astro dev --port ${port} --ignore-lock`,
     url: `http://localhost:${port}/api/v1/health`,
-    env: { E2E_STATE_DIR: stateDir },
+    env: { E2E_STATE_DIR: stateDir, PUBLIC_GA_ID: "G-TEST000000" },
     reuseExistingServer: false,
   },
 });

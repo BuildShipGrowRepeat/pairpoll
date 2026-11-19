@@ -1,0 +1,128 @@
+---
+import { PUBLIC_GA_ID } from "astro:env/client";
+import Button from "./Button.astro";
+
+// Google Analytics consent: a blocking pop-up until the visitor accepts or rejects.
+// Nothing from Google loads before Accept. Renders nothing while PUBLIC_GA_ID is empty.
+---
+{
+  PUBLIC_GA_ID && (
+    <dialog class="consent" data-consent data-ga-id={PUBLIC_GA_ID} aria-labelledby="consent-title" autofocus>
+      <h2 id="consent-title">Analytics cookies</h2>
+      <p>
+        Pairpoll uses Google Analytics cookies to see which pages people visit, only if you accept. Details are on the <a href="/privacy">privacy page</a>.
+      </p>
+      <div class="consent-actions">
+        <Button variant="secondary" data-consent-choice="rejected">Reject</Button>
+        <Button data-consent-choice="accepted">Accept</Button>
+      </div>
+    </dialog>
+  )
+}
+
+<script>
+  const KEY = "pairpoll-analytics";
+  const dialog = document.querySelector<HTMLDialogElement>("[data-consent]");
+
+  function loadAnalytics(id: string) {
+    const w = window as unknown as { dataLayer: unknown[] };
+    w.dataLayer = w.dataLayer || [];
+    // gtag.js reads the `arguments` object, not a plain array.
+    const gtag: (...args: unknown[]) => void = function () {
+      // eslint-disable-next-line prefer-rest-params
+      w.dataLayer.push(arguments);
+    };
+    gtag("js", new Date());
+    gtag("config", id);
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+    document.head.appendChild(script);
+  }
+
+  function ask() {
+    if (!dialog) return;
+    // `autofocus` on the dialog puts focus on the dialog itself, so it is read from its title.
+    dialog.showModal();
+  }
+
+  if (dialog) {
+    const id = dialog.dataset.gaId ?? "";
+    const choice = localStorage.getItem(KEY);
+    if (choice === "accepted") loadAnalytics(id);
+    // The privacy page stays readable, since the pop-up links to it.
+    else if (!choice && location.pathname !== "/privacy") ask();
+
+    // No Escape: the pop-up stays until a choice is made.
+    dialog.addEventListener("cancel", (event) => event.preventDefault());
+    dialog.addEventListener("close", () => {
+      if (!localStorage.getItem(KEY)) ask();
+    });
+
+    dialog.addEventListener("click", (event) => {
+      const button = (event.target as Element).closest<HTMLElement>("[data-consent-choice]");
+      if (!button) return;
+      const value = button.dataset.consentChoice ?? "";
+      const before = localStorage.getItem(KEY);
+      localStorage.setItem(KEY, value);
+      dialog.close();
+      if (value === "accepted" && before !== "accepted") loadAnalytics(id);
+      if (value === "rejected") {
+        // Withdrawn consent: remove the Google Analytics cookies left from an earlier Accept.
+        for (const name of document.cookie.split("; ").map((c) => c.split("=")[0])) {
+          if (!name.startsWith("_ga")) continue;
+          document.cookie = `${name}=; Max-Age=0; path=/`;
+          document.cookie = `${name}=; Max-Age=0; path=/; domain=${location.hostname}`;
+        }
+      }
+    });
+
+    document.querySelector("[data-cookie-settings]")?.addEventListener("click", () => {
+      localStorage.removeItem(KEY);
+      ask();
+    });
+  }
+</script>
+
+<style>
+  .consent {
+    width: min(30rem, calc(100% - 2 * var(--gutter)));
+    padding: var(--s-5);
+    border: 1px solid var(--line);
+    border-radius: var(--r-panel);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .consent::backdrop {
+    background: rgb(29 26 51 / 0.55);
+  }
+
+  .consent:focus {
+    outline: none;
+  }
+
+  .consent h2 {
+    font-size: var(--text-lg);
+  }
+
+  .consent p {
+    margin-top: var(--s-3);
+  }
+
+  .consent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+
+  .consent-actions :global(.btn) {
+    flex: 1 1 8rem;
+  }
+
+  :global(html:has(.consent[open])) {
+    overflow: hidden;
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import Base from "./Base.astro";
 import Logo from "../components/Logo.astro";
+import Consent from "../components/Consent.astro";
 
 // Creator app shell: always noindex. Pages put their title row and content in the slot.
 interface Props {
@@ -37,6 +38,7 @@ const current = (href: string) => (href === "/app" ? path === "/app" || path.sta
   <main id="main" class="wrap app-main">
     <slot />
   </main>
+  <Consent />
 </Base>
 
 <style>
