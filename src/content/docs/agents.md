@@ -51,7 +51,7 @@ pairpoll --json login
 
 It prints one JSON line such as `{"status":"pending","code":"…","url":"https://pairpoll.com/signin/device?code=…","expiresAt":…}`. Ask the person to open the `url`, sign in with their email if asked, check that the code matches and press **Approve**. The command waits and prints `{"status":"signed_in",…}`. The code expires after 10 minutes. The CLI saves the key in a private config file, so later commands need no key.
 
-**For the REST API or MCP**, ask the person to:
+**For the REST API, or MCP with an API key** (connector users sign in with OAuth instead), ask the person to:
 
 1. Open `https://pairpoll.com/signin`, enter their email and open the sign-in link from the email.
 2. Open `https://pairpoll.com/app/keys`, create a key and copy it. The key starts with `ppk_` and is shown once.
@@ -71,7 +71,7 @@ export PAIRPOLL_API_URL=https://pairpoll.com
 
 If your shell does not keep aliases or variables between commands, call `node <path>/packages/cli/bin/pairpoll.js` directly and add `--api-url https://pairpoll.com` to each command.
 
-Sign in as in step 2, then create and open the poll in one command. Pass files, a folder, or both. A folder adds its direct files in name order:
+Sign in as in step 2, then create and open the poll in one command. Pass files, a folder, or both. A folder adds its non-hidden direct files in name order:
 
 ```sh
 pairpoll --json create ./thumbnails \

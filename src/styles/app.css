@@ -868,11 +868,6 @@
   justify-self: start;
 }
 
-.danger-zone {
-  padding-top: var(--s-5);
-  border-top: 2px solid var(--well);
-}
-
 .settings-list {
   display: grid;
   gap: 0;
@@ -908,10 +903,6 @@
   margin-top: var(--s-1);
   color: var(--ink-soft);
   font-size: var(--text-sm);
-}
-
-.loading-line {
-  color: var(--ink-soft);
 }
 
 .empty-line {

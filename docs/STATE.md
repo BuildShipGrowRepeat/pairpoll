@@ -16,12 +16,13 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 - REST API `/api/v1` (contract in `docs/API.md`): email sign-in, sessions, API keys, CLI device approval, polls, uploads, voting, results, CSV/JSON export, share links, media with ranges, account deletion, owner moderation.
 - MCP: `/mcp`, stateless Streamable HTTP, eight tools (`create_poll`, `get_upload_link`, `open_poll`, `close_poll`, `get_results`, `list_polls`, `delete_voter`, `delete_poll`). Existing API keys still work. Claude and ChatGPT apps use OAuth 2.1 authorization code with PKCE S256, refresh tokens, resource indicators, CIMD or DCR, one MCP-only scope, consent, and connected-app revocation at `/app/keys`.
 - CLI: `packages/cli` (`pairpoll`), no dependencies, package fields ready for npm but not published. Device login, create from files or a folder (ffmpeg posters for videos), open, close, results (`--json`, `--csv`), list, delete-voter, delete, logout. Checks file sizes before creating a poll.
+- App header: logo links to `/`, nav has a Docs link, and the site footer shows on app pages.
 - Creator app: `/signin`, `/signin/confirm`, `/signin/device`, `/app`, `/app/new`, `/app/polls/<id>` (draft editor, then results), `/app/polls/<id>/preview`, `/app/keys`, `/app/account`, `/app/owner` (only for `OWNER_EMAILS`; others get 404).
 - Voters: `/p/<code>` with every state (not open, closed, full, expired, finished, removed) and a report link; shared results `/results/<shareCode>`.
 - Marketing: home, 13 use pages, 6 alternative pages, 7 guides, About, Terms, Privacy, 404, 500, docs (`/docs`, quick start, agents, CLI, API, MCP) with `.md` copies, `/docs.md`, `/llms.txt`, sitemap, robots, icons, `og.png`.
 - Analytics: Cloudflare Web Analytics beacon on every page; Google Analytics 4 only after Accept in a blocking consent pop-up (Marketing, Docs and App layouts, not voter pages), choice in localStorage, "Cookie settings" in the footer. IDs `PUBLIC_GA_ID` and `PUBLIC_CF_BEACON_TOKEN` in `astro.config.mjs` (`env.schema`); empty turns each off.
 - Pages rendered on request send `Cache-Control: no-store` and `frame-ancestors 'none'` (`src/middleware.ts`). All HTML sends `nosniff` and a `Referrer-Policy`; `public/_headers` also sets long caching for fonts and one day for icons and `og.png`.
-- Design system: `docs/DESIGN.md` (typeface Gabarito, self-hosted; blue for actions, yellow for the pick and first place). Light and dark themes on every page: default follows the device, the header switch overrides it and is kept in localStorage. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
+- Design system: `docs/DESIGN.md` (typeface Gabarito, self-hosted; blue for actions, yellow for the pick and first place). Light and dark themes on every page: default follows the device, the header theme menu (Light / Dark / System) overrides it and is kept in localStorage. Component preview `/design` exists only under `astro dev` (`src/dev/design.astro`); it is not in the build or the sitemap.
 - Tests: unit (knockout), Worker-level against real local D1/R2 (`test/worker`), CLI (`packages/cli/test`), e2e (`e2e`: smoke and private-page headers, image poll with two voters, plays-once video poll with a reload, editor: failed autosave before opening, upload cancelled during draft creation, analytics consent pop-up, theme switch).
 
 ## Try it locally
@@ -75,7 +76,7 @@ Updated 19 Nov 2026. Everything in `docs/SPEC.md` is built. Live at https://pair
 2. (settled) Licence MIT; email through Cloudflare.
 3. (settled) Analytics: Google Analytics 4 with consent, plus Cloudflare Web Analytics.
 4. (built) OAuth for Claude and ChatGPT apps; live verification from the real apps remains.
-5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
+5. Publishing the CLI to npm, and under which account.
 6. (settled) Terms, Privacy and About approved by the owner.
 7. (settled) Limits approved as built: file sizes, polls per day, voter cap, 30-day deletion.
 

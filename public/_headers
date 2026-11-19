@@ -22,3 +22,27 @@
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=86400
+
+/docs.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/agents.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/api.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/cli.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/mcp.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8
+
+/docs/quick-start.md
+  X-Robots-Tag: noindex
+  Content-Type: text/markdown; charset=utf-8

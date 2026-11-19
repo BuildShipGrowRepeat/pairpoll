@@ -17,19 +17,22 @@ const sampleRanking = [
   { src: art[0].src, share: 45 },
 ];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Pairpoll",
-  url: "https://pairpoll.com/",
-  description: "A free poll for images and videos, ranked head to head.",
-  applicationCategory: "MultimediaApplication",
-  operatingSystem: "Any",
-  isAccessibleForFree: true,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  author: { "@type": "Person", name: "Vladimir Terekhov" },
-  sameAs: ["https://github.com/BuildShipGrowRepeat/pairpoll"],
-};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Pairpoll",
+    url: "https://pairpoll.com/",
+    description: "A free poll for images and videos, ranked head to head.",
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Any",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    author: { "@type": "Person", name: "Vladimir Terekhov" },
+    sameAs: ["https://github.com/BuildShipGrowRepeat/pairpoll"],
+  },
+  { "@context": "https://schema.org", "@type": "WebSite", name: "Pairpoll", url: "https://pairpoll.com/" },
+];
 ---
 <Marketing title="Free image and video poll, ranked head to head | Pairpoll" description={description} jsonLd={jsonLd}>
   <DemoHero
@@ -488,7 +491,6 @@ const jsonLd = {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    /* Nine use pages: three rows of three. */
     .uses {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

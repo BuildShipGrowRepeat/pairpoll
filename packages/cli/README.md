@@ -13,7 +13,7 @@ pairpoll --help
 
 The alias works from any folder, so relative file paths resolve where you run the command. (`npm exec --workspace pairpoll` runs inside `packages/cli`, where relative paths break.)
 
-The package is private and is not published to npm.
+The package is not published to npm.
 
 ## Sign in
 
@@ -40,9 +40,9 @@ pairpoll delete-voter <poll-id> <voter-id>
 pairpoll delete <poll-id>
 ```
 
-Folders include their direct files, sorted by name. A poll must contain 2 to 16 supported images or 2 to 16 supported videos. When `ffmpeg` is on `PATH`, the CLI also uploads one poster frame for each video.
+Folders include their non-hidden direct files, sorted by name. A poll must contain 2 to 16 supported images or 2 to 16 supported videos. When `ffmpeg` is on `PATH`, the CLI also uploads one poster frame for each video.
 
-Add `--json` to any command for machine-readable output. Login emits one JSON line while it waits and one after approval. Errors go to standard error and return exit code `1`; usage errors return `2`.
+Add `--json` to any command except help and version for machine-readable output. Login emits one JSON line while it waits and one after approval. Errors go to standard error and return exit code `1`; usage errors return `2`.
 
 ## Local servers and agents
 

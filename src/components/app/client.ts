@@ -1,13 +1,12 @@
 // Browser helpers shared by the creator app and the voter page: API calls, safe DOM building,
 // formatting, copying, confirmation dialogs and screen-reader announcements.
 import type { getPoll } from "../../server/polls";
-import type { getResults, getSharedResults } from "../../server/results";
+import type { getResults } from "../../server/results";
 import type { getPublicPoll, VoterState } from "../../server/runs";
 
 export type Poll = Awaited<ReturnType<typeof getPoll>>;
 export type Item = Poll["items"][number];
 export type Results = Awaited<ReturnType<typeof getResults>>;
-export type SharedResults = Awaited<ReturnType<typeof getSharedResults>>;
 export type PublicPoll = Awaited<ReturnType<typeof getPublicPoll>>;
 export type { VoterState };
 

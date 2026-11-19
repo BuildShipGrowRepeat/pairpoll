@@ -2,7 +2,7 @@
 
 Pairpoll is a free, open-source web tool. A creator uploads a few videos or images, gets one link, and sends it to their own people. Each person sees the items two at a time and picks the better one. The creator gets each person's top list and an overall ranking. AI agents can do everything a creator can through an API, a CLI and an MCP server.
 
-Owner: Vladimir Terekhov (personal project, "built at Attract Group"). Domain: pairpoll.com (not bought yet). Nothing is deployed or published until Vladimir says so. All work in this repository is local.
+Owner: Vladimir Terekhov (personal project, "built at Attract Group"). Domain: pairpoll.com. Live on Cloudflare; the code is public on GitHub (see `docs/STATE.md`).
 
 Items marked **Decided** were confirmed by Vladimir on 19 Nov 2026. Items marked **Assumed** are our best default; they are listed again in "Open questions" for him.
 
@@ -21,7 +21,7 @@ Meet the requirement as simply as possible. No speculative abstractions, no conf
 - No voter comments, no custom branding, no other voting formats.
 - Abuse limits: invisible Cloudflare Turnstile check on sign-in and when a voter starts; caps per account; one run per browser per poll; a voter cap per poll; files and data deleted automatically after 30 days; the creator sees each voter (name, time) and can delete any entry.
 - Hosting on Cloudflare. Media in R2.
-- Organic search and AI-assistant visibility are a main goal. Launch page set: home, 8 use pages, 4 "free alternative to" pages, 3 guides, agent docs, About.
+- Organic search and AI-assistant visibility are a main goal. Launch page set: home, 13 use pages, 6 "free alternative to" pages, 7 guides, agent docs, About.
 - About page names Vladimir Terekhov, Attract Group, and his other projects (getkira.com, viralix.video, milltrue.com) in one short line.
 - Positioning: "a free poll for images and videos, ranked head to head". Not only for ads. Avoid the words "bracket", "tier list" and "rate my photos" as positioning.
 
@@ -33,8 +33,8 @@ Meet the requirement as simply as possible. No speculative abstractions, no conf
 - No transcoding. Videos: MP4 or WebM, up to 30 MB each. Images: JPEG, PNG, WebP or GIF, up to 10 MB each. The server checks size and real file type (magic bytes), not the file name.
 - Poster stills for videos: the browser upload page and the CLI capture one frame and upload it with the video; when missing, the page shows the video's own first frame.
 - Account caps: 10 new polls per day, 20 live polls. Voter cap per poll: default 50, maximum 200.
-- Email sending and analytics providers are not chosen. Locally, the sign-in link is shown by a dev-only mailbox (console and a dev page). Keep one small function for "send email" and one place for an analytics snippet.
-- MCP and API authentication is a bearer API key. OAuth for the Claude and ChatGPT chat apps comes after the first deploy, because it cannot be tested without a public URL.
+- Email is sent through Resend; analytics are GA4 (after consent) and Cloudflare Web Analytics. Locally, the sign-in link is shown by a dev-only mailbox (console and a dev page). Keep one small function for "send email" and one place for an analytics snippet.
+- MCP and API authentication is a bearer API key. The Claude and ChatGPT chat apps use OAuth (built); verification from the real apps remains.
 - Chat apps cannot pass an attached video to a connector, and fetching files from URLs on the server is deferred (it opens the server to abuse). So the MCP tool that adds items returns a link to the browser upload page for that draft poll.
 - Voter names are visible only to the poll's creator. Poll links are unlisted: `noindex`, unguessable code.
 - A "Report this poll" link on every voter page, stored for the owner of the service to review.
@@ -105,7 +105,7 @@ Complete means every path a real creator, voter or service owner meets is finish
 - **Results:** live refresh, export as CSV and JSON, and an optional read-only results link the creator can switch on and off to show the outcome to others (no voter names on it unless the creator chooses).
 - **Voter page states:** not found, not open yet, closed, full, expired, and "you already finished" with the voter's own top list.
 - **Service owner:** an owner-only page (accounts listed in an `OWNER_EMAILS` setting) with the report queue, take down a poll, block an account, and simple counts (accounts, polls, runs, stored bytes).
-- **Site basics:** 404 and error pages, favicon and app icons, Open Graph images, a contact and abuse address placeholder, terms and privacy drafts.
+- **Site basics:** 404 and error pages, favicon and app icons, Open Graph images, a contact and abuse address, terms and privacy.
 
 Out of scope still: payments, teams, voter comments, custom branding, other voting formats, webhooks, email notifications other than sign-in.
 
@@ -119,7 +119,7 @@ Out of scope still: payments, teams, voter comments, custom branding, other voti
 | `/guides/<slug>` | 7 guides: how voting in pairs works; how many voters you need; how to test ads before spending; preference testing vs A/B testing; how to choose a YouTube thumbnail; paired comparison method; MaxDiff vs pairwise comparison |
 | `/docs`, `/docs/api`, `/docs/cli`, `/docs/mcp`, `/docs/agents` | Agent and developer docs, each also served as plain Markdown at the same path plus `.md` |
 | `/llms.txt` | Index for AI agents |
-| `/about`, `/terms`, `/privacy` | About; terms and privacy are drafts for Vladimir to review |
+| `/about`, `/terms`, `/privacy` | About, terms and privacy (approved) |
 | `/signin` | Email sign-in |
 | `/app` | Creator's polls |
 | `/app/new` | Create a poll: kind, files, question, settings |
@@ -127,7 +127,7 @@ Out of scope still: payments, teams, voter comments, custom branding, other voti
 | `/app/keys` | API keys |
 | `/p/<code>` | Voter page |
 | `/api/v1/*` | REST API (session cookie or bearer key) |
-| `/mcp` | Remote MCP server (Streamable HTTP, bearer key) |
+| `/mcp` | Remote MCP server (Streamable HTTP, API key or OAuth) |
 
 Agent access must cover: create a poll, add items (file upload for API and CLI; an upload-page link for MCP), open and close it, read results, list polls, delete a voter, delete a poll. The CLI lives in `packages/cli` (command `pairpoll`), signs in through a browser approval step that stores an API key, and can create a poll from a folder of files in one command. Publishing the CLI to npm is not done until Vladimir says so.
 
@@ -156,10 +156,5 @@ Agent access must cover: create a poll, add items (file upload for API and CLI; 
 
 ## Open questions for Vladimir
 
-1. Licence: MIT?
-2. Email provider for sign-in links (for example Resend or Cloudflare's email service).
-3. Analytics (for example PostHog or Cloudflare Web Analytics).
-4. OAuth so the Claude and ChatGPT chat apps can connect, after the first deploy.
-5. Publishing the CLI to npm and the repository to GitHub, and under which accounts.
-6. Terms, privacy and About text review.
-7. Limits: file sizes, polls per day, 30-day deletion.
+1. Publishing the CLI to npm, and under which account.
+2. Verifying OAuth from the real Claude and ChatGPT apps.

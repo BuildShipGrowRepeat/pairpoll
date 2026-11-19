@@ -39,7 +39,7 @@ pairpoll create ./one.png ./two.png \
   --open
 ```
 
-You can pass files, folders or both. A folder adds its direct files in name order. One poll accepts 2 to 16 images or 2 to 16 videos. Do not mix them.
+You can pass files, folders or both. A folder adds its non-hidden direct files in name order. One poll accepts 2 to 16 images or 2 to 16 videos. Do not mix them.
 
 Options:
 
@@ -67,7 +67,7 @@ The voter ID is a run `id` from `pairpoll results <poll-id> --json`. Removing a 
 
 ## Agent output and local servers
 
-Add `--json` to any command for machine-readable output. Login emits one JSON line while waiting and one after approval. Errors use standard error. Usage errors exit with code 2. Other failures exit with code 1.
+Add `--json` to any command except help and version for machine-readable output. Login emits one JSON line while waiting and one after approval. Errors use standard error. Usage errors exit with code 2. Other failures exit with code 1.
 
 ```sh
 export PAIRPOLL_API_URL=https://pairpoll.com

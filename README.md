@@ -32,7 +32,7 @@ Pairwise comparison is easier and more honest than asking people to rank a long 
 
 ## For AI agents
 
-Everything a person can do, an agent can do with an API key.
+An agent can create and manage polls with an API key.
 
 **MCP server** (Claude Code shown; Codex and Cursor are in the docs):
 
