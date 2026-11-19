@@ -59,10 +59,11 @@ pairpoll close <poll-id>
 pairpoll results <poll-id>
 pairpoll results <poll-id> --json
 pairpoll results <poll-id> --csv
+pairpoll delete-voter <poll-id> <voter-id>
 pairpoll delete <poll-id>
 ```
 
-Closing and deletion are final.
+The voter ID is a run `id` from `pairpoll results <poll-id> --json`. Removing a voter deletes their result but does not free their place under the voter limit. Closing and deletion are final.
 
 ## Agent output and local servers
 

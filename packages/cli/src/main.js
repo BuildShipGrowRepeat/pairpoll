@@ -13,6 +13,8 @@ import { clearConfig, readConfig, writeConfig } from "./config.js";
 const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm"]);
+// Same ceilings as the server, checked before anything is created or read into memory.
+const MAX_BYTES = { image: 10_000_000, video: 30_000_000 };
 
 const HELP = `Usage: pairpoll [--api-url URL] [--json] <command>
 
@@ -25,6 +27,7 @@ Commands:
   close <poll-id>
   results <poll-id> [--json|--csv]
   list
+  delete-voter <poll-id> <voter-id>
   delete <poll-id>`;
 
 function output(json, value, text) {
@@ -108,6 +111,11 @@ async function create(args, client, apiUrl) {
   if (kinds.size !== 1) throw new UsageError("Use only images or only videos in one poll.");
   const kind = [...kinds][0];
   if (args.playsOnce && kind !== "video") throw new UsageError("--play-once is available only for videos.");
+  for (const path of files) {
+    if ((await stat(path)).size > MAX_BYTES[kind]) {
+      throw new UsageError(`${basename(path)} is too large. ${kind === "image" ? "Images" : "Videos"} can be up to ${MAX_BYTES[kind] / 1_000_000} MB.`);
+    }
+  }
   const poll = await client.create({
     kind,
     question: args.question,
@@ -178,6 +186,9 @@ export async function main(argv) {
         const results = await client.results(args.pollId);
         output(args.json, results, JSON.stringify(results, null, 2));
       }
+    } else if (args.command === "delete-voter") {
+      const result = await client.deleteVoter(args.pollId, args.voterId);
+      output(args.json, result, `Removed voter ${args.voterId}.`);
     } else if (args.command === "delete") {
       const result = await client.delete(args.pollId);
       output(args.json, result, `Deleted ${args.pollId}.`);

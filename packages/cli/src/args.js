@@ -18,10 +18,10 @@ function positiveInteger(input, option) {
   return Number(input);
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function pollId(input, command) {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input)) {
-    throw new UsageError(`Usage: pairpoll ${command} <poll-id>`);
-  }
+  if (!UUID.test(input)) throw new UsageError(`Usage: pairpoll ${command} <poll-id>`);
   return input;
 }
 
@@ -59,6 +59,11 @@ export function parseArgs(argv) {
   if (["open", "close", "delete"].includes(command)) {
     if (rest.length !== 1 || rest[0].startsWith("-")) throw new UsageError(`Usage: pairpoll ${command} <poll-id>`);
     return { command, pollId: pollId(rest[0], command), apiUrl, json };
+  }
+
+  if (command === "delete-voter") {
+    if (rest.length !== 2 || !rest.every((id) => UUID.test(id))) throw new UsageError("Usage: pairpoll delete-voter <poll-id> <voter-id>");
+    return { command, pollId: rest[0], voterId: rest[1], apiUrl, json };
   }
 
   if (command === "results") {

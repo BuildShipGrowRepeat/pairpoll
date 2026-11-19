@@ -37,6 +37,7 @@ pairpoll results <poll-id>
 pairpoll results <poll-id> --json
 pairpoll results <poll-id> --csv
 pairpoll list
+pairpoll delete-voter <poll-id> <voter-id>
 pairpoll delete <poll-id>
 ```
 

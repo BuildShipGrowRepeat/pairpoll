@@ -76,4 +76,5 @@ export class PairpollClient {
   results(pollId) { return this.request(`/polls/${pollId}/results`); }
   resultsCsv(pollId) { return this.request(`/polls/${pollId}/export?format=csv`, { text: true }); }
   delete(pollId) { return this.request(`/polls/${pollId}`, { method: "DELETE" }); }
+  deleteVoter(pollId, voterId) { return this.request(`/polls/${pollId}/runs/${voterId}`, { method: "DELETE" }); }
 }

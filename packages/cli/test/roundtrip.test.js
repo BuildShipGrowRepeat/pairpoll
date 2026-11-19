@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { execFile } from "node:child_process";
 import { createServer } from "node:http";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, truncate, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -14,6 +14,7 @@ let server;
 let apiUrl;
 let directory;
 let uploads = 0;
+let created = 0;
 
 async function readBody(request) {
   const chunks = [];
@@ -26,6 +27,7 @@ beforeAll(async () => {
     expect(request.headers.authorization).toBe(`Bearer ppk_${"1".repeat(64)}`);
     if (request.method === "POST" && request.url === "/api/v1/polls") {
       const settings = JSON.parse((await readBody(request)).toString("utf8"));
+      created++;
       expect(settings).toMatchObject({ kind: "image", question: "Pick one", topSize: 3, voterCap: 12 });
       response.writeHead(201, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ id: pollId, code, status: "draft", ...settings }));
@@ -87,4 +89,24 @@ test("create uploads files and results reads the same poll", async () => {
     cli.pathname, "results", pollId, "--api-url", apiUrl, "--json",
   ], { env });
   expect(JSON.parse(results.stdout)).toMatchObject({ poll: { id: pollId }, finished: 0 });
+});
+
+test("create stops before making a poll when a file is over the size limit", async () => {
+  const env = { ...process.env, PAIRPOLL_API_KEY: `ppk_${"1".repeat(64)}` };
+  const cli = new URL("../bin/pairpoll.js", import.meta.url);
+  const large = await mkdtemp(join(tmpdir(), "pairpoll-cli-large-"));
+  try {
+    await writeFile(join(large, "one.png"), Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+    await writeFile(join(large, "two.png"), "");
+    await truncate(join(large, "two.png"), 10_000_001);
+    const before = created;
+    const failed = await execute(process.execPath, [
+      cli.pathname, "create", large, "--question", "Pick one", "--api-url", apiUrl, "--json",
+    ], { env }).catch((error) => error);
+    expect(failed.code).toBe(2);
+    expect(JSON.parse(failed.stderr).error.message).toContain("two.png is too large");
+    expect(created).toBe(before);
+  } finally {
+    await rm(large, { recursive: true, force: true });
+  }
 });

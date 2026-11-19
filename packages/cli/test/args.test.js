@@ -25,5 +25,6 @@ describe("CLI argument parsing", () => {
 
   test("rejects poll IDs that could change the request path", () => {
     expect(() => parseArgs(["delete", "../keys/key-id"])).toThrow(UsageError);
+    expect(() => parseArgs(["delete-voter", "11111111-1111-4111-8111-111111111111", "../../keys/key-id"])).toThrow(UsageError);
   });
 });
