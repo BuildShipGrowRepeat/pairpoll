@@ -4,6 +4,10 @@
 
 It works in the browser for people, and through a REST API, a CLI and an MCP server for AI agents such as Claude Code, Codex and Cursor.
 
+[![Pairpoll product demo (38 seconds)](public/videos/pairpoll-product-demo.jpg)](https://youtu.be/Mqsdhv-pNdk)
+
+Watch: [product demo](https://youtu.be/Mqsdhv-pNdk) (38 s) and [an AI agent running a poll](https://youtu.be/6ge4znIlh4w) (42 s).
+
 ## What people use it for
 
 - Testing ad creatives and video cuts before spending on them
