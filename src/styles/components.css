@@ -1093,12 +1093,13 @@ kbd {
   }
 }
 
-/* Self-hosted demo video: full width up to a cap, 16:9 reserved before it loads. */
+/* Self-hosted demo video: full width up to a cap, centred, 16:9 reserved before it loads. */
 .demo-video {
   display: block;
   width: 100%;
   max-width: 56rem;
   height: auto;
+  margin-inline: auto;
   aspect-ratio: 16 / 9;
   border: 2px solid var(--line);
   border-radius: var(--r-frame);

@@ -133,7 +133,6 @@ const jsonLd = [
           <li>Cursor</li>
         </ul>
         <p><a href="/docs/agents"><b>Read the agent docs</b></a></p>
-        <DemoVideo name="pairpoll-agent-demo" label="Pairpoll agent demo: an AI agent creates a poll and reads the results" />
       </div>
       <div>
         <pre class="terminal" aria-label="Example command">pairpoll create ./thumbnails \
@@ -157,6 +156,7 @@ const jsonLd = [
           </div>
         </dl>
       </div>
+      <DemoVideo name="pairpoll-agent-demo" label="Pairpoll agent demo: an AI agent creates a poll and reads the results" />
     </section>
   </div>
 
@@ -181,7 +181,8 @@ const jsonLd = [
 
 <style>
   /* How it works */
-  .section-head + .demo-video {
+  /* The video is a child component, so scoped selectors need :global to reach it. */
+  .section-head + :global(.demo-video) {
     margin-bottom: clamp(1.75rem, 4vw, 3rem);
   }
 
@@ -388,8 +389,8 @@ const jsonLd = [
     min-width: 0;
   }
 
-  .agents .demo-video {
-    margin-top: var(--s-5);
+  .agents :global(.demo-video) {
+    grid-column: 1 / -1;
     border-color: var(--panel-line);
     background: var(--panel);
   }
