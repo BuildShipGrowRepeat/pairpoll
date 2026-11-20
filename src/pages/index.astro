@@ -49,6 +49,7 @@ const jsonLd = [
       <h2 id="how-title">How it works</h2>
       <p class="lead">Choosing from a full grid is hard. Choosing between two is easy, so that is all a voter ever sees.</p>
     </div>
+    <div class="how">
     <DemoVideo name="pairpoll-product-demo" label="Pairpoll product demo: making a poll, voting and reading the ranking" />
     <ol class="steps">
       <li class="step">
@@ -85,6 +86,7 @@ const jsonLd = [
         <p>You get each person's top list and an overall ranking.</p>
       </li>
     </ol>
+    </div>
   </section>
 
   <section class="section wrap" aria-labelledby="uses-title">
@@ -134,11 +136,13 @@ const jsonLd = [
         </ul>
         <p><a href="/docs/agents"><b>Read the agent docs</b></a></p>
       </div>
-      <div>
+      <div class="agents-media">
+        <DemoVideo name="pairpoll-agent-demo" label="Pairpoll agent demo: an AI agent creates a poll and reads the results" />
         <pre class="terminal" aria-label="Example command">pairpoll create ./thumbnails \
   --question "Which thumbnail would you click?" \
   --top 3 --open</pre>
-        <dl class="agents-list">
+      </div>
+      <dl class="agents-list">
           <div>
             <dt>MCP server</dt>
             <dd>
@@ -154,9 +158,7 @@ const jsonLd = [
             <dt>API</dt>
             <dd>REST endpoints under <code>/api/v1</code>, with an API key you create in your account.</dd>
           </div>
-        </dl>
-      </div>
-      <DemoVideo name="pairpoll-agent-demo" label="Pairpoll agent demo: an AI agent creates a poll and reads the results" />
+      </dl>
     </section>
   </div>
 
@@ -182,8 +184,9 @@ const jsonLd = [
 <style>
   /* How it works */
   /* The video is a child component, so scoped selectors need :global to reach it. */
-  .section-head + :global(.demo-video) {
-    margin-bottom: clamp(1.75rem, 4vw, 3rem);
+  .how {
+    display: grid;
+    gap: clamp(1.75rem, 4vw, 3rem);
   }
 
   .steps {
@@ -389,8 +392,12 @@ const jsonLd = [
     min-width: 0;
   }
 
+  .agents-media {
+    display: grid;
+    gap: var(--s-4);
+  }
+
   .agents :global(.demo-video) {
-    grid-column: 1 / -1;
     border-color: var(--panel-line);
     background: var(--panel);
   }
@@ -437,7 +444,7 @@ const jsonLd = [
 
   .agents-list {
     display: grid;
-    margin-top: var(--s-3);
+    grid-column: 1 / -1;
   }
 
   .agents-list > div {
@@ -515,10 +522,80 @@ const jsonLd = [
 
     .agents {
       grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      align-items: center;
+    }
+
+    /* The three ways in, side by side under the intro and the video. */
+    .agents-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .agents-list > div {
+      grid-template-columns: 1fr;
+      align-content: start;
+      gap: 0.35rem;
+      border-top: 2px solid var(--panel-line);
+      border-bottom: 0;
     }
 
     .cta {
       grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+
+  /* Wide screens: the video on the left, the three steps stacked beside it. */
+  @media (min-width: 80rem) {
+    .how {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+    }
+
+    .how :global(.demo-video) {
+      max-width: none;
+    }
+
+    .steps {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 11rem minmax(0, 1fr);
+      column-gap: 1.25rem;
+    }
+
+    .step-art {
+      grid-row: span 2;
+      min-height: 7rem;
+      padding: 0.75rem;
+      border-radius: 18px;
+    }
+
+    .step h3 {
+      align-self: end;
+      margin-top: 0;
+    }
+
+    .step p {
+      align-self: start;
+    }
+
+    .mini-grid {
+      gap: 5px;
+    }
+
+    .link-key {
+      padding: 0.5rem 0.7rem;
+      font-size: 0.8125rem;
+    }
+
+    .mini-rank li {
+      grid-template-columns: 0.9rem 2.25rem 1fr;
+      gap: 0.4rem;
+      padding: 4px 0.5rem 4px 0.4rem;
+      font-size: 0.875rem;
     }
   }
 
