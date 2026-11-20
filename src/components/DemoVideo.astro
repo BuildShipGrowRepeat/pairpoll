@@ -1,11 +1,55 @@
 ---
 // Self-hosted demo video: files in public/videos/<name>.mp4 and <name>.jpg (poster).
+// With scripts on, it plays silently in a loop while on screen or under the pointer; the play
+// button restarts it with sound and the browser's controls. Without scripts it is a plain player.
 interface Props {
   name: string;
   label: string;
 }
 const { name, label } = Astro.props;
 ---
-<video class="demo-video" controls preload="none" playsinline poster={`/videos/${name}.jpg`} width="1920" height="1080" aria-label={label}>
-  <source src={`/videos/${name}.mp4`} type="video/mp4" />
-</video>
+<div class="demo-video">
+  <video controls muted playsinline preload="none" poster={`/videos/${name}.jpg`} width="1920" height="1080" aria-label={label}>
+    <source src={`/videos/${name}.mp4`} type="video/mp4" />
+  </video>
+  <button type="button" class="demo-video-play" aria-label="Play with sound" hidden><span aria-hidden="true"></span></button>
+</div>
+
+<script>
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const box of document.querySelectorAll<HTMLElement>(".demo-video")) {
+    const video = box.querySelector("video")!;
+    const button = box.querySelector("button")!;
+    let preview = true;
+    let onScreen = false;
+
+    video.controls = false;
+    video.loop = true;
+    button.hidden = false;
+
+    const playSilently = () => {
+      if (preview && !still) void video.play().catch(() => {});
+    };
+
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry!.isIntersecting;
+        if (onScreen) playSilently();
+        else video.pause();
+      },
+      { threshold: 0.5 },
+    ).observe(box);
+    box.addEventListener("pointerenter", playSilently);
+
+    button.addEventListener("click", () => {
+      preview = false;
+      button.hidden = true;
+      video.loop = false;
+      video.muted = false;
+      video.controls = true;
+      video.currentTime = 0;
+      void video.play();
+    });
+  }
+</script>

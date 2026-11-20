@@ -1095,13 +1095,76 @@ kbd {
 
 /* Self-hosted demo video: full width up to a cap, centred, 16:9 reserved before it loads. */
 .demo-video {
-  display: block;
+  position: relative;
   width: 100%;
   max-width: 56rem;
-  height: auto;
   margin-inline: auto;
+  overflow: hidden;
   aspect-ratio: 16 / 9;
   border: 2px solid var(--line);
   border-radius: var(--r-frame);
   background: var(--well);
+}
+
+.demo-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Covers the silent preview, so a click anywhere starts the video with sound. */
+.demo-video-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.demo-video-play[hidden] {
+  display: none;
+}
+
+.demo-video-play span {
+  display: grid;
+  place-items: center;
+  --size: clamp(3rem, 8vw, 4.5rem);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--yellow);
+  animation: demo-video-pulse 2.4s ease-out infinite;
+}
+
+.demo-video-play span::before {
+  content: "";
+  margin-left: calc(var(--size) * 0.07);
+  border-block: calc(var(--size) * 0.18) solid transparent;
+  border-left: calc(var(--size) * 0.29) solid var(--on-yellow);
+}
+
+.demo-video-play:hover span {
+  background: var(--yellow-deep);
+}
+
+.demo-video-play:focus-visible {
+  outline: none;
+}
+
+.demo-video-play:focus-visible span {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@keyframes demo-video-pulse {
+  from {
+    box-shadow: 0 0 0 0 rgb(255 207 51 / 0.65);
+  }
+  70%,
+  to {
+    box-shadow: 0 0 0 1.25rem rgb(255 207 51 / 0);
+  }
 }
