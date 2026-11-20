@@ -6,11 +6,12 @@ import { byteRange } from "./media.js";
 // isolate, chunk by chunk, only to count its bytes.
 const sizes = new Map<string, number>();
 async function countBytes(url: string, assets: Fetcher) {
-  let bytes = sizes.get(url) ?? 0;
+  const key = new URL(url).pathname;
+  let bytes = sizes.get(key) ?? 0;
   if (bytes) return bytes;
   const reader = (await assets.fetch(url)).body!.getReader();
   for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) bytes += chunk.value.byteLength;
-  sizes.set(url, bytes);
+  sizes.set(key, bytes);
   return bytes;
 }
 
