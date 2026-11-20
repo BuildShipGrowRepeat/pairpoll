@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import Docs from "../../layouts/Docs.astro";
+import DemoVideo from "../../components/DemoVideo.astro";
 
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
@@ -13,6 +14,7 @@ const { Content } = await render(doc);
 <Docs title={doc.data.seoTitle} description={doc.data.description} markdownHref={`/docs/${doc.id}.md`}>
   <article class="prose">
     <h1>{doc.data.title}</h1>
+    {doc.data.video && <DemoVideo {...doc.data.video} />}
     <Content />
   </article>
 </Docs>

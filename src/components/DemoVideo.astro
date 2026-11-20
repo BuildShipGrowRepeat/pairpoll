@@ -1,0 +1,11 @@
+---
+// Self-hosted demo video: files in public/videos/<name>.mp4 and <name>.jpg (poster).
+interface Props {
+  name: string;
+  label: string;
+}
+const { name, label } = Astro.props;
+---
+<video class="demo-video" controls preload="none" playsinline poster={`/videos/${name}.jpg`} width="1920" height="1080" aria-label={label}>
+  <source src={`/videos/${name}.mp4`} type="video/mp4" />
+</video>

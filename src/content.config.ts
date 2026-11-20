@@ -68,6 +68,8 @@ const docs = defineCollection({
     ...page,
     nav: z.string(),
     order: z.number(),
+    // Optional demo video shown under the title on the web page only: files in public/videos/<name>.
+    video: z.object({ name: z.string(), label: z.string() }).optional(),
   }),
 });
 

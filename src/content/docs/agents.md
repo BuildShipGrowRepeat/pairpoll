@@ -4,6 +4,9 @@ description: "A step-by-step recipe for AI agents: create an image or video poll
 title: "Pairpoll for AI agents"
 nav: "Agents"
 order: 2
+video:
+  name: "pairpoll-agent-demo"
+  label: "Pairpoll agent demo: an AI agent creates a poll and reads the results"
 ---
 
 This page is a complete recipe for an AI agent that sets up a Pairpoll poll for a person. Follow it from top to bottom.
