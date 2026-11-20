@@ -120,6 +120,7 @@ Out of scope still: payments, teams, voter comments, custom branding, other voti
 | `/docs`, `/docs/api`, `/docs/cli`, `/docs/mcp`, `/docs/agents` | Agent and developer docs, each also served as plain Markdown at the same path plus `.md` |
 | `/llms.txt` | Index for AI agents |
 | `/about`, `/terms`, `/privacy` | About, terms and privacy (approved) |
+| `/feedback` | Feedback: email or a GitHub issue |
 | `/signin` | Email sign-in |
 | `/app` | Creator's polls |
 | `/app/new` | Create a poll: kind, files, question, settings |

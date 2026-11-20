@@ -12,6 +12,7 @@ export const GET: APIRoute = async ({ site }) => {
   const paths = [
     "/",
     "/about",
+    "/feedback",
     "/terms",
     "/privacy",
     "/for",

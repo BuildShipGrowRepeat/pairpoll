@@ -1,0 +1,31 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import PageIntro from "../components/PageIntro.astro";
+---
+<Marketing
+  title="Feedback | Pairpoll"
+  description="Tell us what was unclear, what broke, or what you would like Pairpoll to do. Send an email or submit a question or issue on GitHub."
+>
+  <div class="wrap">
+    <PageIntro title="Feedback" lead="Tell us what was unclear, what broke, or what you would like Pairpoll to do." />
+    <div class="prose feedback">
+      <h2>Send an email</h2>
+      <p>
+        Write to <a href="mailto:hello@pairpoll.com?subject=Pairpoll%20feedback">hello@pairpoll.com</a>. For a problem,
+        say what you did and what happened, and add the poll link if there is one.
+      </p>
+
+      <h2>Ask a question or report an issue on GitHub</h2>
+      <p>
+        <a href="https://github.com/BuildShipGrowRepeat/pairpoll/issues/new">Submit a question or issue on GitHub</a>.
+        You need a GitHub account. Issues are public, so leave out private poll links.
+      </p>
+    </div>
+  </div>
+</Marketing>
+
+<style>
+  .feedback {
+    padding-bottom: var(--s-8);
+  }
+</style>
