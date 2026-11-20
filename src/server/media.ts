@@ -233,7 +233,7 @@ export async function duplicatePoll(db: D1Database, bucket: R2Bucket, ownerId: s
 
 // One well-formed range: the bytes to send, or null when it lies outside the file (416).
 // Anything else (malformed, several ranges) is ignored: undefined, and the whole file is sent.
-function byteRange(header: string, bytes: number) {
+export function byteRange(header: string, bytes: number) {
   const match = /^bytes=(\d*)-(\d*)$/i.exec(header.trim());
   if (!match || (!match[1] && !match[2])) return undefined;
   if (!match[1]) {

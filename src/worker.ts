@@ -5,11 +5,13 @@ import {
   revokePendingOAuthAccounts,
   revokePendingOAuthGrants,
 } from "./server/oauth.js";
+import { serveSiteVideo } from "./server/site-video.js";
 
 const astro: ExportedHandler<Env> = { fetch: handle };
 
 export default {
   fetch(request, env, context) {
+    if (new URL(request.url).pathname.startsWith("/videos/")) return serveSiteVideo(request, env.ASSETS);
     return handleOAuthRequest(request, env, context, astro);
   },
   async scheduled(_controller, env) {
