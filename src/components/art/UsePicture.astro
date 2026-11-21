@@ -20,7 +20,7 @@ const photos = demoSets.photos.items;
     <i></i>
     <span class="picture-key link-key">pairpoll.com/p/7hq2xk</span>
     <i></i>
-    <ol class="picture-rank agent-rank"><li><b>1</b><span>First</span><strong>8</strong></li><li><b>2</b><span>Second</span><strong>5</strong></li><li><b>3</b><span>Third</span><strong>2</strong></li></ol>
+    <ol class="picture-rank agent-rank"><li><b>1</b><span>First</span></li><li><b>2</b><span>Second</span></li><li><b>3</b><span>Third</span></li></ol>
   </div>
 )}
 
@@ -39,7 +39,10 @@ const photos = demoSets.photos.items;
     <div class="picture-panel every-pair-panel">
       <header><b>Every pair</b><span>16 items</span></header>
       <div class="pair-cloud">
-        {Array.from({ length: 12 }, (_, index) => <span>{String.fromCharCode(65 + (index % 6))} · {String.fromCharCode(66 + (index % 5))}</span>)}
+        {[
+          "A · B", "A · C", "A · D", "A · E", "A · F", "B · C",
+          "B · D", "B · E", "B · F", "C · D", "C · E", "C · F",
+        ].map((pair) => <span>{pair}</span>)}
       </div>
       <strong>120 picks</strong>
     </div>
@@ -87,7 +90,7 @@ const photos = demoSets.photos.items;
   }
 
   .agent-rank li {
-    grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
   }
 
   .pick-count-panels {
