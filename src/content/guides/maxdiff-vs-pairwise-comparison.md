@@ -5,6 +5,7 @@ title: "MaxDiff vs ranking questions vs pairwise comparison"
 blurb: "Three ways to make people rank a list, and which one fits your options."
 published: 2026-11-19
 order: 7
+picture: "maxdiff"
 ---
 
 When you want people to put a list of options in order, you have three common methods. A ranking question asks them to sort the whole list. MaxDiff shows a few options at a time and asks for the best and the worst. Pairwise comparison shows two at a time and asks for one. Each suits a different kind of list.
@@ -20,6 +21,10 @@ A ranking question shows the full list and asks the person to drag the options i
 ## MaxDiff
 
 MaxDiff, short for maximum difference scaling, shows a small set of options in each question and asks for the best and the worst. Sawtooth Software [describes](https://sawtoothsoftware.com/maxdiff) a typical study: 4 or 5 items per question, 8 to 15 questions per person, and about 15 to 40 items in total. The result is a score for each item on a common scale.
+
+<div class="article-picture best-worst-picture" aria-hidden="true">
+  <b class="best">Best</b><i>A</i><i>B</i><i>C</i><i>D</i><b class="worst">Worst</b>
+</div>
 
 - **Strengths:** handles long lists, and choosing best and worst is easier than sorting everything. Sawtooth says its scores separate items more clearly than rating scales do.
 - **Weaknesses:** you need a tool that builds the question sets and does the analysis, and each person answers many similar questions.

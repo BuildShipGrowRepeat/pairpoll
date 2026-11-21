@@ -1,89 +1,41 @@
 ---
-import Sticker from "../Sticker.astro";
-import { demoSets } from "../demo/sets";
+import AboutPicture from "./AboutPicture.astro";
+import AlternativePicture from "./AlternativePicture.astro";
+import GuidePicture from "./GuidePicture.astro";
+import UsePicture from "./UsePicture.astro";
+
+export type PagePictureKind =
+  | "about"
+  | "pairwise"
+  | "voters"
+  | "ads"
+  | "thumbnails"
+  | "preference-ab"
+  | "paired-method"
+  | "maxdiff"
+  | "pickfu"
+  | "lyssna"
+  | "opinionx"
+  | "pollunit"
+  | "strawpoll"
+  | "uxtweak"
+  | "agents"
+  | "pairwise-tool";
 
 interface Props {
-  kind: "pairwise" | "pickfu" | "about";
+  kind: PagePictureKind;
 }
 
 const { kind } = Astro.props;
-const art = demoSets.thumbnails.items;
-const scores = [100, 70, 45];
+const guideKinds = ["pairwise", "voters", "ads", "thumbnails", "preference-ab", "paired-method", "maxdiff"];
+const alternativeKinds = ["pickfu", "lyssna", "opinionx", "pollunit", "strawpoll", "uxtweak"];
 ---
 
 <div class:list={["coded-picture", `coded-picture--${kind}`]} aria-hidden="true">
-  {
-    kind === "pairwise" && (
-      <div class="flow">
-        <div class="pair">
-          <span class="tile picked">
-            <span class="frame"><img src={art[2].src} alt="" loading="lazy" /></span>
-            <Sticker />
-          </span>
-          <span class="tile passed">
-            <span class="frame"><img src={art[5].src} alt="" loading="lazy" /></span>
-          </span>
-        </div>
-        <span class="join" />
-        <ol class="mini-rank">
-          {[art[2], art[0], art[5]].map((item, index) => (
-            <li class:list={[index === 0 && "first"]}>
-              <b>{index + 1}</b>
-              <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>
-              <i style={`--share: ${scores[index]}%`} />
-            </li>
-          ))}
-        </ol>
-      </div>
-    )
-  }
-
-  {
-    kind === "pickfu" && (
-      <div class="compare-cards">
-        <div class="compare-card">
-          <header><b>PickFu</b><span>Paid panel</span></header>
-          <div class="people">
-            {Array.from({ length: 6 }, () => (
-              <svg viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>
-            ))}
-          </div>
-          <span class="key money">$</span>
-        </div>
-        <div class="compare-card pairpoll-card">
-          <header><b>Pairpoll</b><span>Your audience</span></header>
-          <span class="key link">pairpoll.com/p/7hq2xk</span>
-          <div class="people own-people">
-            {Array.from({ length: 4 }, () => (
-              <svg viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  {
-    kind === "about" && (
-      <div class="flow origin-flow">
-        <div class="video-grid">
-          {Array.from({ length: 9 }, (_, index) => (
-            <span class:list={[index === 4 && "finalist"]}>
-              <svg class="play" viewBox="0 0 24 24"><path d="m9 7 8 5-8 5Z" /></svg>
-            </span>
-          ))}
-        </div>
-        <span class="join" />
-        <div class="pair origin-pair">
-          <span class="tile picked">
-            <svg class="play" viewBox="0 0 24 24"><path d="m9 7 8 5-8 5Z" /></svg>
-            <Sticker />
-          </span>
-          <span class="tile passed"><svg class="play" viewBox="0 0 24 24"><path d="m9 7 8 5-8 5Z" /></svg></span>
-        </div>
-      </div>
-    )
-  }
+  {kind === "about" && <AboutPicture />}
+  {guideKinds.includes(kind) && <GuidePicture kind={kind} />}
+  {alternativeKinds.includes(kind) && <AlternativePicture kind={kind} />}
+  {(kind === "agents" || kind === "pairwise-tool") && <UsePicture kind={kind} />}
 </div>
 
 <style>
@@ -96,46 +48,15 @@ const scores = [100, 70, 45];
     background: var(--well);
   }
 
-  .flow {
+  :global(:where(.coded-picture .picture-flow)) {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(2rem, 7vw, 5rem) minmax(0, 0.9fr);
+    grid-template-columns: minmax(0, 1fr) clamp(2rem, 7vw, 5rem) minmax(0, 1fr);
     align-items: center;
     max-width: 58rem;
     margin-inline: auto;
   }
 
-  .pair {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(0.75rem, 2vw, 1.5rem);
-  }
-
-  .tile {
-    position: relative;
-    display: grid;
-    place-items: center;
-    padding: 7px;
-    border-radius: var(--r-tile);
-    background: var(--surface);
-    box-shadow: 0 5px 0 var(--edge);
-  }
-
-  .picked {
-    box-shadow: 0 5px 0 var(--yellow-deep), 0 0 0 4px var(--yellow);
-  }
-
-  .passed {
-    opacity: 0.4;
-  }
-
-  .picked :global(.sticker) {
-    top: -14px;
-    right: -10px;
-    opacity: 1;
-    animation: none;
-  }
-
-  .join {
+  :global(:where(.coded-picture .picture-join)) {
     display: block;
     width: calc(100% - 0.75rem);
     height: 3px;
@@ -144,54 +65,7 @@ const scores = [100, 70, 45];
     background: var(--line);
   }
 
-  .mini-rank {
-    display: grid;
-    gap: 7px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .mini-rank li {
-    display: grid;
-    grid-template-columns: 1.25rem clamp(2.75rem, 8vw, 4.5rem) minmax(0, 1fr);
-    align-items: center;
-    gap: clamp(0.4rem, 1.5vw, 0.75rem);
-    padding: 6px 0.75rem 6px 0.5rem;
-    border-radius: var(--r-control);
-    background: var(--surface);
-    box-shadow: 0 3px 0 var(--edge);
-  }
-
-  .mini-rank .first {
-    background: var(--yellow);
-    box-shadow: 0 3px 0 var(--yellow-deep);
-    color: var(--on-yellow);
-  }
-
-  .mini-rank b {
-    font-size: var(--text-lg);
-    font-weight: var(--weight-display);
-    text-align: center;
-  }
-
-  .mini-rank .frame {
-    border-radius: 7px;
-  }
-
-  .mini-rank i {
-    display: block;
-    width: var(--share);
-    height: 7px;
-    border-radius: var(--r-pill);
-    background: var(--blue);
-  }
-
-  .mini-rank .first i {
-    background: var(--on-yellow);
-  }
-
-  .compare-cards {
+  :global(:where(.coded-picture .picture-panels)) {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(1rem, 3vw, 2rem);
@@ -199,7 +73,7 @@ const scores = [100, 70, 45];
     margin-inline: auto;
   }
 
-  .compare-card {
+  :global(:where(.coded-picture .picture-panel)) {
     position: relative;
     min-width: 0;
     padding: clamp(1rem, 3vw, 1.5rem);
@@ -208,7 +82,11 @@ const scores = [100, 70, 45];
     box-shadow: 0 5px 0 var(--edge);
   }
 
-  .compare-card header {
+  :global(:where(.coded-picture .picture-panel.is-pairpoll)) {
+    box-shadow: 0 5px 0 var(--blue-deep), 0 0 0 3px var(--blue);
+  }
+
+  :global(:where(.coded-picture .picture-panel > header)) {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -216,38 +94,17 @@ const scores = [100, 70, 45];
     gap: var(--s-2) var(--s-3);
   }
 
-  .compare-card header b {
-    font-size: var(--text-xl);
+  :global(:where(.coded-picture .picture-panel > header b)) {
+    font-size: var(--text-lg);
     font-weight: var(--weight-display);
   }
 
-  .compare-card header span {
+  :global(:where(.coded-picture .picture-panel > header span)) {
     color: var(--ink-soft);
     font-weight: var(--weight-ui);
   }
 
-  .people {
-    display: grid;
-    grid-template-columns: repeat(3, 2.5rem);
-    justify-content: center;
-    gap: var(--s-2) var(--s-3);
-    margin-top: var(--s-5);
-  }
-
-  .people svg {
-    width: 2.5rem;
-    padding: 5px;
-    overflow: visible;
-    border-radius: 50%;
-    background: var(--well);
-    box-shadow: 0 3px 0 var(--edge);
-    fill: none;
-    stroke: var(--ink-soft);
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
-
-  .key {
+  :global(:where(.coded-picture .picture-key)) {
     display: block;
     width: fit-content;
     max-width: 100%;
@@ -258,142 +115,77 @@ const scores = [100, 70, 45];
     font-weight: var(--weight-ui);
   }
 
-  .money {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
-    width: 2.75rem;
+  :global(:where(.coded-picture .picture-people)) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-2);
+  }
+
+  :global(:where(.coded-picture .person)) {
+    display: block;
+    width: 2.25rem;
+    padding: 5px;
+    overflow: visible;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    fill: none;
+    stroke: var(--ink-soft);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  :global(:where(.coded-picture .picture-rank)) {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :global(:where(.coded-picture .picture-rank li)) {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s-3);
+    min-width: 0;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+  }
+
+  :global(:where(.coded-picture .picture-rank li:first-child)) {
+    background: var(--yellow);
+    box-shadow: 0 3px 0 var(--yellow-deep);
+    color: var(--on-yellow);
+  }
+
+  :global(:where(.coded-picture .picture-rank b)) {
     font-size: var(--text-lg);
+    font-weight: var(--weight-display);
     text-align: center;
   }
 
-  .pairpoll-card {
-    box-shadow: 0 5px 0 var(--blue-deep), 0 0 0 3px var(--blue);
-  }
-
-  .link {
-    margin: var(--s-5) auto 0;
+  :global(:where(.coded-picture .picture-rank span)) {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .own-people {
-    grid-template-columns: repeat(4, 2.5rem);
-    gap: clamp(0.4rem, 2vw, 0.8rem);
-    margin-top: var(--s-4);
-  }
-
-  .own-people svg {
-    background: var(--surface);
-    box-shadow: 0 3px 0 var(--blue-deep), 0 0 0 2px var(--blue);
-  }
-
-  .origin-flow {
-    max-width: 50rem;
-  }
-
-  .video-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(0.4rem, 1.4vw, 0.7rem);
-  }
-
-  .video-grid > span {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 16 / 9;
-    border-radius: var(--r-frame);
-    background: var(--surface);
-    box-shadow: 0 3px 0 var(--edge);
-  }
-
-  .video-grid .finalist {
-    box-shadow: 0 3px 0 var(--blue-deep), 0 0 0 3px var(--blue);
-  }
-
-  .play {
-    width: 1.75rem;
-    fill: var(--ink-soft);
-  }
-
-  .origin-pair .tile {
-    aspect-ratio: 4 / 3;
-  }
-
-  :global(.coded-picture--knockout) {
-    position: relative;
-    min-height: 17rem;
-    padding: clamp(1rem, 4vw, 2.5rem);
-    overflow: hidden;
-    border-radius: var(--r-panel);
-    background: var(--well);
-  }
-
-  :global(.knockout-picture) {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    height: 13rem;
-    max-width: 35rem;
-    margin-inline: auto;
-  }
-
-  :global(.knockout-lines) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    color: var(--line);
-  }
-
-  :global(.knockout-round) {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    min-width: 0;
-  }
-
-  :global(.knockout-card) {
-    display: block;
-    width: clamp(3.25rem, 12vw, 5rem);
-    padding: 4px;
-    border-radius: 10px;
-    background: var(--surface);
-    box-shadow: 0 3px 0 var(--edge);
-  }
-
-  :global(.knockout-card .frame) {
-    border-radius: 6px;
-  }
-
-  :global(.knockout-card.is-winner) {
-    width: clamp(4.25rem, 16vw, 6.25rem);
-    box-shadow: 0 3px 0 var(--yellow-deep), 0 0 0 3px var(--yellow);
+    font-weight: var(--weight-ui);
   }
 
   @media (max-width: 39.99rem) {
-    .flow,
-    .compare-cards {
+    .coded-picture :global(.picture-flow),
+    .coded-picture :global(.picture-panels) {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--s-5);
     }
 
-    .join {
+    .coded-picture :global(.picture-join) {
       width: 3px;
       height: 1.75rem;
-    }
-
-    :global(.coded-picture--knockout) {
-      min-height: 14rem;
-      padding-inline: 0.75rem;
-    }
-
-    :global(.knockout-picture) {
-      height: 11rem;
     }
   }
 </style>

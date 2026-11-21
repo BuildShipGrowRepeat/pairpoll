@@ -4,6 +4,7 @@ import Marketing from "../../layouts/Marketing.astro";
 import DemoHero from "../../components/DemoHero.astro";
 import LinkList from "../../components/LinkList.astro";
 import CtaBand from "../../components/CtaBand.astro";
+import PagePicture from "../../components/art/PagePicture.astro";
 
 export async function getStaticPaths() {
   const uses = await getCollection("uses");
@@ -19,7 +20,8 @@ const others = (await getCollection("uses"))
 <Marketing title={use.data.seoTitle} description={use.data.description}>
   <DemoHero title={use.data.title} lead={use.data.lead} set={use.data.demo} question={use.data.demoQuestion} />
 
-  <div class="wrap use-body">
+  <div class="wrap use-body reading-page">
+    {use.data.picture && <div class="use-picture wide-reading"><PagePicture kind={use.data.picture} /></div>}
     <div class="prose">
       <Content />
     </div>
@@ -42,6 +44,10 @@ const others = (await getCollection("uses"))
 <style>
   .use-body {
     padding-block: var(--s-6) var(--s-8);
+  }
+
+  .use-picture {
+    margin-bottom: var(--s-7);
   }
 
   .use-others {

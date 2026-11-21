@@ -7,6 +7,7 @@ blurb: "A picture or video poll where people compare options two at a time."
 lead: "StrawPoll makes quick polls with text, image, ranking and meeting options. Pairpoll does one thing: people compare 2 to 16 images or videos two at a time, and each voter ends with their own top list. It's free."
 checked: 2026-11-19
 order: 5
+picture: "strawpoll"
 comparison:
   - topic: "Poll types"
     them: "Multiple choice, image poll, ranking poll and meeting poll"

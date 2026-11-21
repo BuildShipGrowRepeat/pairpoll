@@ -181,6 +181,18 @@ pre {
   font-size: var(--text-sm);
 }
 
+/* Reading pages share one centred axis while keeping their text left-aligned. */
+.reading-page > :is(.page-intro, header, .prose, .reading-footer) {
+  width: min(100%, var(--measure));
+  margin-inline: auto;
+}
+
+.wide-reading {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
 /* Long-form text from Markdown. */
 .prose {
   max-width: var(--measure);

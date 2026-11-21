@@ -18,7 +18,7 @@ For videos, the creator can turn on "each video plays once". Then both videos in
 
 ## How the pairs are chosen
 
-<div class="coded-picture coded-picture--knockout" aria-hidden="true">
+<div class="article-picture" aria-hidden="true">
   <div class="knockout-picture">
     <svg class="knockout-lines" viewBox="0 0 600 240" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
       <path d="M95 30H190V60H285 M95 90H190V60 M95 150H190V180H285 M95 210H190V180 M345 60H440V120H520 M345 180H440V120" />
@@ -51,6 +51,25 @@ A knockout needs far fewer picks than comparing every pair. With 16 items, every
 ## How the overall ranking works
 
 The creator chooses a top size of 1, 3 or 5. Each finished voter's top list gives points: with a top 3, first place gets 3 points, second 2 and third 1. The overall ranking adds up everyone's points. If two items have the same points, the one with more first places ranks higher. If that is equal too, they share the place.
+
+<div class="article-picture points-picture" aria-hidden="true">
+  <ol class="voter-list">
+    <li><span>A</span><b>3</b></li>
+    <li><span>B</span><b>2</b></li>
+    <li><span>C</span><b>1</b></li>
+  </ol>
+  <b class="points-plus">+</b>
+  <ol class="voter-list">
+    <li><span>B</span><b>3</b></li>
+    <li><span>A</span><b>2</b></li>
+    <li><span>C</span><b>1</b></li>
+  </ol>
+  <div class="points-total">
+    <span>A: 3 + 2 = 5</span>
+    <span>B: 2 + 3 = 5</span>
+    <span>C: 1 + 1 = 2</span>
+  </div>
+</div>
 
 Only voters who finished count. Someone who stops halfway doesn't change the ranking.
 

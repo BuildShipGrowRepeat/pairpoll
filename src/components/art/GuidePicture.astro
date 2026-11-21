@@ -1,0 +1,634 @@
+---
+import Sticker from "../Sticker.astro";
+import { demoSets } from "../demo/sets";
+
+interface Props {
+  kind: string;
+}
+
+const { kind } = Astro.props;
+const thumbnails = demoSets.thumbnails.items;
+const ads = demoSets["ad-creatives"].items;
+---
+
+{kind === "pairwise" && (
+  <div class="picture-flow">
+    <div class="pair-cards">
+      <span class="media-tile picked">
+        <span class="frame"><img src={thumbnails[2].src} alt="" loading="lazy" /></span>
+        <Sticker />
+      </span>
+      <span class="media-tile passed"><span class="frame"><img src={thumbnails[5].src} alt="" loading="lazy" /></span></span>
+    </div>
+    <span class="picture-join"></span>
+    <ol class="picture-rank image-rank">
+      {[thumbnails[2], thumbnails[0], thumbnails[5]].map((item, index) => (
+        <li>
+          <b>{index + 1}</b>
+          <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>
+          <i style={`--share: ${[100, 70, 45][index]}%`}></i>
+        </li>
+      ))}
+    </ol>
+  </div>
+)}
+
+{kind === "voters" && (
+  <div class="picture-panels voter-panels">
+    <div class="picture-panel close-result">
+      <header><b>6–4</b><span>Too close to call</span></header>
+      <div class="vote-line"><div>{Array.from({ length: 6 }, () => <svg class="person" viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>)}</div><div>{Array.from({ length: 4 }, () => <svg class="person" viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>)}</div></div>
+    </div>
+    <div class="picture-panel clear-result">
+      <header><b>9–1</b><span>Strong hint</span></header>
+      <div class="vote-line"><div>{Array.from({ length: 9 }, () => <svg class="person" viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>)}</div><div>{Array.from({ length: 1 }, () => <svg class="person" viewBox="0 0 40 40"><circle cx="20" cy="12" r="6" /><path d="M8 34c1-9 5-13 12-13s11 4 12 13" /></svg>)}</div></div>
+    </div>
+  </div>
+)}
+
+{kind === "ads" && (
+  <div class="picture-flow test-flow">
+    <div class="option-grid square-grid">
+      {ads.map((item) => <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>)}
+    </div>
+    <span class="stage-label"><b>Pre-test</b><i></i><b>Live test</b></span>
+    <div class="finalists">
+      {[ads[1], ads[3]].map((item, index) => (
+        <span class:list={["media-tile", index === 0 && "picked"]}>
+          <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>
+          {index === 0 && <Sticker />}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
+
+{kind === "thumbnails" && (
+  <div class="picture-flow test-flow">
+    <div class="option-grid thumbnail-grid">
+      {thumbnails.map((item) => <span class="frame"><img src={item.src} alt="" loading="lazy" /></span>)}
+    </div>
+    <span class="stage-label"><b>Viewer poll</b><i></i><b>YouTube test</b></span>
+    <div class="finalists three-finalists">
+      {[thumbnails[2], thumbnails[0], thumbnails[4]].map((item) => (
+        <span class="media-tile"><span class="frame"><img src={item.src} alt="" loading="lazy" /></span></span>
+      ))}
+    </div>
+  </div>
+)}
+
+{kind === "preference-ab" && (
+  <div class="picture-panels">
+    <div class="picture-panel preference-panel">
+      <header><b>Preference test</b><span>What people say</span></header>
+      <div class="pair-cards small-pair">
+        <span class="media-tile picked"><span class="frame"><img src={ads[1].src} alt="" loading="lazy" /></span><Sticker /></span>
+        <span class="media-tile passed"><span class="frame"><img src={ads[0].src} alt="" loading="lazy" /></span></span>
+      </div>
+    </div>
+    <div class="picture-panel live-panel">
+      <header><b>A/B test</b><span>What people do</span></header>
+      <div class="traffic"><span>A</span><i></i><span>B</span><i></i></div>
+      <div class="actions"><b>Click</b><b>Sign-up</b><b>Sale</b></div>
+    </div>
+  </div>
+)}
+
+{kind === "paired-method" && (
+  <div class="picture-flow method-flow">
+    <div class="letter-pair"><span class="picked-letter">A</span><span>B</span></div>
+    <span class="pair-count"><b>10 pairs</b><i></i></span>
+    <ol class="picture-rank letter-rank">
+      {["C", "A", "E", "B", "D"].map((letter, index) => <li><b>{index + 1}</b><span>Option {letter}</span><strong>{4 - index} wins</strong></li>)}
+    </ol>
+  </div>
+)}
+
+{kind === "maxdiff" && (
+  <div class="method-panels">
+    <div class="method-panel ranking-method">
+      <b>Ranking</b>
+      <ol>{["A", "B", "C", "D"].map((letter) => <li>{letter}</li>)}</ol>
+    </div>
+    <div class="method-panel maxdiff-method">
+      <b>MaxDiff</b>
+      <div><span class="best">Best</span><i>A</i><i>B</i><i>C</i><span class="worst">Worst</span></div>
+    </div>
+    <div class="method-panel pairwise-method">
+      <b>Pairwise</b>
+      <div class="letter-pair"><span class="picked-letter">A</span><span>B</span></div>
+    </div>
+  </div>
+)}
+
+<style>
+  .pair-cards,
+  .finalists {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.65rem, 2vw, 1.25rem);
+  }
+
+  .media-tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: 6px;
+    border-radius: var(--r-tile);
+    background: var(--surface);
+    box-shadow: 0 5px 0 var(--edge);
+  }
+
+  .media-tile.picked {
+    box-shadow: 0 5px 0 var(--yellow-deep), 0 0 0 4px var(--yellow);
+  }
+
+  .media-tile.passed {
+    opacity: 0.4;
+  }
+
+  .media-tile :global(.sticker) {
+    top: -14px;
+    right: -10px;
+    opacity: 1;
+    animation: none;
+  }
+
+  .image-rank li {
+    grid-template-columns: 1.25rem clamp(2.75rem, 8vw, 4.5rem) minmax(0, 1fr);
+  }
+
+  .image-rank .frame {
+    border-radius: 7px;
+  }
+
+  .image-rank i {
+    display: block;
+    width: var(--share);
+    height: 7px;
+    border-radius: var(--r-pill);
+    background: var(--blue);
+  }
+
+  .image-rank li:first-child i {
+    background: var(--on-yellow);
+  }
+
+  .voter-panels {
+    max-width: 50rem;
+  }
+
+  .vote-line {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+
+  .vote-line > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-height: 2.25rem;
+  }
+
+  .close-result {
+    opacity: 0.72;
+  }
+
+  .clear-result {
+    box-shadow: 0 5px 0 var(--yellow-deep), 0 0 0 3px var(--yellow);
+  }
+
+  .clear-result .vote-line > div:first-child :global(.person) {
+    stroke: var(--blue);
+  }
+
+  .test-flow {
+    grid-template-columns: minmax(0, 1.2fr) clamp(5rem, 13vw, 8rem) minmax(0, 0.8fr);
+  }
+
+  .option-grid {
+    display: grid;
+    gap: clamp(0.4rem, 1vw, 0.7rem);
+  }
+
+  .square-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .thumbnail-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .option-grid .frame {
+    border: 4px solid var(--surface);
+    border-radius: var(--r-frame);
+    box-shadow: 0 3px 0 var(--edge);
+  }
+
+  .stage-label,
+  .pair-count {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-2);
+    color: var(--ink-soft);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .stage-label i,
+  .pair-count i {
+    width: 100%;
+    height: 3px;
+    border-radius: var(--r-pill);
+    background: var(--line);
+  }
+
+  .three-finalists {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .preference-panel,
+  .live-panel {
+    display: grid;
+    align-content: space-between;
+    gap: var(--s-5);
+  }
+
+  .small-pair {
+    max-width: 16rem;
+    margin-inline: auto;
+  }
+
+  .traffic {
+    display: grid;
+    grid-template-columns: auto minmax(2rem, 1fr);
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .traffic span {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    color: var(--ink);
+    font-weight: var(--weight-display);
+  }
+
+  .traffic i {
+    height: 7px;
+    border-radius: var(--r-pill);
+    background: var(--blue);
+  }
+
+  .traffic i:last-child {
+    width: 64%;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .actions b {
+    padding: 0.45rem 0.65rem;
+    border-radius: var(--r-pill);
+    background: var(--well);
+    font-size: var(--text-sm);
+  }
+
+  .method-flow {
+    max-width: 46rem;
+  }
+
+  .letter-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  .letter-pair span {
+    display: grid;
+    place-items: center;
+    min-height: 6rem;
+    border-radius: var(--r-tile);
+    background: var(--surface);
+    box-shadow: 0 5px 0 var(--edge);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-display);
+  }
+
+  .letter-pair .picked-letter {
+    background: var(--yellow);
+    box-shadow: 0 5px 0 var(--yellow-deep);
+    color: var(--on-yellow);
+  }
+
+  .letter-rank strong {
+    color: inherit;
+    font-size: var(--text-sm);
+  }
+
+  .method-panels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  .method-panel {
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+    min-width: 0;
+    padding: clamp(0.8rem, 2vw, 1.25rem);
+    border-radius: var(--r-tile);
+    background: var(--surface);
+    box-shadow: 0 5px 0 var(--edge);
+  }
+
+  .method-panel > b {
+    font-size: var(--text-lg);
+    text-align: center;
+  }
+
+  .ranking-method ol {
+    display: grid;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: ranking;
+  }
+
+  .ranking-method li {
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--r-control);
+    background: var(--well);
+    font-weight: var(--weight-ui);
+  }
+
+  .maxdiff-method div {
+    display: grid;
+    grid-template-columns: auto repeat(3, minmax(0, 1fr)) auto;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .maxdiff-method i {
+    display: grid;
+    place-items: center;
+    min-height: 4rem;
+    border-radius: var(--r-control);
+    background: var(--well);
+    font-style: normal;
+    font-weight: var(--weight-display);
+  }
+
+  .maxdiff-method span {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-ui);
+    writing-mode: vertical-rl;
+  }
+
+  .maxdiff-method .best {
+    color: var(--blue);
+  }
+
+  .maxdiff-method .worst {
+    color: var(--ink-soft);
+  }
+
+  .pairwise-method .letter-pair span {
+    min-height: 4rem;
+  }
+
+  :global(.article-picture) {
+    width: min(60rem, calc(100vw - var(--gutter) - var(--gutter)));
+    margin: var(--s-6) 50%;
+    padding: clamp(1rem, 3vw, 1.75rem);
+    overflow: hidden;
+    transform: translateX(-50%);
+    border-radius: var(--r-panel);
+    background: var(--well);
+  }
+
+  :global(.knockout-picture) {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    height: 13rem;
+    max-width: 35rem;
+    margin-inline: auto;
+  }
+
+  :global(.knockout-lines) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--line);
+  }
+
+  :global(.knockout-round) {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 0;
+  }
+
+  :global(.knockout-card) {
+    display: block;
+    width: clamp(3.25rem, 12vw, 5rem);
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+  }
+
+  :global(.knockout-card .frame) {
+    border-radius: 6px;
+  }
+
+  :global(.knockout-card.is-winner) {
+    width: clamp(4.25rem, 16vw, 6.25rem);
+    box-shadow: 0 3px 0 var(--yellow-deep), 0 0 0 3px var(--yellow);
+  }
+
+  :global(.points-picture) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1.25fr);
+    align-items: center;
+    gap: clamp(0.75rem, 3vw, 2rem);
+  }
+
+  :global(.voter-list) {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  :global(.voter-list li) {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    font-weight: var(--weight-ui);
+  }
+
+  :global(.voter-list li:first-child) {
+    background: var(--yellow);
+    box-shadow: 0 3px 0 var(--yellow-deep);
+    color: var(--on-yellow);
+  }
+
+  :global(.points-plus) {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-display);
+    color: var(--ink-soft);
+  }
+
+  :global(.points-total) {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  :global(.points-total span) {
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    font-weight: var(--weight-display);
+  }
+
+  :global(.points-total span:nth-child(-n + 2)) {
+    background: var(--yellow);
+    box-shadow: 0 3px 0 var(--yellow-deep);
+    color: var(--on-yellow);
+  }
+
+  :global(.all-pairs-picture) {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s-2);
+    width: 100%;
+    max-width: 46rem;
+    margin-inline: 0;
+    transform: none;
+  }
+
+  :global(.all-pairs-picture span) {
+    padding: 0.7rem 0.35rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    font-weight: var(--weight-display);
+    text-align: center;
+  }
+
+  :global(.best-worst-picture) {
+    display: grid;
+    grid-template-columns: auto repeat(4, minmax(0, 1fr)) auto;
+    align-items: center;
+    gap: var(--s-2);
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: 0;
+    transform: none;
+  }
+
+  :global(.best-worst-picture i) {
+    display: grid;
+    place-items: center;
+    min-height: 6rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--edge);
+    font-style: normal;
+    font-weight: var(--weight-display);
+  }
+
+  :global(.best-worst-picture b) {
+    font-size: var(--text-sm);
+    writing-mode: vertical-rl;
+  }
+
+  :global(.best-worst-picture .best) {
+    color: var(--blue);
+  }
+
+  :global(.best-worst-picture .worst) {
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 39.99rem) {
+    .test-flow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-5);
+    }
+
+    .stage-label i,
+    .pair-count i {
+      width: 3px;
+      height: 1.5rem;
+    }
+
+    .method-panels {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .method-panel {
+      min-height: 9rem;
+    }
+
+    :global(.article-picture) {
+      width: calc(100vw - var(--gutter) - var(--gutter));
+    }
+
+    :global(.knockout-picture) {
+      height: 11rem;
+    }
+
+    :global(.points-picture) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    :global(.points-plus) {
+      display: none;
+    }
+
+    :global(.points-total) {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    :global(.all-pairs-picture) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    :global(.best-worst-picture) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    :global(.best-worst-picture b) {
+      grid-column: span 2;
+      writing-mode: horizontal-tb;
+      text-align: center;
+    }
+  }
+</style>

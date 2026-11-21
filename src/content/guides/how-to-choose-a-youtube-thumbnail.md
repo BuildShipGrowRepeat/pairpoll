@@ -5,6 +5,7 @@ title: "How to choose a YouTube thumbnail"
 blurb: "Make a few versions, narrow them with your viewers, then test the finalists on YouTube."
 published: 2026-11-19
 order: 5
+picture: "thumbnails"
 ---
 
 Most thumbnail advice is a list of design rules. The rules help you make good options. They don't tell you which of your options to use. This guide is a process for that: make a few versions, narrow them down with your viewers, then let YouTube test the finalists.

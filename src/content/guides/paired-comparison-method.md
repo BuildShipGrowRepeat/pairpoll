@@ -5,6 +5,7 @@ title: "The paired comparison method"
 blurb: "Rank options by comparing every pair: how to do it by hand, and when it gets too long."
 published: 2026-11-19
 order: 6
+picture: "paired-method"
 ---
 
 The paired comparison method ranks a list of options by comparing them two at a time. You compare every option with every other option, note the winner of each pair, and count the wins. The option with the most wins comes first. It's useful when a list is hard to sort at once, because one choice between two is easy.
@@ -17,6 +18,11 @@ Say a team is choosing between five logo concepts: A, B, C, D and E.
 2. For each pair, decide which option is better and write down the winner.
 3. Count each option's wins.
 4. Sort the options by wins.
+
+<div class="article-picture all-pairs-picture" aria-hidden="true">
+  <span>A–B</span><span>A–C</span><span>A–D</span><span>A–E</span><span>B–C</span>
+  <span>B–D</span><span>B–E</span><span>C–D</span><span>C–E</span><span>D–E</span>
+</div>
 
 A grid makes this easier to track. Each cell holds the winner of the pair in its row and column, so you fill only the half above the diagonal:
 

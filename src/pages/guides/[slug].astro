@@ -28,7 +28,7 @@ const jsonLd = {
 };
 ---
 <Marketing title={guide.data.seoTitle} description={description} ogType="article" jsonLd={jsonLd}>
-  <article class="wrap guide">
+  <article class="wrap guide reading-page">
     <header>
       <h1>{title}</h1>
       <p class="guide-date">
@@ -43,11 +43,11 @@ const jsonLd = {
         }
       </p>
     </header>
-    {guide.data.picture && <div class="guide-picture"><PagePicture kind={guide.data.picture} /></div>}
+    {guide.data.picture && <div class="guide-picture wide-reading"><PagePicture kind={guide.data.picture} /></div>}
     <div class="prose">
       <Content />
     </div>
-    <p class="guide-more"><a href="/guides">All guides</a></p>
+    <p class="guide-more reading-footer"><a href="/guides">All guides</a></p>
   </article>
   <CtaBand />
 </Marketing>
@@ -74,7 +74,6 @@ const jsonLd = {
   }
 
   .guide-picture {
-    max-width: 64rem;
     margin-bottom: var(--s-7);
   }
 

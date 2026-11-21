@@ -20,16 +20,16 @@ const checked = alt.data.checked.toLocaleDateString("en-GB", {
 });
 ---
 <Marketing title={alt.data.seoTitle} description={alt.data.description}>
-  <div class="wrap">
+  <div class="wrap reading-page">
     <PageIntro title={alt.data.title} lead={alt.data.lead}>
       <div class="actions intro-actions">
         <a class="btn btn--primary btn--lg" href="/app/new">Create a free poll</a>
       </div>
     </PageIntro>
 
-    {alt.data.picture && <PagePicture kind={alt.data.picture} />}
+    {alt.data.picture && <div class="wide-reading"><PagePicture kind={alt.data.picture} /></div>}
 
-    <section aria-labelledby="compare-title" class="compare">
+    <section aria-labelledby="compare-title" class="compare wide-reading">
       <h2 id="compare-title">{alt.data.tool} and Pairpoll side by side</h2>
       <div>
         <table>

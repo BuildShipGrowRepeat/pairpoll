@@ -7,6 +7,7 @@ blurb: "Let Claude, ChatGPT or a coding agent set up the poll and read the resul
 lead: "Ask Claude, ChatGPT or a coding agent to make an image or video poll. It creates the poll, gives you the link to share and reads the ranking back to you. Pairpoll is free, and the voters are your own people."
 order: 12
 demo: designs
+picture: "agents"
 ---
 
 ## What your assistant can do

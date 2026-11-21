@@ -7,6 +7,7 @@ blurb: "Voting in pairs on images or videos, with each voter's own top list."
 lead: "PollUnit is a voting tool with many formats, one of them a pairwise comparison ranked with an ELO rating. Pairpoll only does voting in pairs, on 2 to 16 images or videos, and it's free."
 checked: 2026-11-19
 order: 2
+picture: "pollunit"
 comparison:
   - topic: "How pairs work"
     them: "Each participant gets several randomly drawn pairs; you set the number of voting rounds; the ranking uses an ELO rating"

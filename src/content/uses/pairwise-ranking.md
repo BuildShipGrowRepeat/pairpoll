@@ -8,6 +8,7 @@ lead: "Upload 2 to 16 images or videos and share one link. Each person picks the
 order: 9
 demo: photos
 demoQuestion: "Which photo do you like more?"
+picture: "pairwise-tool"
 ---
 
 ## What a pairwise ranking tool does

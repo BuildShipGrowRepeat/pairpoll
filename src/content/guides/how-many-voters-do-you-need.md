@@ -5,6 +5,7 @@ title: "How many voters do you need?"
 blurb: "What a few votes can tell you, and when a result is too close to call."
 published: 2026-11-19
 order: 2
+picture: "voters"
 ---
 
 It depends on what you want from the poll. A handful of people you trust can tell you whether one option is clearly loved or clearly ignored. That's an opinion check. To tell apart two options that people like about equally, you need far more votes, and even then a poll measures what people say they prefer, not what they'll do.

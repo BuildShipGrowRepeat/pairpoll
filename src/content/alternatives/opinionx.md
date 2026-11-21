@@ -7,6 +7,7 @@ blurb: "Pairwise ranking for images and videos, free for your own audience."
 lead: "OpinionX is a survey platform for research and pricing studies, and its Pair Rank method turns head-to-head votes into a ranked list. Pairpoll only does voting in pairs, on 2 to 16 images or videos, and it's free."
 checked: 2026-11-19
 order: 4
+picture: "opinionx"
 comparison:
   - topic: "What it is"
     them: "Survey platform with many methods, including pairwise comparison, MaxDiff, conjoint analysis and ranked choice voting"

@@ -5,6 +5,7 @@ title: "Preference testing vs A/B testing"
 blurb: "What each test measures, when to use which, and how to run them one after the other."
 published: 2026-11-19
 order: 4
+picture: "preference-ab"
 ---
 
 Both tests compare versions of something, such as a design, an ad, a thumbnail or a headline. A preference test asks people which version they prefer. An A/B test shows each version to different people in real use and measures what they do. They answer different questions, and they work best one after the other.

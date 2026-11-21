@@ -7,6 +7,7 @@ blurb: "A free preference test for up to 16 images or videos, with your own audi
 lead: "Lyssna is a user research platform, and its preference test compares up to 6 designs. Pairpoll does one kind of test: your own people compare 2 to 16 images or videos two at a time. It's free."
 checked: 2026-11-19
 order: 3
+picture: "lyssna"
 comparison:
   - topic: "What it is"
     them: "User research platform with usability testing, surveys, interviews and participant recruitment"
