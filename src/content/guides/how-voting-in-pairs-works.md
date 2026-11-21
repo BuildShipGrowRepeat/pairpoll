@@ -5,6 +5,7 @@ title: "Pairwise comparison: how voting in pairs works"
 blurb: "How picks between two items become each voter's top list and an overall ranking."
 published: 2026-11-19
 order: 1
+picture: "pairwise"
 ---
 
 Voting in pairs means each person compares two items at a time and picks the one they prefer. It's also called pairwise comparison or pairwise ranking. Choosing between two is easier than ordering a whole list or giving each item a score.
@@ -16,6 +17,27 @@ A voter opens the poll link, types their name and starts. They see two items sid
 For videos, the creator can turn on "each video plays once". Then both videos in a pair play to the end, with no replay, pause or seeking, before the voter can pick. With it off, and for images, voters can look as long as they like.
 
 ## How the pairs are chosen
+
+<div class="coded-picture coded-picture--knockout" aria-hidden="true">
+  <div class="knockout-picture">
+    <svg class="knockout-lines" viewBox="0 0 600 240" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+      <path d="M95 30H190V60H285 M95 90H190V60 M95 150H190V180H285 M95 210H190V180 M345 60H440V120H520 M345 180H440V120" />
+    </svg>
+    <div class="knockout-round">
+      <span class="knockout-card"><span class="frame"><img src="/demo/sunrise-hike.svg" alt="" loading="lazy"></span></span>
+      <span class="knockout-card"><span class="frame"><img src="/demo/ramen-at-home.svg" alt="" loading="lazy"></span></span>
+      <span class="knockout-card"><span class="frame"><img src="/demo/rocket-launch.svg" alt="" loading="lazy"></span></span>
+      <span class="knockout-card"><span class="frame"><img src="/demo/city-at-night.svg" alt="" loading="lazy"></span></span>
+    </div>
+    <div class="knockout-round">
+      <span class="knockout-card"><span class="frame"><img src="/demo/sunrise-hike.svg" alt="" loading="lazy"></span></span>
+      <span class="knockout-card"><span class="frame"><img src="/demo/rocket-launch.svg" alt="" loading="lazy"></span></span>
+    </div>
+    <div class="knockout-round">
+      <span class="knockout-card is-winner"><span class="frame"><img src="/demo/rocket-launch.svg" alt="" loading="lazy"></span></span>
+    </div>
+  </div>
+</div>
 
 Each voter gets their own knockout:
 

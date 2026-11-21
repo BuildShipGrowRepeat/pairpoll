@@ -2,6 +2,7 @@
 import Marketing from "../layouts/Marketing.astro";
 import PageIntro from "../components/PageIntro.astro";
 import CtaBand from "../components/CtaBand.astro";
+import PagePicture from "../components/art/PagePicture.astro";
 
 // Descriptions of the other projects come from each site's own title or meta description (checked 19 Nov 2026).
 const jsonLd = {
@@ -22,6 +23,7 @@ const jsonLd = {
 >
   <div class="wrap">
     <PageIntro title="About Pairpoll" />
+    <div class="about-picture"><PagePicture kind="about" /></div>
     <div class="prose about">
       <p>
         Pairpoll is a free, open-source poll for images and videos, ranked head to head. You upload a few options, send one
@@ -56,6 +58,11 @@ const jsonLd = {
 <style>
   .about {
     padding-bottom: var(--s-8);
+  }
+
+  .about-picture {
+    max-width: 64rem;
+    margin-bottom: var(--s-7);
   }
 
   .about > p:first-child {

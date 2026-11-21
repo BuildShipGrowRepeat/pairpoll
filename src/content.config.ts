@@ -36,6 +36,7 @@ const alternatives = defineCollection({
     lead: z.string(),
     checked: z.coerce.date(),
     order: z.number(),
+    picture: z.enum(["pickfu"]).optional(),
     comparison: z
       .array(
         z.object({
@@ -58,6 +59,7 @@ const guides = defineCollection({
     published: z.coerce.date(),
     updated: z.coerce.date().optional(),
     order: z.number(),
+    picture: z.enum(["pairwise"]).optional(),
   }),
 });
 

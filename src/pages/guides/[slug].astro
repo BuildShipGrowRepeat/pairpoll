@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import Marketing from "../../layouts/Marketing.astro";
 import CtaBand from "../../components/CtaBand.astro";
+import PagePicture from "../../components/art/PagePicture.astro";
 
 export async function getStaticPaths() {
   const guides = await getCollection("guides");
@@ -42,6 +43,7 @@ const jsonLd = {
         }
       </p>
     </header>
+    {guide.data.picture && <div class="guide-picture"><PagePicture kind={guide.data.picture} /></div>}
     <div class="prose">
       <Content />
     </div>
@@ -69,6 +71,11 @@ const jsonLd = {
   .guide .prose > :global(:first-child) {
     font-size: var(--text-lg);
     line-height: 1.5;
+  }
+
+  .guide-picture {
+    max-width: 64rem;
+    margin-bottom: var(--s-7);
   }
 
   .guide-more {

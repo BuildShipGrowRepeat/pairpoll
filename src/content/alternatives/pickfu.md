@@ -7,6 +7,7 @@ blurb: "Rank up to 16 images or videos in pairs with your own audience."
 lead: "PickFu sells answers from a paid panel of respondents and also runs free polls with your own audience. Pairpoll is only for your own audience, and ranks up to 16 images or videos head to head."
 checked: 2026-11-19
 order: 1
+picture: "pickfu"
 comparison:
   - topic: "Polls for your own audience"
     them: "Free on every plan, up to 500 responses"

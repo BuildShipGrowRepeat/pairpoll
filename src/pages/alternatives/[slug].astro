@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import Marketing from "../../layouts/Marketing.astro";
 import PageIntro from "../../components/PageIntro.astro";
 import CtaBand from "../../components/CtaBand.astro";
+import PagePicture from "../../components/art/PagePicture.astro";
 
 export async function getStaticPaths() {
   const alternatives = await getCollection("alternatives");
@@ -25,6 +26,8 @@ const checked = alt.data.checked.toLocaleDateString("en-GB", {
         <a class="btn btn--primary btn--lg" href="/app/new">Create a free poll</a>
       </div>
     </PageIntro>
+
+    {alt.data.picture && <PagePicture kind={alt.data.picture} />}
 
     <section aria-labelledby="compare-title" class="compare">
       <h2 id="compare-title">{alt.data.tool} and Pairpoll side by side</h2>
